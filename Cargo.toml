@@ -1,7 +1,7 @@
 [package]
 name = "heos-dial"
 version = "0.1.0"
-authors = ["unexist <christoph@unexist.dev>"]
+authors = ["Christoph Kappel <christoph@unexist.dev>"]
 edition = "2021"
 resolver = "2"
 rust-version = "1.77"
