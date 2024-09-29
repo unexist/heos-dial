@@ -502,11 +502,9 @@ dependencies = [
  "embedded-io-async",
  "enumset",
  "heapless",
- "log",
  "num_enum",
  "serde",
  "strum 0.25.0",
- "strum_macros 0.25.3",
 ]
 
 [[package]]
@@ -544,7 +542,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d07a4b049558765cef5f0c1a273c3fc57084d768b44d2f98127aef4cceb17293"
 dependencies = [
  "enumset_derive",
- "serde",
 ]
 
 [[package]]
@@ -792,7 +789,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0bfb9eb618601c89945a70e254898da93b13be0388091d42117462b265bb3fad"
 dependencies = [
  "hash32",
- "serde",
  "stable_deref_trait",
 ]
 
@@ -807,8 +803,6 @@ name = "heos-dial"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "embedded-hal 1.0.0",
- "embedded-svc",
  "embuild",
  "esp-idf-svc",
  "log",
