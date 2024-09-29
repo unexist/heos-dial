@@ -15,9 +15,6 @@ target/
 **/zig-out/*
 
 # Rust
-**/target/*
-/.embuild
-
-# subtle
-build/*
-config.*
+target/*
+.embuild/*
+.cargo/*
