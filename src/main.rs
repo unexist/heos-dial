@@ -9,6 +9,8 @@
 /// See the file LICENSE for details.
 ///
 
+mod wifi;
+
 use anyhow::{bail, Result};
 use core::str;
 use embedded_svc::{
@@ -20,7 +22,6 @@ use esp_idf_svc::{
 use esp_idf_svc::hal::{
     delay::FreeRtos,
     peripherals::Peripherals,
-    wifi::wifi,
     prelude::*,
 };
 use wifi::wifi;
@@ -41,9 +42,6 @@ fn main() -> anyhow::Result<()> {
     esp_idf_svc::sys::link_patches();
     esp_idf_svc::log::EspLogger::initialize_default();
 
-    let app_config = CONFIG;
-    let sysloop = EspSystemEventLoop::take()?;
-
     println!("Setup pins");
     let peripherals = Peripherals::take().context("Failed to take Peripherals")?;
     let mut pin_a = peripherals.pins.gpio5;
@@ -54,6 +52,9 @@ fn main() -> anyhow::Result<()> {
     let mut last_value = 0i32;
 
     // Connect to the Wi-Fi network
+    let app_config = CONFIG;
+    let sysloop = EspSystemEventLoop::take()?;
+
     let _wifi = match wifi(
         app_config.wifi_ssid,
         app_config.wifi_psk,
@@ -88,8 +89,8 @@ fn main() {
     }
 }
 
-#[cfg(any(esp32, esp32s2, esp32s3))]
 // esp-idf encoder implementation using v4 pcnt api
+#[cfg(any(esp32, esp32s2, esp32s3))]
 mod encoder {
     use std::cmp::min;
     use std::sync::atomic::AtomicI32;
@@ -99,7 +100,7 @@ mod encoder {
     use esp_idf_svc::hal::gpio::AnyInputPin;
     use esp_idf_svc::hal::gpio::InputPin;
     use esp_idf_svc::hal::pcnt::*;
-    use esp_idf_sys::EspError;
+    use esp_idf_svc::sys::EspError;
 
     const LOW_LIMIT: i16 = -100;
     const HIGH_LIMIT: i16 = 100;
