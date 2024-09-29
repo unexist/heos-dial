@@ -17,4 +17,3 @@ target/
 # Rust
 target/*
 .embuild/*
-.cargo/*
