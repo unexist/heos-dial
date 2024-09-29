@@ -28,7 +28,7 @@ use esp_idf_svc::hal::{
 
 #[toml_cfg::toml_config]
 pub struct Config {
-    #[default("serc")]
+    #[default("")]
     wifi_ssid: &'static str,
     #[default("")]
     wifi_psk: &'static str,
