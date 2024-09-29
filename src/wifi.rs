@@ -17,7 +17,7 @@ use esp_idf_svc::{
 };
 use log::info;
 
-pub fn wifi(
+pub fn Wifi(
     ssid: &str,
     pass: &str,
     modem: impl peripheral::Peripheral<P = esp_idf_svc::hal::modem::Modem> + 'static,
