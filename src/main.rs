@@ -82,7 +82,7 @@ fn main() -> anyhow::Result<()> {
 
 #[cfg(not(any(esp32, esp32s2, esp32s3)))]
 fn main() {
-    use esp_idf_hal::delay::FreeRtos;
+    use esp_idf_svc::hal::delay::FreeRtos;
     println!("pcnt peripheral not supported on this device!");
     loop {
         FreeRtos::delay_ms(100u32);
