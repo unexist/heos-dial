@@ -23,41 +23,25 @@ pub fn Wifi(
     modem: impl peripheral::Peripheral<P = esp_idf_svc::hal::modem::Modem> + 'static,
     sysloop: EspSystemEventLoop,
 ) -> Result<Box<EspWifi<'static>>> {
-    let mut auth_method = AuthMethod::WPA2Personal;
-    if ssid.is_empty() {
-        bail!("Missing WiFi name")
+    if ssid.is_empty() || pass.is_empty() {
+        bail!("Missing WiFi name or password")
     }
-    if pass.is_empty() {
-        auth_method = AuthMethod::None;
-        info!("Wifi password is empty");
-    }
-    let mut esp_wifi = EspWifi::new(modem, sysloop.clone(), None)?;
 
+    let mut auth_method = AuthMethod::WPA2Personal;
+    let mut esp_wifi = EspWifi::new(modem, sysloop.clone(), None)?;
     let mut wifi = BlockingWifi::wrap(&mut esp_wifi, sysloop)?;
 
+    info!("Starting wifi scan");
+
     wifi.set_configuration(&Configuration::Client(ClientConfiguration::default()))?;
-
-    info!("Starting wifi...");
-
     wifi.start()?;
 
-    info!("Scanning...");
-
     let ap_infos = wifi.scan()?;
-
     let ours = ap_infos.into_iter().find(|a| a.ssid == ssid);
 
     let channel = if let Some(ours) = ours {
-        info!(
-            "Found configured access point {} on channel {}",
-            ssid, ours.channel
-        );
         Some(ours.channel)
     } else {
-        info!(
-            "Configured access point {} not found during scanning, will go with unknown channel",
-            ssid
-        );
         None
     };
 
