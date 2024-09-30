@@ -11,6 +11,7 @@
 
 mod wifi;
 mod encoder;
+mod heos;
 
 use anyhow::{bail, Result};
 use core::str;
@@ -39,14 +40,17 @@ fn main() -> anyhow::Result<()> {
     use anyhow::Context;
     use encoder::Encoder;
     use wifi::Wifi;
+    use heos::Heos;
 
     esp_idf_svc::sys::link_patches();
     esp_idf_svc::log::EspLogger::initialize_default();
 
     println!("Setup pins");
     let peripherals = Peripherals::take().context("Failed to take Peripherals")?;
-    let mut pin_a = peripherals.pins.gpio5;
-    let mut pin_b = peripherals.pins.gpio6;
+
+    /// Pin mappings: https://github.com/m5stack/M5Dial/blob/master/src/M5Dial.h#L9
+    let mut pin_a = peripherals.pins.gpio40;
+    let mut pin_b = peripherals.pins.gpio41;
 
     println!("Setup encoder");
     let encoder = Encoder::new(peripherals.pcnt0, &mut pin_a, &mut pin_b)?;
@@ -55,6 +59,8 @@ fn main() -> anyhow::Result<()> {
     // Connect to the Wi-Fi network
     let app_config = CONFIG;
     let sysloop = EspSystemEventLoop::take()?;
+
+    let _heos = heos::Heos();
 
     let _wifi = match Wifi(
         app_config.wifi_ssid,
