@@ -1,5 +1,5 @@
 ///
-/// @package geos-dial
+/// @package heos-dial
 ///
 /// @file Wifi helper
 /// @copyright 2024-present Christoph Kappel <christoph@unexist.dev>
