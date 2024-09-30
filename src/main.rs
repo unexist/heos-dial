@@ -12,9 +12,11 @@
 mod wifi;
 mod encoder;
 mod heos;
+mod heos_test;
 
 use anyhow::{bail, Result};
 use core::str;
+use std::net::UdpSocket;
 use embedded_svc::{
     io::Read,
 };
@@ -39,7 +41,7 @@ pub struct Config {
 fn main() -> anyhow::Result<()> {
     use anyhow::Context;
     use encoder::Encoder;
-    use wifi::Wifi;
+    use wifi::create_wifi;
     use heos::Heos;
 
     esp_idf_svc::sys::link_patches();
@@ -60,30 +62,29 @@ fn main() -> anyhow::Result<()> {
     let app_config = CONFIG;
     let sysloop = EspSystemEventLoop::take()?;
 
-    let _heos = heos::Heos();
-
-    let _wifi = match Wifi(
+    let _wifi = create_wifi(
         app_config.wifi_ssid,
         app_config.wifi_psk,
         peripherals.modem,
         sysloop,
-    ) {
-        Ok(inner) => {
-            println!("Connected to Wi-Fi network!");
-            let value = encoder.get_value()?;
+    );
 
-            if value != last_value {
-                println!("value: {value}");
-                last_value = value;
-            }
-            FreeRtos::delay_ms(100u32);
-            inner
-        }
-        Err(err) => {
-            // Red!
-            bail!("Could not connect to Wi-Fi network: {:?}", err)
-        }
-    };
+    /// Start discovery
+    let socket = UdpSocket::bind("127.0.0.1:34254")?;
+
+    let heos = Heos::new(socket);
+
+    heos.discovery();
+
+    /// Read encoder
+    let value = encoder.get_value()?;
+
+    if value != last_value {
+        println!("value: {value}");
+        last_value = value;
+    }
+    FreeRtos::delay_ms(100u32);
+
     Ok(())
 }
 
