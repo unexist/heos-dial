@@ -1,3 +1,5 @@
+#![feature(assert_matches)]
+
 ///
 /// @package heos-dial
 ///
@@ -28,6 +30,7 @@ use esp_idf_svc::hal::{
     peripherals::Peripherals,
     prelude::*,
 };
+use esp_idf_svc::hal::task::block_on;
 
 #[toml_cfg::toml_config]
 pub struct Config {
@@ -70,11 +73,9 @@ fn main() -> anyhow::Result<()> {
     );
 
     /// Start discovery
-    let socket = UdpSocket::bind("127.0.0.1:34254")?;
+    let heos = Heos::new();
 
-    let heos = Heos::new(socket);
-
-    heos.discovery();
+    block_on(heos.discover());
 
     /// Read encoder
     let value = encoder.get_value()?;
