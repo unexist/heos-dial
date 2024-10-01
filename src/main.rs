@@ -53,7 +53,7 @@ fn main() -> anyhow::Result<()> {
     println!("Setup pins");
     let peripherals = Peripherals::take().context("Failed to take Peripherals")?;
 
-    /// Pin mappings: https://github.com/m5stack/M5Dial/blob/master/src/M5Dial.h#L9
+    // Pin mappings: https://github.com/m5stack/M5Dial/blob/master/src/M5Dial.h#L9
     let mut pin_a = peripherals.pins.gpio40;
     let mut pin_b = peripherals.pins.gpio41;
 
@@ -72,12 +72,12 @@ fn main() -> anyhow::Result<()> {
         sysloop,
     );
 
-    /// Start discovery
+    // Start discovery
     let heos = Heos::new();
 
     block_on(heos.discover());
 
-    /// Read encoder
+    // Read encoder
     let value = encoder.get_value()?;
 
     if value != last_value {
