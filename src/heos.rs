@@ -11,13 +11,12 @@
 
 use std::net::{Ipv4Addr, SocketAddr, UdpSocket};
 use anyhow::anyhow;
-use std::collections::HashMap;
 use esp_idf_svc::sys::const_format::formatcp;
 
 const TARGET_URN: &'static str = "urn:schemas-denon-com:device:ACT-Denon:1";
-const DISCOVERY_REQUEST: &'static str = formatcp!(#"M-SEARCH * HTTP/1.1\r\n
+const DISCOVERY_REQUEST: &'static str = formatcp!(r#"M-SEARCH * HTTP/1.1\r\n
 HOST: 239.255.255.250:1900\r\n
-MAN: \"ssdp:discover\"\r\n
+MAN: "ssdp:discover"\r\n
 MX: 5\r\n
 ST: {urn}\r\n
 \r\n"#, urn = TARGET_URN);
