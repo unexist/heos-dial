@@ -16,9 +16,7 @@ mod encoder;
 mod heos;
 mod heos_test;
 
-use anyhow::{bail, Result};
 use core::str;
-use std::net::UdpSocket;
 use embedded_svc::{
     io::Read,
 };
@@ -59,7 +57,7 @@ fn main() -> anyhow::Result<()> {
 
     println!("Setup encoder");
     let encoder = Encoder::new(peripherals.pcnt0, &mut pin_a, &mut pin_b)?;
-    let mut last_value = 0i32;
+    let mut _last_value = 0i32;
 
     // Connect to the Wi-Fi network
     let app_config = CONFIG;
@@ -80,9 +78,9 @@ fn main() -> anyhow::Result<()> {
     // Read encoder
     let value = encoder.get_value()?;
 
-    if value != last_value {
+    if value != _last_value {
         println!("value: {value}");
-        last_value = value;
+        _last_value = value;
     }
     FreeRtos::delay_ms(100u32);
 

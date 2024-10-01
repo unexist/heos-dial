@@ -10,7 +10,7 @@
 ///
 
 use std::net::{Ipv4Addr, SocketAddr, UdpSocket};
-use anyhow::anyhow;
+use anyhow::{anyhow, Result};
 use esp_idf_svc::sys::const_format::formatcp;
 
 const TARGET_URN: &'static str = "urn:schemas-denon-com:device:ACT-Denon:1";
@@ -61,7 +61,7 @@ impl<'d> Heos<'d> {
         }
     }
 
-    pub(crate) fn parse_discovery_response(response_str: &str) -> Result<HeosDevice, Err> {
+    pub(crate) fn parse_discovery_response(response_str: &str) -> Result<HeosDevice> {
         Ok(HeosDevice{})
     }
 }
