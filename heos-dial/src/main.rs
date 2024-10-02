@@ -14,7 +14,6 @@
 
 mod wifi;
 mod encoder;
-mod heos;
 
 use core::str;
 use embedded_svc::{

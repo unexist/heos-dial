@@ -810,9 +810,18 @@ dependencies = [
  "embedded-svc",
  "embuild",
  "esp-idf-svc",
+ "heos-lib",
  "log",
  "shtcx",
  "toml-cfg",
+]
+
+[[package]]
+name = "heos-lib"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "const_format",
 ]
 
 [[package]]
