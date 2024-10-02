@@ -2,6 +2,17 @@
 
 This project holds a small controller software for HEOS based on MD5Dial and Rust
 
+== Modules
+
+[cols="1,3"]
+|===
+| heos-dial
+| The actual firmware
+
+| heos-lib
+| Heos parser lib crate
+|===
+
 == Links
 
 - https://github.com/m5stack/M5Dial
