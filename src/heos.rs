@@ -9,6 +9,7 @@
 /// See the file LICENSE for details.
 ///
 
+use std::str;
 use std::net::{Ipv4Addr, SocketAddr, UdpSocket};
 use anyhow::{anyhow, Result};
 use esp_idf_svc::sys::const_format::formatcp;
@@ -21,47 +22,51 @@ MX: 5\r\n
 ST: {urn}\r\n
 \r\n"#, urn = TARGET_URN);
 
-#[derive(Debug)]
-pub struct HeosDevice<'d> {
+#[derive(Default, Debug)]
+pub struct HeosDevice {
+    url: String,
 }
 
 #[derive(Default)]
-pub struct Heos<'d> {
+pub struct Heos {
+    devices: Vec<HeosDevice>,
 }
 
-impl<'d> Heos<'d> {
+impl Heos {
     pub fn new() -> Self {
-        Self { }
+        Self {
+            devices: vec![]
+        }
     }
 
-    pub async fn discover(&self) -> Self {
+    pub fn discover(&self) -> Result<()> {
         let any: SocketAddr = ([0, 0, 0, 0], 0).into();
-        let socket = UdpSocket::bind(any).await?;
-        socket.join_multicast_v4(Ipv4Addr::new(239, 255, 255, 250),
-                                 Ipv4Addr::new(0, 0, 0, 0))?;
+        let socket = UdpSocket::bind(any)?;
+        socket.join_multicast_v4(&Ipv4Addr::new(239, 255, 255, 250),
+                                 &Ipv4Addr::new(0, 0, 0, 0))?;
 
         // Set the socket address to the multicast IP and port for UPnP device discovery
         let socket_addr: SocketAddr = ([239, 255, 255, 250], 1900).into();
 
         // Send the discovery request
-        socket.send_to(DISCOVERY_REQUEST.as_bytes(), &socket_addr).await?;
+        socket.send_to(DISCOVERY_REQUEST.as_bytes(), &socket_addr)?;
 
         loop {
             // Receive the discovery response
             let mut buf = [0; 2048];
-            let (size, _) = socket.recv_from(&mut buf).await?;
+            let (size, _) = socket.recv_from(&mut buf)?;
 
             // Convert the response to a string
             let response =
                 str::from_utf8(unsafe { std::slice::from_raw_parts(buf.as_ptr() as *const u8, size) })?;
 
-            let headers = Self::parse_discovery_response(response)
-                .ok_or_else(|| anyhow!("Couldn't parse response"))?
-                .to_string();
+            let device = Self::parse_discovery_response(response)?;
+
+            println!("{:#?}", device);
         }
     }
 
     pub(crate) fn parse_discovery_response(response_str: &str) -> Result<HeosDevice> {
-        Ok(HeosDevice{})
+        Ok(HeosDevice{ url: String::from("") })
     }
 }
