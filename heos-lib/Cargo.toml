@@ -9,10 +9,6 @@ homepage = "https://unexist.dev"
 repository = "https://hg.unexist.dev/heos-dial"
 edition = "2021"
 
-[[bin]]
-name = "heos-dial"
-harness = false # do not use the built in cargo test harness -> resolve rust-analyzer errors
-
 [dependencies]
 anyhow = "1.0.89"
 const_format = "0.2.33"
