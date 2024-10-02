@@ -27,7 +27,6 @@ use esp_idf_svc::hal::{
     peripherals::Peripherals,
     prelude::*,
 };
-use esp_idf_svc::hal::task::block_on;
 
 #[toml_cfg::toml_config]
 pub struct Config {
@@ -72,7 +71,7 @@ fn main() -> anyhow::Result<()> {
     // Start discovery
     let heos = Heos::new();
 
-    block_on(heos.discover());
+    heos.discover();
 
     // Read encoder
     let value = encoder.get_value()?;
