@@ -13,7 +13,7 @@ use anyhow::{bail, Result};
 use esp_idf_svc::{
     eventloop::EspSystemEventLoop,
     hal::peripheral,
-    wifi::{AuthMethod, BlockingWifi, ClientConfiguration, Configuration, EspWifi},
+    wifi::{BlockingWifi, ClientConfiguration, Configuration, EspWifi},
 };
 use log::info;
 
