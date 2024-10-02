@@ -12,12 +12,11 @@
 #[cfg(test)]
 mod heos_test {
     use crate::heos::Heos;
-    use std::assert_matches::assert_matches;
     use std::collections::HashMap;
     use const_format::formatcp;
 
     #[test]
-    fn should_parse_discovery_response() -> anyhow::Result<()> {
+    fn should_parse_discovery_response() {
         const LOCATION: &'static str = "http://10.0.8.87:60006/upnp/desc/aios_device/aios_device.xml";
         const RAW_REPLY: &'static str = formatcp!(r#"HTTP/1.1 200 OK\r\n
     CACHE-CONTROL: max-age=180\r\n
@@ -31,15 +30,21 @@ mod heos_test {
     ST: urn:schemas-denon-com:device:ACT-Denon:1\r\n
     USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT-Denon:1\r\n\r\n"#, location = LOCATION);
 
-        assert_matches!(Heos::parse_discovery_response(RAW_REPLY),
-            Ok(device) if LOCATION.eq(&device.url));
+        match Heos::parse_discovery_response(RAW_REPLY) {
+            Ok(device) => assert!(LOCATION.eq(&device.url)),
+            Err(err) => panic!("{}", err),
+        }
     }
 
     #[test]
-    fn should_generate_valid_heos_command() -> anyhow::Result<()> {
+    fn should_generate_valid_heos_command() {
         const COMMAND: &'static str = "heos://\r\n";
 
-        assert_matches!(Heos::generate_heos_command("player", "get_volume",
-            HashMap::from(["pid", "5"])), Ok(cmd) if COMMAND.eq(cmd));
+        match Heos::generate_heos_command("player", "get_volume",
+                                          HashMap::from([("pid", "5")]))
+        {
+            Ok(cmd_str) => assert!(COMMAND.eq(cmd_str)),
+            Err(err) => panic!("{}", err),
+        }
     }
 }
