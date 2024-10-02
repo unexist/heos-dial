@@ -69,7 +69,7 @@ impl Heos {
         }
     }
 
-    pub(crate) fn generate_heos_attributes(attributes: &HashMap<String, &str>) -> String {
+    pub(crate) fn generate_heos_attributes(attributes: &HashMap<&str, &str>) -> String {
         if attributes.is_empty() {
             "".to_string()
         } else {
@@ -81,7 +81,7 @@ impl Heos {
     }
 
     pub(crate) fn generate_heos_command(command_group: &str, command_string: &str,
-                                        attributes: HashMap<String, &str>) -> String
+                                        attributes: HashMap<&str, &str>) -> String
     {
         format!("{}{}/{}{}{}", PREFIX, command_group, command_string,
                 Self::generate_heos_attributes(&attributes), POSTFIX)
