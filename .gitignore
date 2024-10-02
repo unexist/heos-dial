@@ -1,2 +1,9 @@
+# IntelliJ
+**/*.iml
+*.iml
+*.bin
+
+# Rust
 .embuild/*
 target/*
+**/cfg.toml

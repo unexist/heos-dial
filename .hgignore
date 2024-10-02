@@ -17,3 +17,4 @@ target/
 # Rust
 target/*
 .embuild/*
+**/cfg.toml
