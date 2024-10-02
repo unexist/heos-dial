@@ -1,7 +1,4 @@
-#![feature(let_chains)]
-#![feature(assert_matches)]
-
-///
+//
 /// @package heos-dial
 ///
 /// @file HEOS lib
