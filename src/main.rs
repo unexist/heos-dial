@@ -1,4 +1,5 @@
 #![feature(assert_matches)]
+#![feature(let_chains)]
 
 ///
 /// @package heos-dial
@@ -71,7 +72,7 @@ fn main() -> anyhow::Result<()> {
     // Start discovery
     let heos = Heos::new();
 
-    heos.discover();
+    let _ = heos.discover()?;
 
     // Read encoder
     let value = encoder.get_value()?;
