@@ -91,12 +91,12 @@ impl Heos {
         match response_str.split("\r\n\r\n").next() {
             Some(header_str) => {
                 for header_line in header_str.split("\r\n") {
-                    if header_line.starts_with("LOCATION")
-                        && let Some(idx) = header_str.find(':')
-                    {
-                        let url = header_line[idx + 1..].trim();
+                    if header_line.starts_with("LOCATION") {
+                        if let Some(idx) = header_str.find(':') {
+                            let url = header_line[idx + 1..].trim();
 
-                        return Ok(HeosDevice { url: url.to_string() });
+                            return Ok(HeosDevice { url: url.to_string() });
+                        }
                     }
                 }
                 Err(anyhow::anyhow!("Invalid response"))
