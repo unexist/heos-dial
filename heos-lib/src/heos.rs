@@ -12,6 +12,7 @@
 use std::str;
 use std::net::{Ipv4Addr, SocketAddr, UdpSocket};
 use std::collections::HashMap;
+use anyhow::anyhow;
 use const_format::formatcp;
 
 const PREFIX: &'static str = "heos://";
@@ -26,18 +27,18 @@ ST: {urn}\r\n
 
 #[derive(Default, Debug)]
 pub struct HeosDevice {
-    pub(crate) url: String,
+    pub(crate) _url: String,
 }
 
 #[derive(Default)]
 pub struct Heos {
-    pub(crate) devices: Vec<HeosDevice>,
+    pub(crate) _devices: Vec<HeosDevice>,
 }
 
 impl Heos {
     pub fn new() -> Self {
         Self {
-            devices: vec![]
+            _devices: vec![]
         }
     }
 
@@ -73,18 +74,22 @@ impl Heos {
         if attributes.is_empty() {
             "".to_string()
         } else {
-            format!("?{:?}", attributes.into_iter()
+            match attributes.into_iter()
                 .map(|kv| { format!("{}={}", kv.0, kv.1) })
-                .reduce(|prev, next| { format!("{}&{}", prev, next) }))
+                .reduce(|prev, next| { format!("{}&{}", prev, next) })
+            {
+                Some(result) => format!("?{}", result),
+                None => "".to_string()
+            }
         }
 
     }
 
     pub(crate) fn generate_heos_command(command_group: &str, command_string: &str,
-                                        attributes: HashMap<&str, &str>) -> String
+                                        attributes: &HashMap<&str, &str>) -> String
     {
         format!("{}{}/{}{}{}", PREFIX, command_group, command_string,
-                Self::generate_heos_attributes(&attributes), POSTFIX)
+                Self::generate_heos_attributes(attributes), POSTFIX)
     }
 
     pub(crate) fn parse_discovery_response(response_str: &str) -> anyhow::Result<HeosDevice> {
@@ -95,7 +100,7 @@ impl Heos {
                         if let Some(idx) = header_str.find(':') {
                             let url = header_line[idx + 1..].trim();
 
-                            return Ok(HeosDevice { url: url.to_string() });
+                            return Ok(HeosDevice { _url: url.to_string() });
                         }
                     }
                 }
