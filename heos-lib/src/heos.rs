@@ -89,7 +89,7 @@ impl Heos {
                                attributes: &HashMap<&str, &str>) -> String
     {
         format!("{}{}/{}{}{}", PREFIX, command_group, command_string,
-                Self::attributes_from(&attributes), POSTFIX)
+                Self::attributes_from(attributes), POSTFIX)
     }
 
     pub(crate) fn parse_discovery_response(response_str: &str) -> anyhow::Result<HeosDevice> {
