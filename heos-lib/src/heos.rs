@@ -70,11 +70,11 @@ impl Heos {
         }
     }
 
-    pub(crate) fn generate_heos_attributes(attributes: &HashMap<&str, &str>) -> String {
+    pub(crate) fn attributes_from(attributes: &HashMap<&str, &str>) -> String {
         if attributes.is_empty() {
             "".to_string()
         } else {
-            match attributes.into_iter()
+            match attributes.iter()
                 .map(|kv| { format!("{}={}", kv.0, kv.1) })
                 .reduce(|prev, next| { format!("{}&{}", prev, next) })
             {
@@ -85,11 +85,11 @@ impl Heos {
 
     }
 
-    pub(crate) fn generate_heos_command(command_group: &str, command_string: &str,
-                                        attributes: &HashMap<&str, &str>) -> String
+    pub(crate) fn command_from(command_group: &str, command_string: &str,
+                               attributes: &HashMap<&str, &str>) -> String
     {
         format!("{}{}/{}{}{}", PREFIX, command_group, command_string,
-                Self::generate_heos_attributes(attributes), POSTFIX)
+                Self::attributes_from(&attributes), POSTFIX)
     }
 
     pub(crate) fn parse_discovery_response(response_str: &str) -> anyhow::Result<HeosDevice> {

@@ -31,20 +31,23 @@ mod heos_test {
     USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT-Denon:1\r\n\r\n"#, location = LOCATION);
 
         match Heos::parse_discovery_response(RAW_REPLY) {
-            Ok(device) => assert!(LOCATION.eq(&device.url)),
+            Ok(device) => assert!(LOCATION.eq(&device._url)),
             Err(err) => panic!("{}", err),
         }
     }
 
     #[test]
-    fn should_generate_valid_heos_command() {
-        const COMMAND: &'static str = "heos://\r\n";
+    fn should_generate_heos_attribute_string() {
+        assert_eq!(Heos::attributes_from(&HashMap::<&str, &str>::new()), "");
+        assert_eq!(Heos::attributes_from(&HashMap::from([("pid", "5")])), "?pid=5");
+        assert_eq!(Heos::attributes_from(&HashMap::from([("pid", "5"), ("v", "1")])), "?pid=5&v=1");
+    }
 
-        match Heos::generate_heos_command("player", "get_volume",
-                                          HashMap::from([("pid", "5")]))
-        {
-            Ok(cmd_str) => assert!(COMMAND.eq(cmd_str)),
-            Err(err) => panic!("{}", err),
-        }
+    #[test]
+    fn should_generate_valid_heos_command() {
+        const COMMAND: &'static str = "heos://player/get_volume?pid=5\r\n";
+
+        assert_eq!(Heos::command_from("player", "get_volume",
+                                      &HashMap::from([("pid", "5")])), COMMAND);
     }
 }
