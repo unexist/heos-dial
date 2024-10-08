@@ -38,9 +38,9 @@ mod heos_test {
 
     #[test]
     fn should_generate_heos_attribute_string() {
-        assert_eq!(Heos::attributes_from(&HashMap::<&str, &str>::new()), "");
-        assert_eq!(Heos::attributes_from(&HashMap::from([("pid", "5")])), "?pid=5");
-        assert_eq!(Heos::attributes_from(&HashMap::from([("pid", "5"), ("v", "1")])), "?pid=5&v=1");
+        assert_eq!(Heos::attributes_from([]), "");
+        assert_eq!(Heos::attributes_from([("pid", "5")]), "?pid=5");
+        assert_eq!(Heos::attributes_from([("pid", "5"), ("v", "1")]), "?pid=5&v=1");
     }
 
     #[test]
