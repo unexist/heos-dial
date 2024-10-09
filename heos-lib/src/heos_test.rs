@@ -11,7 +11,7 @@
 
 #[cfg(test)]
 mod heos_test {
-    use crate::heos::Heos;
+    use crate::heos::{Heos, HeosAttributes};
     use std::collections::HashMap;
     use const_format::formatcp;
 
@@ -38,9 +38,13 @@ mod heos_test {
 
     #[test]
     fn should_generate_heos_attribute_string() {
-        assert_eq!(Heos::attributes_from([]), "");
-        assert_eq!(Heos::attributes_from([("pid", "5")]), "?pid=5");
-        assert_eq!(Heos::attributes_from([("pid", "5"), ("v", "1")]), "?pid=5&v=1");
+        assert_eq!(Heos::attributes_from(vec![]), "");
+        assert_eq!(Heos::attributes_from(vec![("pid", "5")]), "?pid=5");
+        assert_eq!(Heos::attributes_from(vec![("pid", "5"), ("v", "1")]), "?pid=5&v=1");
+
+        assert_eq!(vec![()].to_attributes().expect("To attributes failed"), "");
+        assert_eq!(vec![("pid", "5")].to_attributes().expect("To attributes failed"), "?pid=5");
+        assert_eq!(vec![("pid", "5"), ("v", "1")].to_attributes().expect("To attributes failed"), "?pid=5&v=1");
     }
 
     #[test]
