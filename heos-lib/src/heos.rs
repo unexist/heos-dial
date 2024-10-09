@@ -80,7 +80,7 @@ impl Heos {
         }
     }
 
-    pub(crate) fn attributes_from(attributes: Vec<_>) -> String {
+    pub(crate) fn attributes_from<T>(attributes: Vec<T>) -> String {
         if attributes.is_empty() {
             "".to_string()
         } else {
@@ -94,8 +94,8 @@ impl Heos {
         }
     }
 
-    pub(crate) fn command_from(command_group: &str, command_string: &str,
-                               attributes: &HashMap<&str, &str>) -> String
+    pub(crate) fn command_from<T>(command_group: &str, command_string: &str,
+                               attributes: Vec<T>) -> String
     {
         format!("{}{}/{}{}{}", PREFIX, command_group, command_string,
                 Self::attributes_from(attributes), POSTFIX)
