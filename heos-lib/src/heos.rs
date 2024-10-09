@@ -35,6 +35,16 @@ pub struct Heos {
     pub(crate) _devices: Vec<HeosDevice>,
 }
 
+pub(crate) trait HeosAttributes {
+    fn to_attributes(&self) -> anyhow::Result<String> {}
+}
+
+impl<T: Clone> HeosAttributes for [T] {
+    fn to_attributes(&self) -> anyhow::Result<String> {
+        Heos::attributes_from(&self)
+    }
+}
+
 impl Heos {
     pub fn new() -> Self {
         Self {
@@ -70,7 +80,7 @@ impl Heos {
         }
     }
 
-    pub(crate) fn attributes_from(attributes: &HashMap<&str, &str>) -> String {
+    pub(crate) fn attributes_from(attributes: Vec<_>) -> String {
         if attributes.is_empty() {
             "".to_string()
         } else {
@@ -82,7 +92,6 @@ impl Heos {
                 None => "".to_string()
             }
         }
-
     }
 
     pub(crate) fn command_from(command_group: &str, command_string: &str,
