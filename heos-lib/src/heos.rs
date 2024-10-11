@@ -11,8 +11,6 @@
 
 use std::str;
 use std::net::{Ipv4Addr, SocketAddr, UdpSocket};
-use std::collections::HashMap;
-use anyhow::anyhow;
 use const_format::formatcp;
 
 const PREFIX: &'static str = "heos://";
@@ -102,11 +100,11 @@ impl Heos {
     }
 
     pub(crate) fn parse_discovery_response(response_str: &str) -> anyhow::Result<HeosDevice> {
-        match response_str.split("\r\n\r\n").next() {
+        match response_str.split("\\r\\n\\r\\n").next() {
             Some(header_str) => {
-                for header_line in header_str.split("\r\n") {
-                    if header_line.starts_with("LOCATION") {
-                        if let Some(idx) = header_str.find(':') {
+                for header_line in header_str.split("\\r\\n") {
+                    if header_line.contains("LOCATION") {
+                        if let Some(idx) = header_line.find(":") {
                             let url = header_line[idx + 1..].trim();
 
                             return Ok(HeosDevice { _url: url.to_string() });
