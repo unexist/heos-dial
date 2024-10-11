@@ -36,12 +36,12 @@ pub struct Heos {
 }
 
 pub(crate) trait HeosAttributes {
-    fn to_attributes(&self) -> anyhow::Result<String> {}
+    fn to_heos_attrs(&self) -> anyhow::Result<String>;
 }
 
-impl<T: Clone> HeosAttributes for [T] {
-    fn to_attributes(&self) -> anyhow::Result<String> {
-        Heos::attributes_from(&self)
+impl HeosAttributes for [(&str, &str)] {
+    fn to_heos_attrs(&self) -> anyhow::Result<String> {
+        Ok(Heos::attributes_from(self.to_vec()))
     }
 }
 
@@ -80,22 +80,22 @@ impl Heos {
         }
     }
 
-    pub(crate) fn attributes_from<T>(attributes: Vec<T>) -> String {
+    pub(crate) fn attributes_from(attributes: Vec<(&str, &str)>) -> String {
         if attributes.is_empty() {
-            "".to_string()
+            "".into()
         } else {
             match attributes.iter()
                 .map(|kv| { format!("{}={}", kv.0, kv.1) })
                 .reduce(|prev, next| { format!("{}&{}", prev, next) })
             {
                 Some(result) => format!("?{}", result),
-                None => "".to_string()
+                None => "".into()
             }
         }
     }
 
-    pub(crate) fn command_from<T>(command_group: &str, command_string: &str,
-                               attributes: Vec<T>) -> String
+    pub(crate) fn command_from(command_group: &str, command_string: &str,
+                               attributes: Vec<(&str, &str)>) -> String
     {
         format!("{}{}/{}{}{}", PREFIX, command_group, command_string,
                 Self::attributes_from(attributes), POSTFIX)
