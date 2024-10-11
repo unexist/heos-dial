@@ -12,10 +12,8 @@
 #[cfg(test)]
 mod heos_test {
     use crate::heos::{Heos, HeosAttributes};
-    use std::collections::HashMap;
     use const_format::formatcp;
 
-    #[ignore]
     #[test]
     fn should_parse_discovery_response() {
         const LOCATION: &'static str = "http://10.0.8.87:60006/upnp/desc/aios_device/aios_device.xml";
