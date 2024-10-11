@@ -53,4 +53,15 @@ USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT
         assert_eq!(Heos::command_from("player",
                                       "get_volume", vec![("pid", "5")]), COMMAND);
     }
+
+    #[ignore]
+    #[test]
+    fn should_discover_anything() {
+        let heos = Heos::new();
+
+        match heos.discover() {
+            Ok(_) => println!("OK"),
+            Err(err) => panic!("{}", err),
+        }
+    }
 }
