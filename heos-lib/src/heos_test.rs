@@ -43,16 +43,16 @@ mod heos_test {
         assert_eq!(Heos::attributes_from(vec![("pid", "5")]), "?pid=5");
         assert_eq!(Heos::attributes_from(vec![("pid", "5"), ("v", "1")]), "?pid=5&v=1");
 
-        assert_eq!(vec![()].to_attributes().expect("To attributes failed"), "");
-        assert_eq!(vec![("pid", "5")].to_attributes().expect("To attributes failed"), "?pid=5");
-        assert_eq!(vec![("pid", "5"), ("v", "1")].to_attributes().expect("To attributes failed"), "?pid=5&v=1");
+        assert_eq!(vec![].to_heos_attrs().expect("To attributes failed"), "");
+        assert_eq!(vec![("pid", "5")].to_heos_attrs().expect("To attributes failed"), "?pid=5");
+        assert_eq!(vec![("pid", "5"), ("v", "1")].to_heos_attrs().expect("To attributes failed"), "?pid=5&v=1");
     }
 
     #[test]
     fn should_generate_valid_heos_command() {
         const COMMAND: &'static str = "heos://player/get_volume?pid=5\r\n";
 
-        assert_eq!(Heos::command_from("player", "get_volume",
-                                      &HashMap::from([("pid", "5")])), COMMAND);
+        assert_eq!(Heos::command_from("player",
+                                      "get_volume", vec![("pid", "5")]), COMMAND);
     }
 }
