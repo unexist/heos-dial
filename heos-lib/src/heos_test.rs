@@ -56,10 +56,10 @@ USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT
 
     #[ignore]
     #[test]
-    fn should_discover_anything() {
+    async fn should_discover_anything() {
         let heos = Heos::new();
 
-        match heos.discover() {
+        match heos.discover().await {
             Ok(_) => println!("OK"),
             Err(err) => panic!("{}", err),
         }

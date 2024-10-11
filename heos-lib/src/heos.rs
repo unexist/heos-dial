@@ -10,8 +10,11 @@
 ///
 
 use std::str;
-use std::net::{Ipv4Addr, SocketAddr, UdpSocket};
+use anyhow::Result;
+use async_stream::stream;
 use const_format::formatcp;
+use futures_util::Stream;
+use std::net::{Ipv4Addr, SocketAddr, UdpSocket};
 
 const PREFIX: &'static str = "heos://";
 const POSTFIX: &'static str = "\r\n";
@@ -50,9 +53,9 @@ impl Heos {
         }
     }
 
-    pub fn discover(&self) -> anyhow::Result<()> {
+    pub async fn discover(&self) -> Result<impl Stream<Item = HeosDevice>>  {
         let any: SocketAddr = ([0, 0, 0, 0], 0).into();
-        let socket = UdpSocket::bind(any)?;
+        let socket = UdpSocket::bind(any).await?;
         socket.join_multicast_v4(&Ipv4Addr::new(239, 255, 255, 250),
                                  &Ipv4Addr::new(0, 0, 0, 0))?;
 
@@ -60,22 +63,34 @@ impl Heos {
         let socket_addr: SocketAddr = ([239, 255, 255, 250], 1900).into();
 
         // Send the discovery request
-        socket.send_to(DISCOVERY_REQUEST.as_bytes(), &socket_addr)?;
+        socket.send_to(DISCOVERY_REQUEST.as_bytes(), &socket_addr).await?;
 
-        loop {
-            // Receive the discovery response
-            let mut buf = [0; 2048];
-            let (size, _) = socket.recv_from(&mut buf)?;
+        Ok(stream! {
+            loop {
+                async fn get_next(socket: &UdpSocket) -> Result<String> {
+                     // Receive the discovery response
+                    let mut buf = [0; 2048];
+                    let (size, _) = socket.recv_from(&mut buf).await?;
 
-            // Convert the response to a string
-            let response =
-                str::from_utf8(unsafe { std::slice::from_raw_parts(buf.as_ptr() as *const u8, size) })?;
+                    // Convert the response to a string
+                    let response =
+                        str::from_utf8(unsafe { std::slice::from_raw_parts(buf.as_ptr() as *const u8, size) })?;
 
-            match Self::parse_discovery_response(response) {
-                Ok(device) => println!("{:#?}", device),
-                Err(err) => println!("{:#?}", err),
+                    if response.contains(TARGET_URN) {
+                        Ok(response.to_string())
+                    } else {
+                        Err(anyhow::Error::msg("Target urn not found"))
+                    }
+                }
+
+                if let Ok(response) = get_next(&socket).await {
+                    match Self::parse_discovery_response(response) {
+                        Ok(device) => yield device,
+                        Err(err) => println!("{:#?}", err),
+                    }
+                }
             }
-        }
+        })
     }
 
     pub(crate) fn attributes_from(attributes: Vec<(&str, &str)>) -> String {
