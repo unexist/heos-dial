@@ -10,11 +10,12 @@
 ///
 
 use std::str;
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use async_stream::stream;
 use const_format::formatcp;
 use futures_util::Stream;
-use std::net::{Ipv4Addr, SocketAddr, UdpSocket};
+use std::net::{Ipv4Addr, SocketAddr};
+use tokio::net::UdpSocket;
 
 const PREFIX: &'static str = "heos://";
 const POSTFIX: &'static str = "\r\n";
@@ -26,7 +27,7 @@ MX: 5\r\n
 ST: {urn}\r\n
 \r\n"#, urn = TARGET_URN);
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct HeosDevice {
     pub(crate) _url: String,
 }
@@ -56,8 +57,8 @@ impl Heos {
     pub async fn discover(&self) -> Result<impl Stream<Item = HeosDevice>>  {
         let any: SocketAddr = ([0, 0, 0, 0], 0).into();
         let socket = UdpSocket::bind(any).await?;
-        socket.join_multicast_v4(&Ipv4Addr::new(239, 255, 255, 250),
-                                 &Ipv4Addr::new(0, 0, 0, 0))?;
+        socket.join_multicast_v4(Ipv4Addr::new(239, 255, 255, 250),
+                                 Ipv4Addr::new(0, 0, 0, 0))?;
 
         // Set the socket address to the multicast IP and port for UPnP device discovery
         let socket_addr: SocketAddr = ([239, 255, 255, 250], 1900).into();
@@ -84,7 +85,7 @@ impl Heos {
                 }
 
                 if let Ok(response) = get_next(&socket).await {
-                    match Self::parse_discovery_response(response) {
+                    match Self::parse_discovery_response(&response) {
                         Ok(device) => yield device,
                         Err(err) => println!("{:#?}", err),
                     }
@@ -114,7 +115,7 @@ impl Heos {
                 Self::attributes_from(attributes), POSTFIX)
     }
 
-    pub(crate) fn parse_discovery_response(response_str: &str) -> anyhow::Result<HeosDevice> {
+    pub(crate) fn parse_discovery_response(response_str: &str) -> Result<HeosDevice> {
         match response_str.split("\\r\\n\\r\\n").next() {
             Some(header_str) => {
                 for header_line in header_str.split("\\r\\n") {
@@ -126,9 +127,9 @@ impl Heos {
                         }
                     }
                 }
-                Err(anyhow::anyhow!("Invalid response"))
+                Err(anyhow!("Invalid response"))
             }
-            None => Err(anyhow::anyhow!("Invalid response")),
+            None => Err(anyhow!("Invalid response")),
         }
     }
 }
