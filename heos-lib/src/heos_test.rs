@@ -13,7 +13,7 @@
 mod heos_test {
     use crate::heos::{Heos, HeosAttributes};
     use const_format::formatcp;
-    use futures_util::StreamExt;
+    use futures_util::{pin_mut, StreamExt};
 
     #[test]
     fn should_parse_discovery_response() {
@@ -59,8 +59,8 @@ USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT
     async fn should_discover_anything() {
         let heos = Heos::new();
 
-        let devices = heos.discover().await;
-        tokio::pin!(devices);
+        let devices = heos.discover().await.expect("To discover devices");
+        pin_mut!(devices);
 
         while let Some(device) = devices.next().await {
             println!("{:?}", device);

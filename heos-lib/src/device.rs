@@ -1,4 +1,4 @@
-//
+///
 /// @package heos-dial
 ///
 /// @file HEOS lib
@@ -9,10 +9,7 @@
 /// See the file LICENSE for details.
 ///
 
-mod heos;
-mod device;
-
-#[cfg(test)]
-mod heos_test;
-
-pub use heos::{Heos, HeosDevice};
+#[derive(Default, Debug, Clone)]
+pub struct HeosDevice {
+    pub(crate) _url: String,
+}

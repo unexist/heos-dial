@@ -16,6 +16,7 @@ use const_format::formatcp;
 use futures_util::Stream;
 use std::net::{Ipv4Addr, SocketAddr};
 use tokio::net::UdpSocket;
+use crate::device::HeosDevice;
 
 const PREFIX: &'static str = "heos://";
 const POSTFIX: &'static str = "\r\n";
@@ -24,13 +25,7 @@ const DISCOVERY_REQUEST: &'static str = formatcp!(r#"M-SEARCH * HTTP/1.1\r\n
 HOST: 239.255.255.250:1900\r\n
 MAN: "ssdp:discover"\r\n
 MX: 5\r\n
-ST: {urn}\r\n
-\r\n"#, urn = TARGET_URN);
-
-#[derive(Default, Debug, Clone)]
-pub struct HeosDevice {
-    pub(crate) _url: String,
-}
+ST: {urn}\r\n\r\n"#, urn = TARGET_URN);
 
 #[derive(Default)]
 pub struct Heos {
@@ -60,6 +55,7 @@ impl Heos {
         socket.join_multicast_v4(Ipv4Addr::new(239, 255, 255, 250),
                                  Ipv4Addr::new(0, 0, 0, 0))?;
 
+
         // Set the socket address to the multicast IP and port for UPnP device discovery
         let socket_addr: SocketAddr = ([239, 255, 255, 250], 1900).into();
 
@@ -76,6 +72,8 @@ impl Heos {
                     // Convert the response to a string
                     let response =
                         str::from_utf8(unsafe { std::slice::from_raw_parts(buf.as_ptr() as *const u8, size) })?;
+
+                    println!("{}", response);
 
                     if response.contains(TARGET_URN) {
                         Ok(response.to_string())
