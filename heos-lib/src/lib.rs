@@ -10,9 +10,10 @@
 ///
 
 mod heos;
-mod device;
+mod heos_device;
 
 #[cfg(test)]
 mod heos_test;
 
-pub use heos::{Heos, HeosDevice};
+pub use heos::Heos;
+pub use heos_device::HeosDevice;

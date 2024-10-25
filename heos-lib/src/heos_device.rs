@@ -1,3 +1,5 @@
+use crate::Heos;
+
 ///
 /// @package heos-dial
 ///
@@ -12,4 +14,12 @@
 #[derive(Default, Debug, Clone)]
 pub struct HeosDevice {
     pub(crate) _url: String,
+}
+
+impl HeosDevice {
+    pub fn new(url: &str) -> Self {
+        Self {
+            _url: url.into()
+        }
+    }
 }

@@ -16,7 +16,7 @@ use const_format::formatcp;
 use futures_util::Stream;
 use std::net::{Ipv4Addr, SocketAddr};
 use tokio::net::UdpSocket;
-use crate::device::HeosDevice;
+use crate::heos_device::HeosDevice;
 
 const PREFIX: &'static str = "heos://";
 const POSTFIX: &'static str = "\r\n";
@@ -54,7 +54,6 @@ impl Heos {
         let socket = UdpSocket::bind(any).await?;
         socket.join_multicast_v4(Ipv4Addr::new(239, 255, 255, 250),
                                  Ipv4Addr::new(0, 0, 0, 0))?;
-
 
         // Set the socket address to the multicast IP and port for UPnP device discovery
         let socket_addr: SocketAddr = ([239, 255, 255, 250], 1900).into();
@@ -121,7 +120,7 @@ impl Heos {
                         if let Some(idx) = header_line.find(":") {
                             let url = header_line[idx + 1..].trim();
 
-                            return Ok(HeosDevice { _url: url.to_string() });
+                            return Ok(HeosDevice::new(url));
                         }
                     }
                 }
