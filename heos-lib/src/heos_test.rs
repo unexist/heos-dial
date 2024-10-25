@@ -62,7 +62,7 @@ USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT
         let devices = heos.discover().await.expect("To discover devices");
         pin_mut!(devices);
 
-        while let Some(device) = devices.next().await {
+        if let Some(device) = devices.next().await {
             println!("{:?}", device);
         }
 
