@@ -1,5 +1,3 @@
-use crate::Heos;
-
 ///
 /// @package heos-dial
 ///
@@ -11,15 +9,26 @@ use crate::Heos;
 /// See the file LICENSE for details.
 ///
 
-#[derive(Default, Debug, Clone)]
+use surf::Url;
+use anyhow::{anyhow, Result};
+
+#[derive(Debug, Clone)]
 pub struct HeosDevice {
-    pub(crate) _url: String,
+    pub(crate) base_url: Url,
 }
 
 impl HeosDevice {
-    pub fn new(url: &str) -> Self {
-        Self {
-            _url: url.into()
-        }
+    pub fn new(url: &str) -> Result<Self> {
+        Ok(Self {
+            base_url: Url::parse(url)?,
+        })
+    }
+
+    pub fn connect() -> Result<Self> {
+       Ok(Self)
+    }
+
+    pub fn ip(&self) -> String {
+        self.base_url.host_str().unwrap().to_string()
     }
 }
