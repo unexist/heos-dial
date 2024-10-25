@@ -12,8 +12,8 @@
 mod heos;
 mod heos_device;
 
-#[cfg(test)]
 mod heos_test;
+mod heos_device_test;
 
 pub use heos::Heos;
 pub use heos_device::HeosDevice;
