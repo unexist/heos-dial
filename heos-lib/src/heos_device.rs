@@ -9,26 +9,42 @@
 /// See the file LICENSE for details.
 ///
 
-use surf::Url;
-use anyhow::{anyhow, Result};
+use anyhow::{Result};
 
 #[derive(Debug, Clone)]
 pub struct HeosDevice {
-    pub(crate) base_url: Url,
+    pub(crate) base_url: String,
+    player_id: String,
 }
 
 impl HeosDevice {
     pub fn new(url: &str) -> Result<Self> {
         Ok(Self {
-            base_url: Url::parse(url)?,
+            base_url: url.into(),
+            player_id: "".into(),
         })
     }
 
-    pub fn connect() -> Result<Self> {
-       Ok(Self)
+    pub(crate) fn attributes_from(attributes: Vec<(&str, &str)>) -> String {
+        if attributes.is_empty() {
+            "".into()
+        } else {
+            match attributes.iter()
+                .map(|kv| { format!("{}={}", kv.0, kv.1) })
+                .reduce(|prev, next| { format!("{}&{}", prev, next) })
+            {
+                Some(result) => format!("?{}", result),
+                None => "".into()
+            }
+        }
     }
 
-    pub fn ip(&self) -> String {
-        self.base_url.host_str().unwrap().to_string()
+    pub(crate) fn command_from(command_group: &str, command_string: &str,
+                               attributes: Vec<(&str, &str)>) -> String
+    {
+        format!("{}{}/{}{}{}", crate::heos::PREFIX, command_group, command_string,
+                Self::attributes_from(attributes), crate::heos::POSTFIX)
     }
 }
+
+
