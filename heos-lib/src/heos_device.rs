@@ -9,7 +9,8 @@
 /// See the file LICENSE for details.
 ///
 
-use anyhow::{Result};
+use anyhow::Result;
+use crate::heos_attributes::HeosAttributes;
 
 #[derive(Debug, Clone)]
 pub struct HeosDevice {
@@ -25,25 +26,13 @@ impl HeosDevice {
         })
     }
 
-    pub(crate) fn attributes_from(attributes: Vec<(&str, &str)>) -> String {
-        if attributes.is_empty() {
-            "".into()
-        } else {
-            match attributes.iter()
-                .map(|kv| { format!("{}={}", kv.0, kv.1) })
-                .reduce(|prev, next| { format!("{}&{}", prev, next) })
-            {
-                Some(result) => format!("?{}", result),
-                None => "".into()
-            }
-        }
-    }
+
 
     pub(crate) fn command_from(command_group: &str, command_string: &str,
                                attributes: Vec<(&str, &str)>) -> String
     {
         format!("{}{}/{}{}{}", crate::heos::PREFIX, command_group, command_string,
-                Self::attributes_from(attributes), crate::heos::POSTFIX)
+            attributes.to_heos_attrs().expect("Parsing attributes failed"), crate::heos::POSTFIX)
     }
 }
 

@@ -16,10 +16,6 @@ mod heos_attributes_test {
 
     #[test]
     fn should_generate_heos_attribute_string() {
-        assert_eq!(HeosDevice::attributes_from(vec![]), "");
-        assert_eq!(HeosDevice::attributes_from(vec![("pid", "5")]), "?pid=5");
-        assert_eq!(HeosDevice::attributes_from(vec![("pid", "5"), ("v", "1")]), "?pid=5&v=1");
-
         assert_eq!(vec![].to_heos_attrs().expect("To attributes failed"), "");
         assert_eq!(vec![("pid", "5")].to_heos_attrs().expect("To attributes failed"), "?pid=5");
         assert_eq!(vec![("pid", "5"), ("v", "1")].to_heos_attrs().expect("To attributes failed"), "?pid=5&v=1");

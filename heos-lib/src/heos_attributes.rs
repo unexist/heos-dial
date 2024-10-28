@@ -9,14 +9,26 @@
 /// See the file LICENSE for details.
 ///
 
-use crate::HeosDevice;
-
 pub(crate) trait HeosAttributes {
     fn to_heos_attrs(&self) -> anyhow::Result<String>;
 }
 
+fn attributes_from(attributes: Vec<(&str, &str)>) -> String {
+    if attributes.is_empty() {
+        "".into()
+    } else {
+        match attributes.iter()
+            .map(|kv| { format!("{}={}", kv.0, kv.1) })
+            .reduce(|prev, next| { format!("{}&{}", prev, next) })
+        {
+            Some(result) => format!("?{}", result),
+            None => "".into()
+        }
+    }
+}
+
 impl HeosAttributes for [(&str, &str)] {
     fn to_heos_attrs(&self) -> anyhow::Result<String> {
-        Ok(HeosDevice::attributes_from(self.to_vec()))
+        Ok(attributes_from(self.to_vec()))
     }
 }
