@@ -11,9 +11,11 @@
 
 mod heos;
 mod heos_device;
+mod heos_attributes;
 
 mod heos_test;
 mod heos_device_test;
+mod heos_attributes_test;
 
 pub use heos::Heos;
 pub use heos_device::HeosDevice;
