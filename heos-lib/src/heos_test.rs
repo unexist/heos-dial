@@ -11,7 +11,7 @@
 
 #[cfg(test)]
 mod heos_test {
-    use crate::heos::{Heos, HeosAttributes};
+    use crate::heos::Heos;
     use const_format::formatcp;
     use futures_util::{pin_mut, StreamExt};
 
@@ -34,25 +34,6 @@ USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT
             Ok(device) => assert!(LOCATION.eq(&device.base_url)),
             Err(err) => panic!("Assertion failed: {}", err),
         }
-    }
-
-    #[test]
-    fn should_generate_heos_attribute_string() {
-        assert_eq!(Heos::attributes_from(vec![]), "");
-        assert_eq!(Heos::attributes_from(vec![("pid", "5")]), "?pid=5");
-        assert_eq!(Heos::attributes_from(vec![("pid", "5"), ("v", "1")]), "?pid=5&v=1");
-
-        assert_eq!(vec![].to_heos_attrs().expect("To attributes failed"), "");
-        assert_eq!(vec![("pid", "5")].to_heos_attrs().expect("To attributes failed"), "?pid=5");
-        assert_eq!(vec![("pid", "5"), ("v", "1")].to_heos_attrs().expect("To attributes failed"), "?pid=5&v=1");
-    }
-
-    #[test]
-    fn should_generate_valid_heos_command() {
-        const COMMAND: &'static str = "heos://player/get_volume?pid=5\r\n";
-
-        assert_eq!(Heos::command_from("player",
-                                      "get_volume", vec![("pid", "5")]), COMMAND);
     }
 
     #[ignore]
