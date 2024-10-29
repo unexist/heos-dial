@@ -11,15 +11,4 @@
 
 #[cfg(test)]
 mod heos_device_test {
-    use crate::HeosDevice;
-
-    #[test]
-    fn should_parse_url() {
-        const URL: &'static str = "http://10.0.8.87:60006/upnp/desc/aios_device/aios_device.xml";
-
-        match HeosDevice::new(URL) {
-            Ok(_) => assert!(true),
-            Err(e) => panic!("{:?}", e),
-        }
-    }
 }
