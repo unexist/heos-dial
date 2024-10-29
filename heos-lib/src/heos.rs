@@ -84,7 +84,7 @@ impl Heos {
                         if let Some(idx) = header_line.find(":") {
                             let url = header_line[idx + 1..].trim();
 
-                            return Ok(HeosDevice::new(url, "1")?);
+                            return Ok(HeosDevice::new(url, "1"));
                         }
                     }
                 }
