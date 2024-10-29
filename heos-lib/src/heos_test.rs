@@ -14,10 +14,10 @@ mod heos_test {
     use crate::heos::Heos;
     use const_format::formatcp;
     use futures_util::{pin_mut, StreamExt};
+    use crate::constants::LOCATION;
 
     #[test]
     fn should_parse_discovery_response() {
-        const LOCATION: &'static str = "http://10.0.8.87:60006/upnp/desc/aios_device/aios_device.xml";
         const RAW_REPLY: &'static str = formatcp!("HTTP/1.1 200 OK\r\n\
 CACHE-CONTROL: max-age=180\r\n\
 EXT:\r\n\
