@@ -16,11 +16,9 @@ use const_format::formatcp;
 use futures_util::Stream;
 use std::net::{Ipv4Addr, SocketAddr};
 use tokio::net::UdpSocket;
+use crate::constants::TARGET_URN;
 use crate::heos_device::HeosDevice;
 
-pub(crate) const PREFIX: &'static str = "heos://";
-pub(crate) const POSTFIX: &'static str = "\r\n";
-const TARGET_URN: &'static str = "urn:schemas-denon-com:device:ACT-Denon:1";
 const DISCOVERY_REQUEST: &'static str = formatcp!("M-SEARCH * HTTP/1.1\r\n\
 HOST: 239.255.255.250:1900\r\n\
 ST: {urn}\r\n\
@@ -86,7 +84,7 @@ impl Heos {
                         if let Some(idx) = header_line.find(":") {
                             let url = header_line[idx + 1..].trim();
 
-                            return Ok(HeosDevice::new(url)?);
+                            return Ok(HeosDevice::new(url, "1")?);
                         }
                     }
                 }

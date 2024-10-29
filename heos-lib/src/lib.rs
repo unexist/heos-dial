@@ -9,13 +9,16 @@
 /// See the file LICENSE for details.
 ///
 
+mod constants;
 mod heos;
 mod heos_device;
 mod heos_attributes;
+mod heos_commands;
 
 mod heos_test;
 mod heos_device_test;
 mod heos_attributes_test;
+mod heos_commands_test;
 
 pub use heos::Heos;
 pub use heos_device::HeosDevice;
