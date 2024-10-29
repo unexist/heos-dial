@@ -11,10 +11,11 @@
 
 use crate::heos_attributes::HeosAttributes;
 use crate::{Heos, HeosDevice};
+use anyhow::Result;
 
 pub(crate) trait HeosCommands {
-    fn command_from(command_group: &str, command_string: &str,
-                    attributes: Vec<(&str, &str)>) -> String;
+    fn command_from(&self, command_group: &str, command_string: &str,
+                    attributes: Vec<(&str, &str)>) -> Result<String>;
 }
 
 fn create_command(command_group: &str, command_string: &str, attributes_string: &str) -> String {
@@ -23,25 +24,24 @@ fn create_command(command_group: &str, command_string: &str, attributes_string: 
 }
 
 impl HeosCommands for HeosDevice {
-    fn command_from(command_group: &str, command_string: &str,
-                    attributes: Vec<(&str, &str)>) -> String
+    fn command_from(&self, command_group: &str, command_string: &str,
+                    attributes: Vec<(&str, &str)>) -> Result<String>
     {
-        attributes.append(vec!["", Self.player_id.clone_into()]);
+        let mut attrs = attributes.clone();
+        attrs.push(("player", self.player_id.as_str()));
 
-        let attributes_string = attributes.to_heos_attrs()
-            .expect("Parsing attributes failed").as_str();
+        let attributes_string = attrs.to_heos_attrs()?;
 
-        create_command(command_group, command_string, attributes_string)
+        Ok(create_command(command_group, command_string, attributes_string.as_str()))
     }
 }
 
 impl HeosCommands for Heos {
-    fn command_from(command_group: &str, command_string: &str,
-                    attributes: Vec<(&str, &str)>) -> String
+    fn command_from(&self, command_group: &str, command_string: &str,
+                    attributes: Vec<(&str, &str)>) -> Result<String>
     {
-        let attributes_string = attributes.to_heos_attrs()
-            .expect("Parsing attributes failed").as_str();
+        let attributes_string = attributes.to_heos_attrs()?;
 
-        create_command(command_group, command_string, attributes_string)
+        Ok(create_command(command_group, command_string, attributes_string.as_str()))
     }
 }
