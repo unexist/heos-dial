@@ -9,20 +9,18 @@
 /// See the file LICENSE for details.
 ///
 
-use anyhow::Result;
-
-#[derive(Debug, Clone)]
+#[derive(Default, Debug)]
 pub struct HeosDevice {
     pub (crate) base_url: String,
     pub(crate) player_id: String,
 }
 
 impl HeosDevice {
-    pub fn new(url: &str, pid: &str) -> Result<Self> {
-        Ok(Self {
+    pub fn new(url: &str, pid: &str) -> Self {
+        Self {
             base_url: url.into(),
             player_id: pid.into(),
-        })
+        }
     }
 }
 
