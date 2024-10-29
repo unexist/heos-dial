@@ -13,8 +13,8 @@ use anyhow::Result;
 
 #[derive(Debug, Clone)]
 pub struct HeosDevice {
-    base_url: String,
-    player_id: String,
+    pub (crate) base_url: String,
+    pub(crate) player_id: String,
 }
 
 impl HeosDevice {
