@@ -9,15 +9,17 @@
 /// See the file LICENSE for details.
 ///
 
+use anyhow::Result;
+
 pub(crate) trait HeosAttributes {
-    fn to_heos_attrs(&self) -> anyhow::Result<String>;
+    fn to_heos_attrs(&self) -> Result<String>;
 }
 
-fn attributes_from(attributes: Vec<(&str, &str)>) -> String {
-    if attributes.is_empty() {
+fn attributes_from(attrs: Vec<(&str, &str)>) -> String {
+    if attrs.is_empty() {
         "".into()
     } else {
-        match attributes.iter()
+        match attrs.iter()
             .map(|kv| { format!("{}={}", kv.0, kv.1) })
             .reduce(|prev, next| { format!("{}&{}", prev, next) })
         {
@@ -28,7 +30,7 @@ fn attributes_from(attributes: Vec<(&str, &str)>) -> String {
 }
 
 impl HeosAttributes for [(&str, &str)] {
-    fn to_heos_attrs(&self) -> anyhow::Result<String> {
+    fn to_heos_attrs(&self) -> Result<String> {
         Ok(attributes_from(self.to_vec()))
     }
 }
