@@ -30,10 +30,8 @@ SERVER: LINUX UPnP/1.0 Denon-Heos/316763a47eba7769d9be106fb4f3617c5393a2b7\r\n\
 ST: urn:schemas-denon-com:device:ACT-Denon:1\r\n\
 USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT-Denon:1\r\n\r\n", location = LOCATION);
 
-        match Heos::parse_discovery_response(RAW_REPLY) {
-            Ok(device) => assert!(LOCATION.eq(&device.base_url)),
-            Err(err) => panic!("Assertion failed: {}", err),
-        }
+        assert!(Heos::parse_discovery_response(RAW_REPLY)
+            .is_ok_and(|dev| dev.base_url.to_string() == LOCATION));
     }
 
     #[ignore]
