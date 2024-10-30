@@ -1,5 +1,3 @@
-use surf::Url;
-
 ///
 /// @package heos-dial
 ///
@@ -11,11 +9,12 @@ use surf::Url;
 /// See the file LICENSE for details.
 ///
 
-use anyhow::Result;
+use anyhow::{Context, Result};
+use surf::Url;
 
 #[derive(Debug)]
 pub struct HeosDevice {
-    pub (crate) base_url: Url,
+    pub(crate) base_url: Url,
     pub(crate) player_id: String,
 }
 
@@ -26,6 +25,13 @@ impl HeosDevice {
             player_id: pid.into(),
         })
     }
+
+    pub async fn send(&self, heos_cmd: &str) -> Result<String> {
+        let mut req = surf::post(self.base_url.as_ref()).body(heos_cmd).build();
+
+        let res = req.take_body().into_string().await
+            .context("Can't parse response")?;
+
+        Ok(res)
+    }
 }
-
-
