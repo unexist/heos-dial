@@ -1,3 +1,5 @@
+use surf::Url;
+
 ///
 /// @package heos-dial
 ///
@@ -9,18 +11,20 @@
 /// See the file LICENSE for details.
 ///
 
-#[derive(Default, Debug)]
+use anyhow::Result;
+
+#[derive(Debug)]
 pub struct HeosDevice {
-    pub (crate) base_url: String,
+    pub (crate) base_url: Url,
     pub(crate) player_id: String,
 }
 
 impl HeosDevice {
-    pub fn new(url: &str, pid: &str) -> Self {
-        Self {
-            base_url: url.into(),
+    pub fn new(url: &str, pid: &str) -> Result<Self> {
+        Ok(Self {
+            base_url: Url::parse(url)?,
             player_id: pid.into(),
-        }
+        })
     }
 }
 

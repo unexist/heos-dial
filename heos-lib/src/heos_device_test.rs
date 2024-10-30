@@ -11,4 +11,12 @@
 
 #[cfg(test)]
 mod heos_device_test {
+    use crate::constants::LOCATION;
+    use crate::HeosDevice;
+
+    fn should_create_valid_client() {
+        let dev = HeosDevice::new(LOCATION, "1");
+
+        assert!(dev.is_ok());
+    }
 }
