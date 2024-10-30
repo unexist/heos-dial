@@ -15,3 +15,4 @@ const_format = "0.2.33"
 async-stream = "0.3.6"
 tokio = { version = "1.40.0", features = ["net", "macros", "rt", "rt-multi-thread"] }
 futures-util = "0.3.31"
+surf = { version = "2.3.2", features = ["h1-client-rustls"], default-features = false}
