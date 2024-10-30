@@ -28,7 +28,7 @@ impl HeosCommands for HeosDevice {
                     attributes: Vec<(&str, &str)>) -> Result<String>
     {
         let mut attrs = attributes.clone();
-        attrs.push(("player", self.player_id.as_str()));
+        attrs.push(("pid", self.player_id.as_str()));
 
         let attributes_string = attrs.to_heos_attrs()?;
 

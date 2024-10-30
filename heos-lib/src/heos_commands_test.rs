@@ -12,8 +12,8 @@
 #[cfg(test)]
 mod heos_commands_test {
     use crate::{Heos, HeosDevice};
-
-    const URL: &'static str = "http://10.0.8.87:60006/upnp/desc/aios_device/aios_device.xml";
+    use crate::constants::LOCATION;
+    use crate::heos_commands::HeosCommands;
 
     #[test]
     fn should_generate_valid_heos_command() {
@@ -21,16 +21,20 @@ mod heos_commands_test {
 
         let heos = Heos::new();
 
-        assert_eq!(heos.command_from("player", "get_volume", vec![()]), COMMAND);
+        assert!(heos.command_from("player", "get_players",
+                                  vec![])
+            .is_ok_and(|cmd| COMMAND == cmd));
     }
 
     #[test]
     fn should_generate_valid_heos_device_command() {
-        const COMMAND: &'static str = "heos://player/set_play_state?pid=5&state=play\r\n";
+        const COMMAND: &'static str = "heos://player/set_play_state?state=play&pid=5\r\n";
 
-        let dev = HeosDevice::new(URL, "5");
+        let dev = HeosDevice::new(LOCATION, "5")
+            .expect("Location is not a valid url");
 
-        assert_eq!(dev.command_from("player", "set_play_state",
-                                    vec![("state", "play")]), COMMAND);
+        assert!(dev.command_from("player", "set_play_state",
+                                 vec![("state", "play")])
+            .is_ok_and(|cmd| COMMAND == cmd));
     }
 }
