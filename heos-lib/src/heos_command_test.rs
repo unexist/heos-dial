@@ -13,7 +13,7 @@
 mod heos_commands_test {
     use crate::{Heos, HeosDevice};
     use crate::constants::LOCATION;
-    use crate::heos_commands::HeosCommands;
+    use crate::heos_command::HeosCommand;
 
     #[test]
     fn should_generate_valid_heos_command() {
