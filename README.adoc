@@ -10,7 +10,7 @@ This project holds a small controller software for HEOS based on MD5Dial and Rus
 | The actual firmware
 
 | heos-lib
-| Heos parser lib crate
+| HEOS parser lib crate
 |===
 
 == Links
