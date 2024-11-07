@@ -9,7 +9,7 @@
 /// See the file LICENSE for details.
 ///
 
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Result};
 use surf::Url;
 
 #[derive(Debug)]
@@ -26,12 +26,15 @@ impl HeosDevice {
         })
     }
 
-    pub async fn send(&self, heos_cmd: &str) -> Result<String> {
-        let mut req = surf::post(self.base_url.as_ref()).body(heos_cmd).build();
+    pub async fn send(&self, heos_cmd_str: &str) -> Result<String> {
+        let response = surf::post(self.base_url.as_ref())
+            .body(heos_cmd_str)
+            .recv_string()
+            .await;
 
-        let res = req.take_body().into_string().await
-            .context("Can't parse response")?;
-
-        Ok(res)
+        match response {
+            Ok(body) => Ok(body),
+            Err(err) => Err(err.into_inner())
+        }
     }
 }
