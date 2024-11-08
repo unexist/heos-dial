@@ -21,8 +21,8 @@ pub(crate) trait HeosCommand {
 fn create_command(cmd_group_string: &str, cmd_string: &str,
                   attrs_string: &str) -> String
 {
-    format!("{}{}/{}{}{}", crate::constants::PREFIX, cmd_group_string, cmd_string, attrs_string,
-            crate::constants::POSTFIX)
+    format!("{}{}/{}{}{}", crate::constants::CMD_PREFIX, cmd_group_string, cmd_string, attrs_string,
+            crate::constants::CMD_POSTFIX)
 }
 
 impl HeosCommand for HeosDevice {

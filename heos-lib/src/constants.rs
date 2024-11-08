@@ -12,8 +12,8 @@
 use std::str;
 
 pub(crate) const DEFAULT_PORT: u16 = 1225;
-pub(crate) const PREFIX: &'static str = "heos://";
-pub(crate) const POSTFIX: &'static str = "\r\n";
+pub(crate) const CMD_PREFIX: &'static str = "heos://";
+pub(crate) const CMD_POSTFIX: &'static str = "\r\n";
 pub(crate) const TARGET_URN: &'static str = "urn:schemas-denon-com:device:ACT-Denon:1";
 
 #[cfg(test)]
