@@ -18,6 +18,10 @@ This project holds a small controller software for HEOS based on MD5Dial and Rus
 - https://github.com/m5stack/M5Dial
 - https://shop.m5stack.com/products/m5stack-dial-esp32-s3-smart-rotary-knob-w-1-28-round-touch-screen
 
+=== HEOS
+
+- https://assets.denon.com/documentmaster/us/heos_cli_protocolspecification-version_04062020.pdf
+
 === Rust 
 
 - https://github.com/rust-embedded/awesome-embedded-rust
