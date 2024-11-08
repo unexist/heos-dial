@@ -11,7 +11,10 @@
 
 use std::str;
 
+pub(crate) const DEFAULT_PORT: u16 = 1225;
 pub(crate) const PREFIX: &'static str = "heos://";
 pub(crate) const POSTFIX: &'static str = "\r\n";
 pub(crate) const TARGET_URN: &'static str = "urn:schemas-denon-com:device:ACT-Denon:1";
-pub (crate) const LOCATION: &'static str = "http://10.0.8.87:60006/upnp/desc/aios_device/aios_device.xml";
+
+#[cfg(test)]
+pub (crate) const TEST_LOCATION: &'static str = "http://10.0.8.87:60006/upnp/desc/aios_device/aios_device.xml";
