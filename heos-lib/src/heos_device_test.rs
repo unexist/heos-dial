@@ -11,12 +11,12 @@
 
 #[cfg(test)]
 mod heos_device_test {
-    use crate::constants::LOCATION;
+    use crate::constants::TEST_LOCATION;
     use crate::heos_command::HeosCommand;
     use crate::HeosDevice;
 
     fn should_create_valid_client() {
-        let dev = HeosDevice::new(LOCATION, "1");
+        let dev = HeosDevice::new(TEST_LOCATION, "1");
 
         assert!(dev.is_ok());
     }
@@ -24,7 +24,7 @@ mod heos_device_test {
     #[ignore]
     #[tokio::test]
     async fn should_connect_and_get_result() {
-        let dev = HeosDevice::new(LOCATION, "1")
+        let dev = HeosDevice::new(TEST_LOCATION, "1")
             .expect("Failed to create client");
 
         let cmd = dev.command_from("player", "get_players", vec![])

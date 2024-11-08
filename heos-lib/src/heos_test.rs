@@ -14,7 +14,7 @@ mod heos_test {
     use crate::heos::Heos;
     use const_format::formatcp;
     use futures_util::{pin_mut, StreamExt};
-    use crate::constants::LOCATION;
+    use crate::constants::TEST_LOCATION;
 
     #[test]
     fn should_parse_discovery_response() {
@@ -28,10 +28,10 @@ BOOTID.UPNP.ORG: 1947595085\r\n\
 IPCACHE.URL.UPNP.HEOS.COM: /ajax/upnp/get_device_info\r\n\
 SERVER: LINUX UPnP/1.0 Denon-Heos/316763a47eba7769d9be106fb4f3617c5393a2b7\r\n\
 ST: urn:schemas-denon-com:device:ACT-Denon:1\r\n\
-USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT-Denon:1\r\n\r\n", location = LOCATION);
+USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT-Denon:1\r\n\r\n", location = TEST_LOCATION);
 
         assert!(Heos::parse_discovery_response(RAW_REPLY)
-            .is_ok_and(|dev| dev.base_url.to_string() == LOCATION));
+            .is_ok_and(|dev| dev.base_url.to_string() == TEST_LOCATION));
     }
 
     #[ignore]
