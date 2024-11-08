@@ -1,3 +1,4 @@
+use std::io::BufReader;
 ///
 /// @package heos-dial
 ///
@@ -10,12 +11,17 @@
 ///
 
 use anyhow::{anyhow, Result};
-use surf::Url;
+use tokio::io;
+use tokio::net::TcpStream;
+use url::Url;
+use crate::constants::DEFAULT_PORT;
+use crate::heos_command::HeosCommand;
 
 #[derive(Debug)]
 pub struct HeosDevice {
     pub(crate) base_url: Url,
     pub(crate) player_id: String,
+    stream: TcpStream,
 }
 
 impl HeosDevice {
@@ -26,15 +32,38 @@ impl HeosDevice {
         })
     }
 
-    pub async fn send(&self, heos_cmd_str: &str) -> Result<String> {
-        let response = surf::post(self.base_url.as_ref())
-            .body(heos_cmd_str)
-            .recv_string()
-            .await;
+    pub async fn connect(&mut self) -> Result<()> {
+        self.stream = TcpStream::connect(
+            format!("{}:{}", self.base_url.host(), DEFAULT_PORT)).await?;
 
-        match response {
-            Ok(body) => Ok(body),
-            Err(err) => Err(err.into_inner())
+        Ok(())
+    }
+
+    pub async fn send_cmd(&mut self, cmd_group_string: &str, cmd_string: &str,
+                          attrs: Vec<(&str, &str)>) -> Result<()>
+    {
+        self.stream.try_write(
+            self.command_from(cmd_group_string, cmd_string, attrs)?.as_bytes())?;
+
+        loop {
+            self.stream.readable().await?;
+
+            let mut buf = [0; 4096];
+
+            match self.stream.try_read(&mut buf) {
+                Ok(0) => break,
+                Ok(n) => {
+                    println!("read {} bytes", n);
+                }
+                Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
+                    continue;
+                }
+                Err(e) => {
+                    return Err(e.into());
+                }
+            }
         }
+
+        Ok(())
     }
 }
