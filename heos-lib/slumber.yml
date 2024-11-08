@@ -1,0 +1,9 @@
+profiles:
+  development:
+    data:
+      kitchen_location: http://10.0.8.87:60006/upnp/desc/aios_device/aios_device.xml
+
+requests:
+  device: !request
+    method: GET
+    url: "{{kitchen_location}}"
