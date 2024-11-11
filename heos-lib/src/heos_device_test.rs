@@ -27,10 +27,10 @@ mod heos_device_test {
         let dev = HeosDevice::new(TEST_LOCATION, "1")
             .expect("Failed to create client");
 
-        let cmd = dev.command_from("player", "get_players", vec![])
+        let cmd = HeosCommand::from("player", "get_players", vec![])
             .expect("Failed to create command");
 
-        let result = dev.send(cmd.as_ref()).await;
+        let result = dev.send_cmd(cmd.as_ref()).await;
 
         assert!(result.is_ok());
     }
