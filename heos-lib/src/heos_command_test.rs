@@ -13,17 +13,16 @@
 mod heos_commands_test {
     use crate::{Heos, HeosDevice};
     use crate::constants::TEST_LOCATION;
-    use crate::heos_command::HeosCommand;
+    use crate::heos_command::{HeosCommand, HeosCommandHandler};
 
     #[test]
     fn should_generate_valid_heos_command() {
         const COMMAND: &'static str = "heos://player/get_players\r\n";
 
         let heos = Heos::new();
+        let cmd = HeosCommand::from(heos, "player", "get_players", vec![]);
 
-        assert!(heos.command_from("player", "get_players",
-                                  vec![])
-            .is_ok_and(|cmd| COMMAND == cmd));
+        assert!(cmd.into().is_ok_and(|cmd| COMMAND == cmd));
     }
 
     #[test]
@@ -32,9 +31,9 @@ mod heos_commands_test {
 
         let dev = HeosDevice::new(TEST_LOCATION, "5")
             .expect("Location is not a valid url");
+        let cmd = HeosCommand::from(dev, "player", "set_play_state",
+                                    vec![("state", "play")]);
 
-        assert!(dev.command_from("player", "set_play_state",
-                                 vec![("state", "play")])
-            .is_ok_and(|cmd| COMMAND == cmd));
+        assert!(cmd.into().is_ok_and(|cmd| COMMAND == cmd));
     }
 }

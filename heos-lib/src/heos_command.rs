@@ -9,41 +9,60 @@
 /// See the file LICENSE for details.
 ///
 
-use crate::heos_attributes::HeosAttributes;
 use crate::{Heos, HeosDevice};
 use anyhow::Result;
 
-pub(crate) trait HeosCommand {
-    fn command_from(&self, cmd_group_string: &str, cmd_string: &str,
-                    attrs: Vec<(&str, &str)>) -> Result<String>;
+#[derive(Default)]
+pub struct HeosCommand<'a> {
+    cmd_group_string: &'a str,
+    cmd_string: &'a str,
+    attrs: Vec<(&'a str, &'a str)>,
 }
 
-fn create_command(cmd_group_string: &str, cmd_string: &str,
-                  attrs_string: &str) -> String
-{
-    format!("{}{}/{}{}{}", crate::constants::CMD_PREFIX, cmd_group_string, cmd_string, attrs_string,
-            crate::constants::CMD_POSTFIX)
-}
-
-impl HeosCommand for HeosDevice {
-    fn command_from(&self, cmd_group_string: &str, cmd_string: &str,
-                    attrs: Vec<(&str, &str)>) -> Result<String>
+impl HeosCommand {
+    pub fn from<T:HeosCommandHandler>(handler: T, cmd_group_string: &str, cmd_string: &str,
+                                      attrs: Vec<(&str, &str)>) -> Self
     {
-        let mut attrs = attrs.clone();
-        attrs.push(("pid", self.player_id.as_str()));
+        let cmd = Self {
+            cmd_group_string,
+            cmd_string,
+            attrs,
+        };
 
-        let attrs_string = attrs.to_heos_attrs()?;
+        handler.update_command(cmd)
+    }
 
-        Ok(create_command(cmd_group_string, cmd_string, attrs_string.as_str()))
+    pub fn add_pair(&mut self, key: &str, value: &str) {
+        self.attrs.push((key, value));
+    }
+
+    fn create_command(&self) -> String {
+        format!("{}{}/{}{}{}", crate::constants::CMD_PREFIX,
+                self.cmd_group_string, self.cmd_string, self.attrs,
+                crate::constants::CMD_POSTFIX)
     }
 }
 
-impl HeosCommand for Heos {
-    fn command_from(&self, cmd_group_string: &str, cmd_string: &str,
-                    attrs: Vec<(&str, &str)>) -> Result<String>
-    {
-        let attrs_string = attrs.to_heos_attrs()?;
+impl Into<String> for HeosCommand {
+    fn into(self) -> String {
+        self.create_command()
+    }
+}
 
-        Ok(create_command(cmd_group_string, cmd_string, attrs_string.as_str()))
+pub(crate) trait HeosCommandHandler {
+    fn update_command(cmd: &HeosCommand) -> Result<String>;
+}
+
+impl HeosCommandHandler for HeosDevice {
+    fn update_command(cmd: &mut HeosCommand) -> Result<HeosCommand> {
+        cmd.add_pair("pid", self.player_id.as_str());
+
+        Ok(cmd)
+    }
+}
+
+impl HeosCommandHandler for Heos {
+    fn update_command(cmd: &HeosCommand) -> Result<HeosCommand> {
+        Ok(cmd)
     }
 }
