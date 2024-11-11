@@ -39,11 +39,8 @@ impl HeosDevice {
         Ok(())
     }
 
-    pub async fn send_cmd(&mut self, cmd_group_string: &str, cmd_string: &str,
-                          attrs: Vec<(&str, &str)>) -> Result<()>
-    {
-        self.stream.try_write(
-            self.command_from(cmd_group_string, cmd_string, attrs)?.as_bytes())?;
+    pub async fn send_cmd(&mut self, cmd: HeosCommand) -> Result<()> {
+        self.stream.try_write(cmd.into()?.as_bytes())?;
 
         loop {
             self.stream.readable().await?;
