@@ -1,3 +1,4 @@
+use std::fmt::Display;
 ///
 /// @package heos-dial
 ///
@@ -9,60 +10,64 @@
 /// See the file LICENSE for details.
 ///
 
-use crate::{Heos, HeosDevice};
 use anyhow::Result;
+use crate::heos_attributes::HeosAttributes;
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct HeosCommand<'a> {
-    cmd_group_string: &'a str,
-    cmd_string: &'a str,
-    attrs: Vec<(&'a str, &'a str)>,
+    group: Option<&'a str>,
+    cmd: Option<&'a str>,
+    attrs: Option<Vec<(&'a str, &'a str)>>,
 }
 
-impl HeosCommand {
-    pub fn from<T:HeosCommandHandler>(handler: T, cmd_group_string: &str, cmd_string: &str,
-                                      attrs: Vec<(&str, &str)>) -> Self
-    {
-        let cmd = Self {
-            cmd_group_string,
-            cmd_string,
-            attrs,
-        };
-
-        handler.update_command(cmd)
+impl<'a> HeosCommand<'a> {
+    pub fn new() -> Self {
+        Self {
+            group: None,
+            cmd: None,
+            attrs: None,
+        }
     }
 
-    pub fn add_pair(&mut self, key: &str, value: &str) {
-        self.attrs.push((key, value));
+    pub fn group(mut self, cmd_group_string: &'a str) -> Self {
+        self.group = Some(cmd_group_string);
+
+        self
     }
 
-    fn create_command(&self) -> String {
-        format!("{}{}/{}{}{}", crate::constants::CMD_PREFIX,
-                self.cmd_group_string, self.cmd_string, self.attrs,
-                crate::constants::CMD_POSTFIX)
+    pub fn cmd(mut self, cmd_string: &'a str) -> Self {
+        self.cmd = Some(cmd_string);
+
+        self
+    }
+
+    pub fn attrs(mut self, attrs: Vec<(&'a str, &'a str)>) -> Self {
+        self.attrs = Some(attrs);
+
+        self
+    }
+
+    pub fn attr(mut self, key: &'a str, value: &'a str) {
+        if self.attrs.is_none() {
+            self.attrs = Some(vec![]);
+        }
+
+        self.attrs.unwrap().push((key, value));
+    }
+
+    pub fn build(self) -> String {
+        self.to_string()
     }
 }
 
-impl Into<String> for HeosCommand {
-    fn into(self) -> String {
-        self.create_command()
+impl<'a> Display for HeosCommand<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}{}/{}{:?}{}", crate::constants::CMD_PREFIX,
+               self.group.expect("Group missing"), self.cmd.expect("Cmd missing"),
+               self.attrs.to_attrs_str(), crate::constants::CMD_POSTFIX)
     }
 }
 
 pub(crate) trait HeosCommandHandler {
-    fn update_command(cmd: &HeosCommand) -> Result<String>;
-}
-
-impl HeosCommandHandler for HeosDevice {
-    fn update_command(cmd: &mut HeosCommand) -> Result<HeosCommand> {
-        cmd.add_pair("pid", self.player_id.as_str());
-
-        Ok(cmd)
-    }
-}
-
-impl HeosCommandHandler for Heos {
-    fn update_command(cmd: &HeosCommand) -> Result<HeosCommand> {
-        Ok(cmd)
-    }
+    async fn send_command<'a>(&self, cmd: &HeosCommand<'a>) -> Result<String>;
 }

@@ -11,29 +11,24 @@
 
 #[cfg(test)]
 mod heos_commands_test {
-    use crate::{Heos, HeosDevice};
-    use crate::constants::TEST_LOCATION;
-    use crate::heos_command::{HeosCommand, HeosCommandHandler};
+    use crate::heos_command::HeosCommand;
 
     #[test]
     fn should_generate_valid_heos_command() {
-        const COMMAND: &'static str = "heos://player/get_players\r\n";
+        const COMMAND1: &'static str = "heos://player/get_players\r\n";
+        const COMMAND2: &'static str = "heos://player/set_play_state?state=play&pid=5\r\n";
 
-        let heos = Heos::new();
-        let cmd = HeosCommand::from(heos, "player", "get_players", vec![]);
+        let cmd1 = HeosCommand::new()
+            .group("player")
+            .cmd("get_players");
 
-        assert!(cmd.into().is_ok_and(|cmd| COMMAND == cmd));
-    }
+        assert_eq!(COMMAND1, cmd1.to_string());
 
-    #[test]
-    fn should_generate_valid_heos_device_command() {
-        const COMMAND: &'static str = "heos://player/set_play_state?state=play&pid=5\r\n";
+        let cmd2 = HeosCommand::new()
+            .group("player")
+            .cmd("set_play_state")
+            .attrs(vec![("state", "play")]);
 
-        let dev = HeosDevice::new(TEST_LOCATION, "5")
-            .expect("Location is not a valid url");
-        let cmd = HeosCommand::from(dev, "player", "set_play_state",
-                                    vec![("state", "play")]);
-
-        assert!(cmd.into().is_ok_and(|cmd| COMMAND == cmd));
+        assert_eq!(COMMAND2, cmd2.to_string());
     }
 }
