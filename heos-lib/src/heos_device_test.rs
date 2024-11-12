@@ -12,7 +12,7 @@
 #[cfg(test)]
 mod heos_device_test {
     use crate::constants::TEST_LOCATION;
-    use crate::heos_command::HeosCommand;
+    use crate::heos_command::{HeosCommand, HeosCommandHandler};
     use crate::HeosDevice;
 
     fn should_create_valid_client() {
@@ -27,10 +27,11 @@ mod heos_device_test {
         let dev = HeosDevice::new(TEST_LOCATION, "1")
             .expect("Failed to create client");
 
-        let cmd = HeosCommand::from("player", "get_players", vec![])
-            .expect("Failed to create command");
+        let cmd = HeosCommand::new()
+            .group("player")
+            .cmd("get_players");
 
-        let result = dev.send_cmd(cmd.as_ref()).await;
+        let result = dev.send_command(&cmd).await;
 
         assert!(result.is_ok());
     }

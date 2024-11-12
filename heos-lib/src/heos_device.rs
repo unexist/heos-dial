@@ -1,4 +1,3 @@
-use std::io::BufReader;
 ///
 /// @package heos-dial
 ///
@@ -10,18 +9,18 @@ use std::io::BufReader;
 /// See the file LICENSE for details.
 ///
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use tokio::io;
 use tokio::net::TcpStream;
 use url::Url;
 use crate::constants::DEFAULT_PORT;
-use crate::heos_command::HeosCommand;
+use crate::heos_command::{HeosCommand, HeosCommandHandler};
 
 #[derive(Debug)]
 pub struct HeosDevice {
     pub(crate) base_url: Url,
     pub(crate) player_id: String,
-    stream: TcpStream,
+    stream: Option<TcpStream>,
 }
 
 impl HeosDevice {
@@ -29,38 +28,53 @@ impl HeosDevice {
         Ok(Self {
             base_url: Url::parse(url)?,
             player_id: pid.into(),
+            stream: None,
         })
     }
 
     pub async fn connect(&mut self) -> Result<()> {
-        self.stream = TcpStream::connect(
-            format!("{}:{}", self.base_url.host(), DEFAULT_PORT)).await?;
-
-        Ok(())
-    }
-
-    pub async fn send_cmd(&mut self, cmd: HeosCommand) -> Result<()> {
-        self.stream.try_write(cmd.into()?.as_bytes())?;
-
-        loop {
-            self.stream.readable().await?;
-
-            let mut buf = [0; 4096];
-
-            match self.stream.try_read(&mut buf) {
-                Ok(0) => break,
-                Ok(n) => {
-                    println!("read {} bytes", n);
-                }
-                Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
-                    continue;
-                }
-                Err(e) => {
-                    return Err(e.into());
-                }
-            }
-        }
+        self.stream = Some(TcpStream::connect(
+            format!("{}:{}", self.base_url.host().expect("Host failed"),
+                    DEFAULT_PORT)).await?);
 
         Ok(())
     }
 }
+
+impl HeosCommandHandler for HeosDevice {
+    async fn send_command<'a>(&self, cmd: &HeosCommand<'a>) -> Result<String> {
+        /* Append player id */
+        let mut dev_cmd = cmd.clone();
+
+        dev_cmd.attr("pid", self.player_id.as_str());
+
+        match self.stream.as_ref() {
+            Some(stream) => {
+                stream.try_write(dev_cmd.to_string().as_bytes())?;
+
+                loop {
+                    stream.readable().await?;
+
+                    let mut buf = [0; 4096];
+
+                    match stream.try_read(&mut buf) {
+                        Ok(0) => break,
+                        Ok(n) => {
+                            println!("read {} bytes", n);
+                        }
+                        Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
+                            continue;
+                        }
+                        Err(e) => {
+                            return Err(e.into());
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+
+        Ok("".parse()?)
+    }
+}
+
