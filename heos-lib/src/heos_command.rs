@@ -47,12 +47,14 @@ impl<'a> HeosCommand<'a> {
         self
     }
 
-    pub fn attr(mut self, key: &'a str, value: &'a str) {
-        if self.attrs.is_none() {
-            self.attrs = Some(vec![]);
+    pub fn attr(mut self, key: &'a str, value: &'a str) -> Self {
+        if let Some(ref mut attrs) = self.attrs {
+            attrs.push((key, value));
+        } else {
+            self.attrs = Some(vec![(key, value)]);
         }
 
-        self.attrs.unwrap().push((key, value));
+        self
     }
 
     pub fn build(self) -> String {
@@ -60,11 +62,25 @@ impl<'a> HeosCommand<'a> {
     }
 }
 
+fn format_attributes(attrs: Option<Vec<(&str, &str)>>) -> String {
+    if attrs.is_empty() {
+        "".into()
+    } else {
+        match attrs.iter()
+            .map(|kv| { format!("{}={}", kv.0, kv.1) })
+            .reduce(|prev, next| { format!("{}&{}", prev, next) })
+        {
+            Some(result) => format!("?{}", result),
+            None => "".into()
+        }
+    }
+}
+
 impl<'a> Display for HeosCommand<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}{}/{}{:?}{}", crate::constants::CMD_PREFIX,
                self.group.expect("Group missing"), self.cmd.expect("Cmd missing"),
-               self.attrs.to_attrs_str(), crate::constants::CMD_POSTFIX)
+               format_attributes(self.attrs), crate::constants::CMD_POSTFIX)
     }
 }
 
