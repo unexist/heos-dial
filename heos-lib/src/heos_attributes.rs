@@ -12,10 +12,10 @@
 use anyhow::Result;
 
 pub(crate) trait HeosAttributes {
-    fn to_heos_attrs(&self) -> Result<String>;
+    fn to_attrs_str(&self) -> Result<String>;
 }
 
-fn attributes_from(attrs: Vec<(&str, &str)>) -> String {
+fn attributes_string_from(attrs: Vec<(&str, &str)>) -> String {
     if attrs.is_empty() {
         "".into()
     } else {
@@ -30,7 +30,7 @@ fn attributes_from(attrs: Vec<(&str, &str)>) -> String {
 }
 
 impl HeosAttributes for [(&str, &str)] {
-    fn to_heos_attrs(&self) -> Result<String> {
-        Ok(attributes_from(self.to_vec()))
+    fn to_attrs_str(&self) -> Result<String> {
+        Ok(attributes_string_from(self.to_vec()))
     }
 }

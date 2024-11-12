@@ -15,8 +15,8 @@ mod heos_attributes_test {
 
     #[test]
     fn should_generate_heos_attribute_string() {
-        assert_eq!(vec![].to_heos_attrs().expect("To attributes failed"), "");
-        assert_eq!(vec![("pid", "5")].to_heos_attrs().expect("To attributes failed"), "?pid=5");
-        assert_eq!(vec![("pid", "5"), ("v", "1")].to_heos_attrs().expect("To attributes failed"), "?pid=5&v=1");
+        assert_eq!(vec![].to_attrs_str().expect("To attributes failed"), "");
+        assert_eq!(vec![("pid", "5")].to_attrs_str().expect("To attributes failed"), "?pid=5");
+        assert_eq!(vec![("pid", "5"), ("v", "1")].to_attrs_str().expect("To attributes failed"), "?pid=5&v=1");
     }
 }
