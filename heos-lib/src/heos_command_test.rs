@@ -21,23 +21,26 @@ mod heos_commands_test {
 
         let cmd1 = HeosCommand::new()
             .group("player")
-            .cmd("get_players");
+            .cmd("get_players")
+            .build();
 
-        assert_eq!(COMMAND1, cmd1.to_string());
+        assert_eq!(COMMAND1, cmd1);
 
         let cmd2 = HeosCommand::new()
             .group("player")
             .cmd("set_play_state")
-            .attrs(vec![("state", "play")]);
+            .attrs(vec![("state", "play")])
+            .build();
 
-        assert_eq!(COMMAND2, cmd2.to_string());
+        assert_eq!(COMMAND2, cmd2);
 
         let cmd3 = HeosCommand::new()
             .group("player")
             .cmd("set_play_state")
             .attr("state", "play")
-            .attr("pid", "5");
+            .attr("pid", "5")
+            .build();
 
-        assert_eq!(COMMAND3, cmd3.to_string());
+        assert_eq!(COMMAND3, cmd3);
     }
 }
