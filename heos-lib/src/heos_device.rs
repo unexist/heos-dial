@@ -46,7 +46,7 @@ impl HeosCommandHandler for HeosDevice {
         /* Append player id */
         let mut dev_cmd = cmd.clone();
 
-        dev_cmd.attr("pid", self.player_id.as_str());
+        dev_cmd = dev_cmd.attr("pid", self.player_id.as_str());
 
         match self.stream.as_ref() {
             Some(stream) => {
@@ -63,18 +63,21 @@ impl HeosCommandHandler for HeosDevice {
                             println!("read {} bytes", n);
                         }
                         Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
-                            continue;
+                            /* Exit here */
+                            break;
                         }
                         Err(e) => {
                             return Err(e.into());
                         }
                     }
+
+                    return Ok(String::from_utf8(Vec::from(buf))?)
                 }
             }
             _ => {}
         }
 
-        Ok("".parse()?)
+        Ok("".to_string())
     }
 }
 

@@ -21,18 +21,23 @@ mod heos_device_test {
         assert!(dev.is_ok());
     }
 
-    #[ignore]
     #[tokio::test]
     async fn should_connect_and_get_result() {
-        let dev = HeosDevice::new(TEST_LOCATION, "1")
+        let mut dev = HeosDevice::new(TEST_LOCATION, "1")
             .expect("Failed to create client");
+
+        dev.connect().await
+            .expect("Failed to connect to client");
 
         let cmd = HeosCommand::new()
             .group("player")
             .cmd("get_players");
 
-        let result = dev.send_command(&cmd).await;
+        let result = dev.send_command(&cmd).await
+            .expect("Failed to send command");
 
-        assert!(result.is_ok());
+        println!("{:?}", result);
+
+        assert!(!result.is_empty());
     }
 }
