@@ -44,7 +44,6 @@ USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT
         pin_mut!(devices);
 
         if let Some(device) = devices.next().await {
-            println!("{:?}", device);
             assert!(true);
         } else {
             assert!(false, "Failed to discover devices");
