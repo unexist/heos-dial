@@ -1,4 +1,3 @@
-use std::fmt::Display;
 ///
 /// @package heos-dial
 ///
@@ -10,8 +9,8 @@ use std::fmt::Display;
 /// See the file LICENSE for details.
 ///
 
+use std::fmt::Display;
 use anyhow::Result;
-use crate::heos_attributes::HeosAttributes;
 
 #[derive(Default, Clone)]
 pub struct HeosCommand<'a> {
@@ -48,7 +47,7 @@ impl<'a> HeosCommand<'a> {
     }
 
     pub fn attr(mut self, key: &'a str, value: &'a str) -> Self {
-        if let Some(ref mut attrs) = self.attrs {
+        if let Some(attrs) = self.attrs.as_mut() {
             attrs.push((key, value));
         } else {
             self.attrs = Some(vec![(key, value)]);
@@ -62,11 +61,11 @@ impl<'a> HeosCommand<'a> {
     }
 }
 
-fn format_attributes(attrs: Option<Vec<(&str, &str)>>) -> String {
-    if attrs.is_empty() {
+fn format_attributes(attrs: Option<&Vec<(&str, &str)>>) -> String {
+    if attrs.is_none() || attrs.unwrap().is_empty() {
         "".into()
     } else {
-        match attrs.iter()
+        match attrs.unwrap().iter()
             .map(|kv| { format!("{}={}", kv.0, kv.1) })
             .reduce(|prev, next| { format!("{}&{}", prev, next) })
         {
@@ -78,9 +77,11 @@ fn format_attributes(attrs: Option<Vec<(&str, &str)>>) -> String {
 
 impl<'a> Display for HeosCommand<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}{}/{}{:?}{}", crate::constants::CMD_PREFIX,
-               self.group.expect("Group missing"), self.cmd.expect("Cmd missing"),
-               format_attributes(self.attrs), crate::constants::CMD_POSTFIX)
+        write!(f, "{}{}/{}{}{}", crate::constants::CMD_PREFIX,
+               self.group.expect("Group missing"),
+               self.cmd.expect("Cmd missing"),
+               format_attributes(self.attrs.as_ref()),
+               crate::constants::CMD_POSTFIX)
     }
 }
 
