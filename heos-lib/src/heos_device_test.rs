@@ -22,7 +22,7 @@ mod heos_device_test {
     }
 
     #[tokio::test]
-    async fn should_connect_and_get_result() {
+    async fn should_connect_and_get_players() {
         let mut dev = HeosDevice::new(TEST_LOCATION, "1")
             .expect("Failed to create client");
 
