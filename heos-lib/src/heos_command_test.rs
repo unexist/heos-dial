@@ -22,7 +22,7 @@ mod heos_commands_test {
         let cmd1 = HeosCommand::new()
             .group("player")
             .cmd("get_players")
-            .build();
+            .to_string();
 
         assert_eq!(COMMAND1, cmd1);
 
@@ -30,7 +30,7 @@ mod heos_commands_test {
             .group("player")
             .cmd("set_play_state")
             .attrs(vec![("state", "play")])
-            .build();
+            .to_string();
 
         assert_eq!(COMMAND2, cmd2);
 
@@ -39,7 +39,7 @@ mod heos_commands_test {
             .cmd("set_play_state")
             .attr("state", "play")
             .attr("pid", "5")
-            .build();
+            .to_string();
 
         assert_eq!(COMMAND3, cmd3);
     }

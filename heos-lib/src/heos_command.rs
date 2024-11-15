@@ -55,10 +55,6 @@ impl<'a> HeosCommand<'a> {
 
         self
     }
-
-    pub fn build(self) -> String {
-        self.to_string()
-    }
 }
 
 fn format_attributes(attrs: Option<&Vec<(&str, &str)>>) -> String {
