@@ -52,27 +52,26 @@ impl HeosCommandHandler for HeosDevice {
             Some(stream) => {
                 stream.try_write(dev_cmd.to_string().as_bytes())?;
 
+                let mut buf = Vec::with_capacity(2048);
+
                 loop {
                     stream.readable().await?;
 
-                    let mut buf = [0; 4096];
-
-                    match stream.try_read(&mut buf) {
+                    match stream.try_read_buf(&mut buf) {
                         Ok(0) => break,
                         Ok(n) => {
-                            println!("read {} bytes", n);
+                            println!("Read {} bytes", n);
                         }
                         Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
-                            /* Exit here */
-                            break;
+                            continue;
                         }
                         Err(e) => {
                             return Err(e.into());
                         }
                     }
-
-                    return Ok(String::from_utf8(Vec::from(buf))?)
                 }
+
+                return Ok(String::from_utf8(buf)?)
             }
             _ => {}
         }
