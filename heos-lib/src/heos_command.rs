@@ -11,6 +11,7 @@
 
 use std::fmt::Display;
 use anyhow::Result;
+use crate::heos_reply::HeosReply;
 
 #[derive(Default, Clone)]
 pub struct HeosCommand<'a> {
@@ -82,5 +83,5 @@ impl<'a> Display for HeosCommand<'a> {
 }
 
 pub(crate) trait HeosCommandHandler {
-    async fn send_command<'a>(&self, cmd: &HeosCommand<'a>) -> Result<String>;
+    async fn send_command<'a>(&self, cmd: &HeosCommand<'a>) -> Result<HeosReply>;
 }
