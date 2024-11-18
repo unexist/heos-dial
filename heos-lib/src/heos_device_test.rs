@@ -13,6 +13,7 @@
 mod heos_device_test {
     use crate::constants::TEST_LOCATION;
     use crate::heos_command::{HeosCommand, HeosCommandHandler};
+    use crate::heos_reply::HeosReplyKind;
     use crate::HeosDevice;
 
     fn should_create_valid_client() {
@@ -38,6 +39,6 @@ mod heos_device_test {
 
         println!("{:?}", result);
 
-        assert!(!result.is_empty());
+        assert_eq!(HeosReplyKind::GetPlayers, result.kind());
     }
 }

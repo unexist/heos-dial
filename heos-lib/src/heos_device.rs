@@ -15,6 +15,7 @@ use tokio::net::TcpStream;
 use url::Url;
 use crate::constants::DEFAULT_PORT;
 use crate::heos_command::{HeosCommand, HeosCommandHandler};
+use crate::heos_reply::HeosReply;
 
 #[derive(Debug)]
 pub struct HeosDevice {
@@ -42,7 +43,7 @@ impl HeosDevice {
 }
 
 impl HeosCommandHandler for HeosDevice {
-    async fn send_command<'a>(&self, cmd: &HeosCommand<'a>) -> Result<String> {
+    async fn send_command<'a>(&self, cmd: &HeosCommand<'a>) -> Result<HeosReply> {
         /* Append player id */
         let mut dev_cmd = cmd.clone();
 
@@ -71,12 +72,12 @@ impl HeosCommandHandler for HeosDevice {
                     }
                 }
 
-                return Ok(String::from_utf8(buf)?)
+                return Ok(HeosReply::parse(String::from_utf8(buf)?.as_str())?)
             }
             _ => {}
         }
 
-        Ok("".to_string())
+        Err(anyhow::anyhow!("Failed to send command"))
     }
 }
 
