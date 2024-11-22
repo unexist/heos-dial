@@ -10,7 +10,7 @@
 ///
 
 use tinyjson::JsonValue;
-use std::collections::HashMap;
+use anyhow::Result;
 
 #[derive(Default, Clone, PartialEq, Debug)]
 pub enum HeosReplyKind {
@@ -18,19 +18,25 @@ pub enum HeosReplyKind {
     GetPlayers
 }
 
+#[derive(Debug)]
 pub struct HeosReply {
     kind: HeosReplyKind,
 }
 
 impl HeosReply {
-    pub(crate) fn parse(response_str: &str) -> Option<HeosReply> {
-        let parsed: JsonValue = response_str.parse().ok()?;
-        let object: &HashMap<_, _> = parsed.get()?;
+    pub(crate) fn parse(response_str: &str) -> Result<HeosReply> {
+        let parsed: JsonValue = response_str.parse()?;
 
-        if let Some(heos) = object.get("heos") {
+        if let Some(heos) = parsed.get().get("heos") {
+            return match heos.get()?.get("command").unwrap() {
+                Some("player/get_players") => Self {
+                    kind: HeosReplyKind::GetPlayers,
+                },
+                _ => None,
+            }
         }
 
-        Some(Self)
+        Err
     }
 
     pub fn kind(&self) -> HeosReplyKind {
