@@ -9,8 +9,9 @@
 /// See the file LICENSE for details.
 ///
 
-use tinyjson::JsonValue;
 use anyhow::Result;
+use jsonpath_rust::JsonPath;
+use std::str::FromStr;
 
 #[derive(Default, Clone, PartialEq, Debug)]
 pub enum HeosReplyKind {
@@ -25,15 +26,14 @@ pub struct HeosReply {
 
 impl HeosReply {
     pub(crate) fn parse(response_str: &str) -> Result<HeosReply> {
-        let parsed: JsonValue = response_str.parse()?;
+        let parsed = serde_json::from_str(response_str)?;
+        let path = JsonPath::from_str("$.heos.command")?;
 
-        if let Some(heos) = parsed.get().get("heos") {
-            return match heos.get()?.get("command").unwrap() {
-                Some("player/get_players") => Self {
-                    kind: HeosReplyKind::GetPlayers,
-                },
-                _ => None,
-            }
+        match path.find_slice(parsed) {
+            "player/get_players" => Ok(Self {
+                kind: HeosReplyKind::GetPlayers,
+            }),
+            _ => Err,
         }
 
         Err
