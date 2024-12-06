@@ -4,3 +4,6 @@ tasks:
   test:
     cmds:
       - cargo test -- --nocapture
+  test-reply:
+    cmds:
+      - cargo test heos_test::should_parse_reply
