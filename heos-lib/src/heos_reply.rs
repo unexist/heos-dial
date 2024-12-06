@@ -9,9 +9,7 @@
 /// See the file LICENSE for details.
 ///
 
-use anyhow::Result;
-use jsonpath_rust::JsonPath;
-use std::str::FromStr;
+use anyhow::{anyhow, Result};
 
 #[derive(Default, Clone, PartialEq, Debug)]
 pub enum HeosReplyKind {
@@ -26,17 +24,14 @@ pub struct HeosReply {
 
 impl HeosReply {
     pub(crate) fn parse(response_str: &str) -> Result<HeosReply> {
-        let parsed = serde_json::from_str(response_str)?;
-        let path = JsonPath::from_str("$.heos.command")?;
+        let value = gjson::get(response_str, "heos.command");
 
-        match path.find_slice(parsed) {
+        match value.str() {
             "player/get_players" => Ok(Self {
                 kind: HeosReplyKind::GetPlayers,
             }),
-            _ => Err,
+            _ => Err(anyhow!("Command type unknown"))
         }
-
-        Err
     }
 
     pub fn kind(&self) -> HeosReplyKind {
