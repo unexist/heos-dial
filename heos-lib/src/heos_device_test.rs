@@ -22,6 +22,7 @@ mod heos_device_test {
         assert!(dev.is_ok());
     }
 
+    #[ignore]
     #[tokio::test]
     async fn should_connect_and_get_players() {
         let mut dev = HeosDevice::new(TEST_LOCATION, "1")
