@@ -14,7 +14,9 @@ use anyhow::{anyhow, Result};
 #[derive(Default, Clone, PartialEq, Debug)]
 pub enum HeosReplyKind {
     #[default]
-    GetPlayers
+    Players,
+
+    PlayState,
 }
 
 #[derive(Debug)]
@@ -28,7 +30,7 @@ impl HeosReply {
 
         match value.str() {
             "player/get_players" => Ok(Self {
-                kind: HeosReplyKind::GetPlayers,
+                kind: HeosReplyKind::Players,
             }),
             _ => Err(anyhow!("Command type unknown"))
         }
