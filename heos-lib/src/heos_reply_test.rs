@@ -20,9 +20,21 @@ mod heos_test {
 {"name": "Studio1", "pid": 844263156, "gid": -622728288, "model": "Denon Home 350", "version": "3.34.425", "ip": "10.0.8.24", "network": "wifi", "lineout": 0, "serial": "BME27220818140"}\
 ]}\r\n"###;
 
+    const RAW_PLAY_REPLY: &'static str = r###"heos": {\
+"command": " player/get_play_state ",\
+"result": "success",\
+"message": "pid='player_id'&state='play_state'"\
+}\r\n"###;
+
     fn should_parse_players_reply() {
         let reply = HeosReply::parse(RAW_PLAYERS_REPLY).expect("Failed to parse");
 
-        assert_eq!(HeosReplyKind::GetPlayers, reply.kind());
+        assert_eq!(HeosReplyKind::Players, reply.kind());
+    }
+
+    fn should_parse_play_reply() {
+        let reply = HeosReply::parse(RAW_PLAY_REPLY).expect("Failed to parse");
+
+        assert_eq!(HeosReplyKind::PlayState, reply.kind());
     }
 }

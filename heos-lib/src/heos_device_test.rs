@@ -40,6 +40,6 @@ mod heos_device_test {
 
         println!("{:?}", result);
 
-        assert_eq!(HeosReplyKind::GetPlayers, result.kind());
+        assert_eq!(HeosReplyKind::Players, result.kind());
     }
 }
