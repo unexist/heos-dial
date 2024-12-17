@@ -21,13 +21,13 @@ mod heos_test {
 ]}\r\n"###;
 
     const RAW_PLAY_REPLY: &'static str = r###"heos": {\
-"command": " player/get_play_state ",\
+"command": "player/get_play_state ",\
 "result": "success",\
 "message": "pid='player_id'&state='play_state'"\
 }\r\n"###;
 
     const RAW_SET_VOL_REPLY: &'static str = r###""heos": {\
- "command": " player/ set_volume ",\
+ "command": "player/set_volume ",\
  "result": "success",\
  "message": "pid='player_id'&level='vol_level'"
  }\r\n"###;
