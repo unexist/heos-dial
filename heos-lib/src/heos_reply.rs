@@ -33,6 +33,12 @@ impl HeosReply {
             "player/get_players" => Ok(Self {
                 kind: HeosReplyKind::Players,
             }),
+            "player/get_play_state" => Ok(Self {
+                kind: HeosReplyKind::PlayState,
+            }),
+            "player/set_volume" => Ok(Self {
+                kind: HeosReplyKind::SetVol,
+            }),
             _ => Err(anyhow!("Command type unknown"))
         }
     }
