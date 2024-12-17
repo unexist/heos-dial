@@ -17,6 +17,7 @@ pub enum HeosReplyKind {
     Players,
 
     PlayState,
+    SetVol,
 }
 
 #[derive(Debug)]

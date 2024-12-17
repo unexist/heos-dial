@@ -26,6 +26,12 @@ mod heos_test {
 "message": "pid='player_id'&state='play_state'"\
 }\r\n"###;
 
+    const RAW_SET_VOL_REPLY: &'static str = r###""heos": {\
+ "command": " player/ set_volume ",\
+ "result": "success",\
+ "message": "pid='player_id'&level='vol_level'"
+ }\r\n"###;
+
     fn should_parse_players_reply() {
         let reply = HeosReply::parse(RAW_PLAYERS_REPLY).expect("Failed to parse");
 
@@ -36,5 +42,11 @@ mod heos_test {
         let reply = HeosReply::parse(RAW_PLAY_REPLY).expect("Failed to parse");
 
         assert_eq!(HeosReplyKind::PlayState, reply.kind());
+    }
+
+    fn should_parse_set_vol_reply() {
+        let reply = HeosReply::parse(RAW_SET_VOL_REPLY).expect("Failed to parse");
+
+        assert_eq!(HeosReplyKind::SetVol, reply.kind());
     }
 }
