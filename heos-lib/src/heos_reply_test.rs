@@ -11,7 +11,7 @@
 
 #[cfg(test)]
 mod heos_test {
-    use crate::heos_reply::{HeosReply, HeosReplyKind};
+    use crate::heos_reply::HeosReply;
 
     const RAW_PLAYERS_REPLY: &'static str = r###"{"heos": {"command": "player/get_players",\
 "result": "success", "message": ""},\
@@ -21,7 +21,7 @@ mod heos_test {
 ]}\r\n"###;
 
     const RAW_PLAY_REPLY: &'static str = r###"heos": {\
-"command": "player/get_play_state ",\
+"command": "player/get_play_state",\
 "result": "success",\
 "message": "pid='player_id'&state='play_state'"\
 }\r\n"###;
@@ -35,18 +35,18 @@ mod heos_test {
     fn should_parse_players_reply() {
         let reply = HeosReply::parse(RAW_PLAYERS_REPLY).expect("Failed to parse");
 
-        assert_eq!(HeosReplyKind::Players, reply.kind());
+        assert_eq!(HeosReply::Players, reply);
     }
 
     fn should_parse_play_reply() {
         let reply = HeosReply::parse(RAW_PLAY_REPLY).expect("Failed to parse");
 
-        assert_eq!(HeosReplyKind::PlayState, reply.kind());
+        assert_eq!(HeosReply::PlayState, reply);
     }
 
     fn should_parse_set_vol_reply() {
         let reply = HeosReply::parse(RAW_SET_VOL_REPLY).expect("Failed to parse");
 
-        assert_eq!(HeosReplyKind::SetVol, reply.kind());
+        assert_eq!(HeosReply::SetVol, reply);
     }
 }

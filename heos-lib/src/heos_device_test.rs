@@ -13,7 +13,7 @@
 mod heos_device_test {
     use crate::constants::TEST_LOCATION;
     use crate::heos_command::{HeosCommand, HeosCommandHandler};
-    use crate::heos_reply::HeosReplyKind;
+    use crate::heos_reply::HeosReply;
     use crate::HeosDevice;
 
     fn should_create_valid_client() {
@@ -40,6 +40,6 @@ mod heos_device_test {
 
         println!("{:?}", result);
 
-        assert_eq!(HeosReplyKind::Players, result.kind());
+        assert_eq!(HeosReply::Players, result);
     }
 }
