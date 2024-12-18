@@ -12,17 +12,12 @@
 use anyhow::{anyhow, Result};
 
 #[derive(Default, Clone, PartialEq, Debug)]
-pub enum HeosReplyKind {
+pub enum HeosReply {
     #[default]
-    Players,
+    Players(Vec<String>),
 
-    PlayState,
-    SetVol,
-}
-
-#[derive(Debug)]
-pub struct HeosReply {
-    kind: HeosReplyKind,
+    PlayState(String),
+    SetVol(bool),
 }
 
 impl HeosReply {
@@ -30,20 +25,17 @@ impl HeosReply {
         let value = gjson::get(response_str, "heos.command");
 
         match value.str() {
-            "player/get_players" => Ok(Self {
-                kind: HeosReplyKind::Players,
-            }),
-            "player/get_play_state" => Ok(Self {
-                kind: HeosReplyKind::PlayState,
-            }),
-            "player/set_volume" => Ok(Self {
-                kind: HeosReplyKind::SetVol,
-            }),
-            _ => Err(anyhow!("Command type unknown"))
-        }
-    }
+            "player/get_players" => Ok(HeosReply::Players(vec![])),
 
-    pub fn kind(&self) -> HeosReplyKind {
-        self.kind.to_owned()
+            "player/get_play_state" => Ok(HeosReply::PlayState(
+                gjson::get(response_str, "heos.message").str().to_string()
+            )),
+
+            "player/set_volume" => Ok(HeosReply::SetVol(
+                "success" == gjson::get(response_str, "heos.result").str()
+            )),
+
+            _ => Err(anyhow!("Command type unknown")),
+        }
     }
 }
