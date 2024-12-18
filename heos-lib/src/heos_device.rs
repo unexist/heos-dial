@@ -80,4 +80,3 @@ impl HeosCommandHandler for HeosDevice {
         Err(anyhow::anyhow!("Failed to send command"))
     }
 }
-

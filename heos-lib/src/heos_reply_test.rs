@@ -35,18 +35,18 @@ mod heos_test {
     fn should_parse_players_reply() {
         let reply = HeosReply::parse(RAW_PLAYERS_REPLY).expect("Failed to parse");
 
-        assert_eq!(HeosReply::Players, reply);
+        assert!(matches!(reply, HeosReply::Players { .. }));
     }
 
     fn should_parse_play_reply() {
         let reply = HeosReply::parse(RAW_PLAY_REPLY).expect("Failed to parse");
 
-        assert_eq!(HeosReply::PlayState, reply);
+        assert!(matches!(reply, HeosReply::PlayState { .. }));
     }
 
     fn should_parse_set_vol_reply() {
         let reply = HeosReply::parse(RAW_SET_VOL_REPLY).expect("Failed to parse");
 
-        assert_eq!(HeosReply::SetVol, reply);
+        assert!(matches!(reply, HeosReply::SetVol { .. }));
     }
 }
