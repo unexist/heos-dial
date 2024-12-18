@@ -40,6 +40,6 @@ mod heos_device_test {
 
         println!("{:?}", result);
 
-        assert_eq!(HeosReply::Players, result);
+        assert!(matches!(result, HeosReply::Players { .. }));
     }
 }
