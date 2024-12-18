@@ -11,11 +11,9 @@
 
 use anyhow::{anyhow, Result};
 
-#[derive(Default, Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum HeosReply {
-    #[default]
     Players(Vec<String>),
-
     PlayState(String),
     SetVol(bool),
 }
