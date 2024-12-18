@@ -15,7 +15,8 @@ use anyhow::{anyhow, Result};
 pub enum HeosReply {
     Players(Vec<String>),
     PlayState(bool, String),
-    SetVol(bool, String),
+    PlayAction(bool, String),
+    Volume(bool, String),
 }
 
 impl HeosReply {
@@ -25,12 +26,12 @@ impl HeosReply {
         match json.get("heos.command").str() {
             "player/get_players" => Ok(HeosReply::Players(vec![])),
 
-            "player/get_play_state" => Ok(HeosReply::PlayState(
+            "player/get_play_state" | "player_set_state" => Ok(HeosReply::PlayState(
                 "success" == json.get("heos.result").str(),
                 json.get("heos.message").str().to_string()
             )),
 
-            "player/set_volume" => Ok(HeosReply::SetVol(
+            "player/set_volume" | "player/get_colume" => Ok(HeosReply::Volume(
                 "success" == json.get("heos.result").str(),
                 json.get("heos.message").str().to_string()
             )),
