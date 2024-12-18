@@ -20,19 +20,19 @@ pub enum HeosReply {
 
 impl HeosReply {
     pub(crate) fn parse(response_str: &str) -> Result<HeosReply> {
-        let value = gjson::get(response_str, "heos.command");
+        let json = gjson::parse(response_str);
 
-        match value.str() {
+        match json.get("heos.command").str() {
             "player/get_players" => Ok(HeosReply::Players(vec![])),
 
             "player/get_play_state" => Ok(HeosReply::PlayState(
-                "success" == gjson::get(response_str, "heos.result").str(),
-                gjson::get(response_str, "heos.message").str().to_string()
+                "success" == json.get("heos.result").str(),
+                json.get("heos.message").str().to_string()
             )),
 
             "player/set_volume" => Ok(HeosReply::SetVol(
-                "success" == gjson::get(response_str, "heos.result").str(),
-                gjson::get(response_str, "heos.message").str().to_string()
+                "success" == json.get("heos.result").str(),
+                json.get("heos.message").str().to_string()
             )),
 
             _ => Err(anyhow!("Command type unknown")),
