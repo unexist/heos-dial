@@ -22,3 +22,4 @@ mod heos_reply_test;
 
 pub use heos::Heos;
 pub use heos_device::HeosDevice;
+pub use heos_reply::HeosReply;
