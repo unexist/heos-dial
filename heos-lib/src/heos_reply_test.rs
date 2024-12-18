@@ -20,14 +20,14 @@ mod heos_reply_test {
 {"name": "Studio1", "pid": 844263156, "gid": -622728288, "model": "Denon Home 350", "version": "3.34.425", "ip": "10.0.8.24", "network": "wifi", "lineout": 0, "serial": "BME27220818140"}\
 ]}\r\n"###;
 
-    const RAW_PLAY_REPLY: &'static str = r###"heos": {\
+    const RAW_PLAY_REPLY: &'static str = r###"{"heos": {\
 "command": "player/get_play_state",\
 "result": "success",\
 "message": "pid='player_id'&state='play_state'"\
 }\r\n"###;
 
-    const RAW_SET_VOL_REPLY: &'static str = r###""heos": {\
- "command": "player/set_volume ",\
+    const RAW_SET_VOL_REPLY: &'static str = r###"{"heos": {\
+ "command": "player/set_volume",\
  "result": "success",\
  "message": "pid='player_id'&level='vol_level'"
  }\r\n"###;

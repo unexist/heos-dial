@@ -14,8 +14,8 @@ use anyhow::{anyhow, Result};
 #[derive(Clone, PartialEq, Debug)]
 pub enum HeosReply {
     Players(Vec<String>),
-    PlayState(String),
-    SetVol(bool),
+    PlayState(bool, String),
+    SetVol(bool, String),
 }
 
 impl HeosReply {
@@ -26,11 +26,13 @@ impl HeosReply {
             "player/get_players" => Ok(HeosReply::Players(vec![])),
 
             "player/get_play_state" => Ok(HeosReply::PlayState(
+                "success" == gjson::get(response_str, "heos.result").str(),
                 gjson::get(response_str, "heos.message").str().to_string()
             )),
 
             "player/set_volume" => Ok(HeosReply::SetVol(
-                "success" == gjson::get(response_str, "heos.result").str()
+                "success" == gjson::get(response_str, "heos.result").str(),
+                gjson::get(response_str, "heos.message").str().to_string()
             )),
 
             _ => Err(anyhow!("Command type unknown")),
