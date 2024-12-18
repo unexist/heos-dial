@@ -10,7 +10,7 @@
 ///
 
 #[cfg(test)]
-mod heos_test {
+mod heos_reply_test {
     use crate::heos_reply::HeosReply;
 
     const RAW_PLAYERS_REPLY: &'static str = r###"{"heos": {"command": "player/get_players",\
@@ -32,18 +32,21 @@ mod heos_test {
  "message": "pid='player_id'&level='vol_level'"
  }\r\n"###;
 
+    #[test]
     fn should_parse_players_reply() {
         let reply = HeosReply::parse(RAW_PLAYERS_REPLY).expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::Players { .. }));
     }
 
+    #[test]
     fn should_parse_play_reply() {
         let reply = HeosReply::parse(RAW_PLAY_REPLY).expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::PlayState { .. }));
     }
 
+    #[test]
     fn should_parse_set_vol_reply() {
         let reply = HeosReply::parse(RAW_SET_VOL_REPLY).expect("Failed to parse");
 
