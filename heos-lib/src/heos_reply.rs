@@ -36,6 +36,11 @@ impl HeosReply {
                 json.get("heos.message").str().to_string()
             )),
 
+            "player/play_next" | "player/play_previous" => Ok(HeosReply::PlayAction(
+                "success" == json.get("heos.result").str(),
+                json.get("heos.message").str().to_string()
+            )),
+
             _ => Err(anyhow!("Command type unknown")),
         }
     }
