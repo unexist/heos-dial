@@ -58,28 +58,40 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_get_players_reply() {
-        let reply = HeosReply::parse(RAW_GET_PLAYERS_REPLY).expect("Failed to parse");
+        let reply = HeosReply::parse(RAW_GET_PLAYERS_REPLY)
+            .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::Players { .. }));
     }
 
     #[test]
     fn should_parse_set_play_state_reply() {
-        let reply = HeosReply::parse(RAW_SET_PLAY_STATE_REPLY).expect("Failed to parse");
+        let reply = HeosReply::parse(RAW_SET_PLAY_STATE_REPLY)
+            .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::PlayState { .. }));
     }
 
     #[test]
     fn should_parse_get_play_state_reply() {
-        let reply = HeosReply::parse(RAW_SET_PLAY_STATE_REPLY).expect("Failed to parse");
+        let reply = HeosReply::parse(RAW_GET_PLAY_STATE_REPLY)
+            .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::PlayState { .. }));
     }
 
     #[test]
     fn should_parse_set_volume_reply() {
-        let reply = HeosReply::parse(RAW_SET_VOLUME_REPLY).expect("Failed to parse");
+        let reply = HeosReply::parse(RAW_SET_VOLUME_REPLY)
+            .expect("Failed to parse");
+
+        assert!(matches!(reply, HeosReply::Volume { .. }));
+    }
+
+    #[test]
+    fn should_parse_get_volume_reply() {
+        let reply = HeosReply::parse(RAW_GET_VOLUME_REPLY)
+            .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::Volume { .. }));
     }
