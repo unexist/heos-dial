@@ -29,7 +29,7 @@ mod heos_reply_test {
     const JSON_GET_PLAY_STATE_REPLY: &'static str = r###"{"heos": {\
 "command": "player/set_play_state", \
 "result": "success", \
-"message": "message": "pid='player_id'&state='play_state'" \
+"message": "pid='player_id'&state='play_state'" \
 }\r\n"###;
 
     const JSON_SET_VOLUME_REPLY: &'static str = r###"{"heos": {\
@@ -51,7 +51,7 @@ mod heos_reply_test {
 }\r\n"###;
 
     const JSON_PLAY_PREVIOUS_REPLY: &'static str = r###"{"heos": {\
-"command": " player/play_next", \
+"command": " player/play_previous", \
 "result": "success", \
 "message": "pid=player_id" \
 }\r\n"###;
