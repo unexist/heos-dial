@@ -45,13 +45,13 @@ mod heos_reply_test {
 }\r\n"###;
 
     const JSON_PLAY_NEXT_REPLY: &'static str = r###"{"heos": {\
-"command": " player/play_next", \
+"command": "player/play_next", \
 "result": "success", \
 "message": "pid=player_id" \
 }\r\n"###;
 
     const JSON_PLAY_PREVIOUS_REPLY: &'static str = r###"{"heos": {\
-"command": " player/play_previous", \
+"command": "player/play_previous", \
 "result": "success", \
 "message": "pid=player_id" \
 }\r\n"###;
