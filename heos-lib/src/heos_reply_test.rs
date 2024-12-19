@@ -95,4 +95,20 @@ mod heos_reply_test {
 
         assert!(matches!(reply, HeosReply::Volume { .. }));
     }
+
+    #[test]
+    fn should_parse_play_next_reply() {
+        let reply = HeosReply::parse(RAW_PLAY_NEXT_REPLY)
+            .expect("Failed to parse");
+
+        assert!(matches!(reply, HeosReply::PlayAction { .. }));
+    }
+
+    #[test]
+    fn should_parse_play_previous_reply() {
+        let reply = HeosReply::parse(RAW_PLAY_PREVIOUS_REPLY)
+            .expect("Failed to parse");
+
+        assert!(matches!(reply, HeosReply::PlayAction { .. }));
+    }
 }
