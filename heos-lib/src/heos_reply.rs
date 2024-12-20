@@ -12,10 +12,11 @@ use std::collections::HashMap;
 
 use anyhow::{anyhow, Result};
 use gjson::Value;
+use crate::HeosDevice;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum HeosReply {
-    Players(Vec<String>),
+    Players(bool, Vec<HeosDevice>),
     PlayState(bool, HashMap<String, String>),
     PlayAction(bool, HashMap<String, String>),
     Volume(bool, HashMap<String, String>),
@@ -26,33 +27,49 @@ impl HeosReply {
         let json = gjson::parse(response_str);
 
         match json.get("heos.command").str() {
-            "player/get_players" => Ok(HeosReply::Players(vec![])),
+            "player/get_players" => Ok(HeosReply::Players(
+                "success" == json.get("heos.result").str(),
+                Self::parse_players(&json, "heos.payload")
+            )),
 
             "player/get_play_state" | "player/set_play_state" => Ok(HeosReply::PlayState(
                 "success" == json.get("heos.result").str(),
-                Self::parse_message(json, "heos.message")
+                Self::parse_message(&json, "heos.message")
             )),
 
             "player/set_volume" | "player/get_volume" => Ok(HeosReply::Volume(
                 "success" == json.get("heos.result").str(),
-                Self::parse_message(json, "heos.message")
+                Self::parse_message(&json, "heos.message")
             )),
 
             "player/play_next" | "player/play_previous" => Ok(HeosReply::PlayAction(
                 "success" == json.get("heos.result").str(),
-                Self::parse_message(json, "heos.message")
+                Self::parse_message(&json, "heos.message")
             )),
 
             _ => Err(anyhow!("Command type unknown")),
         }
     }
 
-    pub(crate) fn parse_message(json: Value, path: &str) -> HashMap<String, String> {
+    pub(crate) fn parse_message(json: &Value, path: &str) -> HashMap<String, String> {
         json.get(path).str()
             .split("&")
             .filter_map(|s| {
                 s.split_once("=")
                     .and_then(|t| Some((t.0.to_owned(), t.1.to_owned())))
+            })
+            .collect()
+    }
+
+    pub(crate) fn parse_player(json: &Value) -> Result<HeosDevice> {
+        HeosDevice::new(json.get("ip").str(),
+                        json.get("player_id").str())
+    }
+
+    fn parse_players(json: &Value, path: &str) -> Vec<HeosDevice> {
+        json.get(path).array().iter()
+            .filter_map(|v| {
+                Self::parse_player(v).and_then(|p| Some(p))
             })
             .collect()
     }
