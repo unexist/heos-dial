@@ -15,16 +15,16 @@ mod heos_commands_test {
 
     #[test]
     fn should_generate_valid_heos_commands() {
-        const COMMAND1: &'static str = "heos://player/get_players\r\n";
-        const COMMAND2: &'static str = "heos://player/set_play_state?state=play\r\n";
-        const COMMAND3: &'static str = "heos://player/set_play_state?state=play&pid=5\r\n";
+        const CMD_GET_PLAYERS: &'static str = "heos://player/get_players\r\n";
+        const CMD_SET_PLAY_STATE1: &'static str = "heos://player/set_play_state?state=play\r\n";
+        const CMD_SET_PLAY_STATE2: &'static str = "heos://player/set_play_state?state=play&pid=5\r\n";
 
         let cmd1 = HeosCommand::new()
             .group("player")
             .cmd("get_players")
             .to_string();
 
-        assert_eq!(COMMAND1, cmd1);
+        assert_eq!(CMD_GET_PLAYERS, cmd1);
 
         let cmd2 = HeosCommand::new()
             .group("player")
@@ -32,7 +32,7 @@ mod heos_commands_test {
             .attrs(vec![("state", "play")])
             .to_string();
 
-        assert_eq!(COMMAND2, cmd2);
+        assert_eq!(CMD_SET_PLAY_STATE1, cmd2);
 
         let cmd3 = HeosCommand::new()
             .group("player")
@@ -41,6 +41,6 @@ mod heos_commands_test {
             .attr("pid", "5")
             .to_string();
 
-        assert_eq!(COMMAND3, cmd3);
+        assert_eq!(CMD_SET_PLAY_STATE2, cmd3);
     }
 }
