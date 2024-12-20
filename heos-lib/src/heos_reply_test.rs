@@ -59,6 +59,8 @@ mod heos_reply_test {
 
     const JSON_MESSAGE: &'static str = r###"{"message": "pid='player_id'&repeat=on_all_or_on_one_or_off&shuffle=on_or_off"}"###;
 
+    const JSON_PLAYER: &'static str = r###"{"name": "Living Room (AVR)", "pid": -474905601, "model": "Denon AVR-S660H", "version": "3.34.410", "ip": "10.0.8.37", "network": "wired", "lineout": 0, "serial": "DBNM052317669"}"###;
+
     #[test]
     fn should_parse_get_players_reply() {
         let reply = HeosReply::parse(JSON_GET_PLAYERS_REPLY)
@@ -117,13 +119,20 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_message() {
-        let attrs: HashMap<_, _> = HeosReply::parse_message(
-            gjson::parse(JSON_MESSAGE), "message");
+        let message: HashMap<_, _> = HeosReply::parse_message(
+            &gjson::parse(JSON_MESSAGE), "message");
 
-        println!("{:?}", attrs);
+        assert_eq!(message.get("pid").expect("Parsing pid failed"), "'player_id'");
+        assert_eq!(message.get("repeat").expect("Parsing repeat_on failed"), "on_all_or_on_one_or_off");
+        assert_eq!(message.get("shuffle").expect("Parsing shuffle failed"), "on_or_off");
+    }
 
-        assert_eq!(attrs.get("pid").expect("Parsing pid failed"), "'player_id'");
-        assert_eq!(attrs.get("repeat").expect("Parsing repeat_on failed"), "on_all_or_on_one_or_off");
-        assert_eq!(attrs.get("shuffle").expect("Parsing shuffle failed"), "on_or_off");
+    #[test]
+    fn should_parse_player() {
+        let dev = HeosReply::parse_player(&gjson::parse(JSON_PLAYER))
+            .expect("Parsing player failed");
+
+        assert_eq!(dev.player_id, "-474905601");
+        assert_eq!(dev.base_url, "")
     }
 }
