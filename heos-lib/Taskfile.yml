@@ -9,7 +9,7 @@ tasks:
     vars:
       MOD: '{{index .MATCH 0}}'
     cmds:
-      - cargo test heos_{{.MOD}}_test {{.CAPTURE}}
+      - cargo test heos_{{.MOD}}_test
 
   cap-*:
     vars:
