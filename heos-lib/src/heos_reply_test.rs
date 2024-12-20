@@ -133,6 +133,6 @@ mod heos_reply_test {
             .expect("Parsing player failed");
 
         assert_eq!(dev.player_id, "-474905601");
-        assert_eq!(dev.base_url, "")
+        assert_eq!(dev.base_url.host_str(), Some("10.0.8.37"));
     }
 }
