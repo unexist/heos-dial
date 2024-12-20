@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 ///
 /// @package heos-dial
 ///
@@ -10,13 +11,14 @@
 ///
 
 use anyhow::{anyhow, Result};
+use gjson::Value;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum HeosReply {
     Players(Vec<String>),
-    PlayState(bool, String),
-    PlayAction(bool, String),
-    Volume(bool, String),
+    PlayState(bool, HashMap<String, String>),
+    PlayAction(bool, HashMap<String, String>),
+    Volume(bool, HashMap<String, String>),
 }
 
 impl HeosReply {
@@ -28,20 +30,30 @@ impl HeosReply {
 
             "player/get_play_state" | "player/set_play_state" => Ok(HeosReply::PlayState(
                 "success" == json.get("heos.result").str(),
-                json.get("heos.message").str().to_string()
+                Self::parse_message(json, "heos.message")
             )),
 
             "player/set_volume" | "player/get_volume" => Ok(HeosReply::Volume(
                 "success" == json.get("heos.result").str(),
-                json.get("heos.message").str().to_string()
+                Self::parse_message(json, "heos.message")
             )),
 
             "player/play_next" | "player/play_previous" => Ok(HeosReply::PlayAction(
                 "success" == json.get("heos.result").str(),
-                json.get("heos.message").str().to_string()
+                Self::parse_message(json, "heos.message")
             )),
 
             _ => Err(anyhow!("Command type unknown")),
         }
+    }
+
+    pub(crate) fn parse_message(json: Value, path: &str) ->HashMap<String, String> {
+        json.get(path).str()
+            .split("&")
+            .filter_map(|s| {
+                s.split_once("=")
+                    .and_then(|t| Some((t.0.to_owned(), t.1.to_owned())))
+            })
+            .collect()
     }
 }
