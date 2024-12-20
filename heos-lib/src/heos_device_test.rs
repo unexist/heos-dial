@@ -16,13 +16,13 @@ mod heos_device_test {
     use crate::heos_reply::HeosReply;
     use crate::HeosDevice;
 
+    #[test]
     fn should_create_valid_client() {
         let dev = HeosDevice::new(TEST_LOCATION, "1");
 
         assert!(dev.is_ok());
     }
 
-    #[ignore]
     #[tokio::test]
     async fn should_connect_and_get_players() {
         let mut dev = HeosDevice::new(TEST_LOCATION, "1")
