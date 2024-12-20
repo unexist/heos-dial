@@ -80,3 +80,19 @@ impl HeosCommandHandler for HeosDevice {
         Err(anyhow::anyhow!("Failed to send command"))
     }
 }
+
+impl Clone for HeosDevice {
+    fn clone(&self) -> Self {
+        Self {
+            base_url: self.base_url.clone(),
+            player_id: self.player_id.clone(),
+            stream: None,
+        }
+    }
+}
+
+impl PartialEq for HeosDevice {
+    fn eq(&self, other: &Self) -> bool {
+        self.player_id == other.player_id
+    }
+}
