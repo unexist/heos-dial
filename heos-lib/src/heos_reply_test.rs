@@ -11,6 +11,7 @@
 
 #[cfg(test)]
 mod heos_reply_test {
+    use std::collections::HashMap;
     use crate::heos_reply::HeosReply;
 
     const JSON_GET_PLAYERS_REPLY: &'static str = r###"{"heos": {"command": "player/get_players",\
@@ -55,6 +56,8 @@ mod heos_reply_test {
 "result": "success", \
 "message": "pid=player_id" \
 }\r\n"###;
+
+    const JSON_MESSAGE: &'static str = r###"{"message": "pid='player_id'&repeat=on_all_or_on_one_or_off&shuffle=on_or_off"}"###;
 
     #[test]
     fn should_parse_get_players_reply() {
@@ -110,5 +113,17 @@ mod heos_reply_test {
             .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::PlayAction { .. }));
+    }
+
+    #[test]
+    fn should_parse_message() {
+        let attrs: HashMap<_, _> = HeosReply::parse_message(
+            gjson::parse(JSON_MESSAGE), "message");
+
+        println!("{:?}", attrs);
+
+        assert_eq!(attrs.get("pid").expect("Parsing pid failed"), "'player_id'");
+        assert_eq!(attrs.get("repeat").expect("Parsing repeat_on failed"), "on_all_or_on_one_or_off");
+        assert_eq!(attrs.get("shuffle").expect("Parsing shuffle failed"), "on_or_off");
     }
 }
