@@ -47,7 +47,7 @@ impl HeosReply {
         }
     }
 
-    pub(crate) fn parse_message(json: Value, path: &str) ->HashMap<String, String> {
+    pub(crate) fn parse_message(json: Value, path: &str) -> HashMap<String, String> {
         json.get(path).str()
             .split("&")
             .filter_map(|s| {
