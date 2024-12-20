@@ -9,7 +9,7 @@
 /// See the file LICENSE for details.
 ///
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use tokio::io;
 use tokio::net::TcpStream;
 use url::Url;
@@ -34,9 +34,8 @@ impl HeosDevice {
     }
 
     pub async fn connect(&mut self) -> Result<()> {
-        self.stream = Some(TcpStream::connect(
-            format!("{}:{}", self.base_url.host().expect("Host failed"),
-                    DEFAULT_PORT)).await?);
+        self.stream = Some(TcpStream::connect(format!("{}:{}", self.base_url.host()
+                .expect("Host failed"), DEFAULT_PORT)).await?);
 
         Ok(())
     }
@@ -45,9 +44,7 @@ impl HeosDevice {
 impl HeosCommandHandler for HeosDevice {
     async fn send_command<'a>(&self, cmd: &HeosCommand<'a>) -> Result<HeosReply> {
         /* Append player id */
-        let mut dev_cmd = cmd.clone();
-
-        dev_cmd = dev_cmd.attr("pid", self.player_id.as_str());
+        let mut dev_cmd = cmd.clone().attr("pid", self.player_id.as_str());
 
         match self.stream.as_ref() {
             Some(stream) => {
@@ -60,14 +57,17 @@ impl HeosCommandHandler for HeosDevice {
 
                     match stream.try_read_buf(&mut buf) {
                         Ok(0) => break,
+                        #[cfg(test)]
                         Ok(n) => {
                             println!("Read {} bytes", n);
                         }
                         Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
-                            continue;
+                            if '\r' == char::from(buf[buf.len() - 2]) && '\n' == char::from(buf[buf.len() - 1]) {
+                                break;
+                            }
                         }
                         Err(e) => {
-                            return Err(e.into());
+                            return Err(anyhow!(e));
                         }
                     }
                 }
