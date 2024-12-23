@@ -29,7 +29,7 @@ impl HeosReply {
         match json.get("heos.command").str() {
             "player/get_players" => Ok(HeosReply::Players(
                 "success" == json.get("heos.result").str(),
-                Self::parse_players(&json, "heos.payload")
+                Self::parse_players_payload(&json, "heos.payload")
             )),
 
             "player/get_play_state" | "player/set_play_state" => Ok(HeosReply::PlayState(
@@ -61,15 +61,12 @@ impl HeosReply {
             .collect()
     }
 
-    pub(crate) fn parse_player(json: &Value) -> Result<HeosDevice> {
-        HeosDevice::new(json.get("ip").str(),
-                        json.get("player_id").str())
-    }
-
-    fn parse_players(json: &Value, path: &str) -> Vec<HeosDevice> {
+    pub(crate) fn parse_players_payload(json: &Value, path: &str) -> Vec<HeosDevice> {
         json.get(path).array().iter()
-            .filter_map(|v| {
-                Self::parse_player(v).and_then(|p| Some(p))
+            .map(|v| {
+                print!("{:?}", json.get("ip").str());
+                HeosDevice::new(json.get("ip").str(),
+                                json.get("player_id").str()).unwrap()
             })
             .collect()
     }
