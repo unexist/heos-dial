@@ -59,8 +59,6 @@ mod heos_reply_test {
 
     const JSON_MESSAGE: &'static str = r###"{"message": "pid='player_id'&repeat=on_all_or_on_one_or_off&shuffle=on_or_off"}"###;
 
-    const JSON_PLAYER: &'static str = r###"{"name": "Living Room (AVR)", "pid": -474905601, "model": "Denon AVR-S660H", "version": "3.34.410", "ip": "10.0.8.37", "network": "wired", "lineout": 0, "serial": "DBNM052317669"}"###;
-
     #[test]
     fn should_parse_get_players_reply() {
         let reply = HeosReply::parse(JSON_GET_PLAYERS_REPLY)
@@ -128,11 +126,12 @@ mod heos_reply_test {
     }
 
     #[test]
-    fn should_parse_player() {
-        let dev = HeosReply::parse_player(&gjson::parse(JSON_PLAYER))
-            .expect("Parsing player failed");
+    fn should_parse_players_payload() {
+        let payload = gjson::parse(JSON_GET_PLAYERS_REPLY);
+        let devices = HeosReply::parse_players_payload(&payload, "heos.payload");
 
-        assert_eq!(dev.player_id, "-474905601");
-        assert_eq!(dev.base_url.host_str(), Some("10.0.8.37"));
+        assert_eq!(devices.len(), 2);
+        assert_eq!(devices[0].player_id, "-474905601");
+        assert_eq!(devices[0].base_url.host_str(), Some("10.0.8.37"));
     }
 }
