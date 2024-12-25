@@ -14,8 +14,10 @@ mod heos_reply_test {
     use std::collections::HashMap;
     use crate::heos_reply::HeosReply;
 
-    const JSON_GET_PLAYERS_REPLY: &'static str = r###"{"heos": {"command": "player/get_players",\
-"result": "success", "message": ""},\
+    const JSON_GET_PLAYERS_REPLY: &'static str = r###"{"heos": {\
+"command": "player/get_players",\
+"result": "success",\
+"message": ""},\
 "payload": [\
 {"name": "Living Room (AVR)", "pid": -474905601, "model": "Denon AVR-S660H", "version": "3.34.410", "ip": "10.0.8.37", "network": "wired", "lineout": 0, "serial": "DBNM052317669"},\
 {"name": "Studio1", "pid": 844263156, "gid": -622728288, "model": "Denon Home 350", "version": "3.34.425", "ip": "10.0.8.24", "network": "wifi", "lineout": 0, "serial": "BME27220818140"}\
@@ -117,18 +119,18 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_message() {
-        let message: HashMap<_, _> = HeosReply::parse_message(
-            &gjson::parse(JSON_MESSAGE), "message");
+        let json = gjson::parse(JSON_MESSAGE);
+        let attrs: HashMap<_, _> = HeosReply::parse_message(&json, "message");
 
-        assert_eq!(message.get("pid").expect("Parsing pid failed"), "'player_id'");
-        assert_eq!(message.get("repeat").expect("Parsing repeat_on failed"), "on_all_or_on_one_or_off");
-        assert_eq!(message.get("shuffle").expect("Parsing shuffle failed"), "on_or_off");
+        assert_eq!(attrs.get("pid").expect("Parsing pid failed"), "'player_id'");
+        assert_eq!(attrs.get("repeat").expect("Parsing repeat_on failed"), "on_all_or_on_one_or_off");
+        assert_eq!(attrs.get("shuffle").expect("Parsing shuffle failed"), "on_or_off");
     }
 
     #[test]
     fn should_parse_players_payload() {
-        let payload = gjson::parse(JSON_GET_PLAYERS_REPLY);
-        let devices = HeosReply::parse_players_payload(&payload, "heos.payload");
+        let json = gjson::parse(JSON_GET_PLAYERS_REPLY);
+        let devices = HeosReply::parse_players_payload(&json, "payload");
 
         assert_eq!(devices.len(), 2);
         assert_eq!(devices[0].player_id, "-474905601");
