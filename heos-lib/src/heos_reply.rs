@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 ///
 /// @package heos-dial
 ///
@@ -11,7 +10,8 @@ use std::collections::HashMap;
 ///
 
 use anyhow::{anyhow, Result};
-use gjson::{Kind, Value};
+use gjson::Value;
+use std::collections::HashMap;
 use crate::HeosDevice;
 
 #[derive(Clone, PartialEq, Debug)]
