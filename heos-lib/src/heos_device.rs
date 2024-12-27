@@ -1,3 +1,4 @@
+use std::fmt::format;
 ///
 /// @package heos-dial
 ///
@@ -12,14 +13,13 @@
 use anyhow::{anyhow, Result};
 use tokio::io;
 use tokio::net::TcpStream;
-use url::Url;
 use crate::constants::DEFAULT_PORT;
 use crate::heos_command::{HeosCommand, HeosCommandHandler};
 use crate::heos_reply::HeosReply;
 
 #[derive(Debug)]
 pub struct HeosDevice {
-    pub(crate) base_url: Url,
+    pub(crate) base_url: String,
     pub(crate) player_id: String,
     stream: Option<TcpStream>,
 }
@@ -27,15 +27,15 @@ pub struct HeosDevice {
 impl HeosDevice {
     pub fn new(url: &str, pid: &str) -> Result<Self> {
         Ok(Self {
-            base_url: Url::parse(url)?,
+            base_url: url.parse()?,
             player_id: pid.into(),
             stream: None,
         })
     }
 
     pub async fn connect(&mut self) -> Result<()> {
-        self.stream = Some(TcpStream::connect(format!("{}:{}", self.base_url.host()
-                .expect("Host failed"), DEFAULT_PORT)).await?);
+        self.stream = Some(TcpStream::connect(
+            format!("{}:{}", self.base_url, DEFAULT_PORT)).await?);
 
         Ok(())
     }
