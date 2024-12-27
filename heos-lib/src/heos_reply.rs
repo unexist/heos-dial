@@ -11,7 +11,7 @@ use std::collections::HashMap;
 ///
 
 use anyhow::{anyhow, Result};
-use gjson::Value;
+use gjson::{Kind, Value};
 use crate::HeosDevice;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -64,8 +64,8 @@ impl HeosReply {
     pub(crate) fn parse_players_payload(json: &Value, path: &str) -> Vec<HeosDevice> {
         json.get(path).array().iter()
             .map(|v| {
-                HeosDevice::new(json.get("ip").str(),
-                                json.get("player_id").str()).unwrap()
+                HeosDevice::new(v.get("ip").str(),
+                                v.get("pid").str()).unwrap()
             })
             .collect()
     }
