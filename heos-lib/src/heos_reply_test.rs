@@ -12,7 +12,6 @@
 #[cfg(test)]
 mod heos_reply_test {
     use std::collections::HashMap;
-    use gjson::Kind;
     use crate::heos_reply::HeosReply;
 
     const JSON_GET_PLAYERS_REPLY: &'static str = r###"{"heos": {
@@ -67,7 +66,12 @@ mod heos_reply_test {
         let reply = HeosReply::parse(JSON_GET_PLAYERS_REPLY)
             .expect("Failed to parse");
 
-        assert!(matches!(reply, HeosReply::Players { .. }));
+        if let HeosReply::Players(success, devices) = reply {
+            assert!(success);
+            assert_eq!(devices.len(), 2);
+        } else {
+            panic!("Wrong reply type");
+        }
     }
 
     #[test]
