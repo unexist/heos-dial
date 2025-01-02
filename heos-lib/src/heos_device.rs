@@ -77,7 +77,7 @@ impl HeosCommandHandler for HeosDevice {
             _ => {}
         }
 
-        Err(anyhow::anyhow!("Failed to send command"))
+        Err(anyhow!("Failed to send command"))
     }
 }
 

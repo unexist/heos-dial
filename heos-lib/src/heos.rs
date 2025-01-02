@@ -62,7 +62,7 @@ impl Heos {
                     if response.contains(TARGET_URN) {
                         Ok(response.to_string())
                     } else {
-                        Err(anyhow::Error::msg("Target urn not found"))
+                        Err(anyhow!("Target urn not found"))
                     }
                 }
 
