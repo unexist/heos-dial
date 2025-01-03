@@ -68,7 +68,11 @@ impl Heos {
 
                 if let Ok(response) = get_next(&socket).await {
                     match Self::parse_discovery_response(&response) {
-                        Ok(device) => yield device,
+                        Ok(location) => {
+                            let url = Heos::parse_location(location.as_ref())?;
+
+                            yield Ok(HeosDevice::new(&*url, "0")?);
+                        },
                         Err(err) => println!("{:#?}", err),
                     }
                 }
@@ -76,21 +80,43 @@ impl Heos {
         })
     }
 
-    pub(crate) fn parse_discovery_response(response_str: &str) -> Result<HeosDevice> {
+    pub(crate) fn parse_discovery_response(response_str: &str) -> Result<String> {
         match response_str.split("\r\n\r\n").next() {
             Some(header_str) => {
                 for header_line in header_str.split("\r\n") {
                     if header_line.contains("LOCATION") {
                         if let Some(idx) = header_line.find(":") {
-                            let url = header_line[idx + 1..].trim();
+                            let location = header_line[idx + 1..].trim();
 
-                            return Ok(HeosDevice::new(url, "1")?);
+                            return Ok(String::from(location));
                         }
                     }
                 }
-                Err(anyhow!("Invalid response"))
+            },
+            None => {}
+        }
+
+        Err(anyhow!("Invalid response"))
+    }
+
+    pub(crate) fn parse_location(location_str: &str) -> Result<String> {
+        let mut start: usize = 0;
+        let mut stop: usize = 0;
+
+        for c in location_str.char_indices() {
+            if '/' == c.1 && ((0 == start && 0 == stop) || (0 <= start && 0 == stop)) {
+                start = c.0;
+            } else if (':' == c.1 && 0 < start && 0 == stop) || ('/' == c.1 && 0 < start) {
+                stop = c.0;
+
+                break;
             }
-            None => Err(anyhow!("Invalid response")),
+        }
+
+        if stop > start {
+            Ok(location_str[start..stop].to_string())
+        } else {
+            Err(anyhow!("Invalid location"))
         }
     }
 }
