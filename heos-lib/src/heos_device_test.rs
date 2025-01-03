@@ -11,21 +11,21 @@
 
 #[cfg(test)]
 mod heos_device_test {
-    use crate::constants::TEST_DEVICE;
+    use crate::constants::TEST_DEVICE_IP;
     use crate::heos_command::{HeosCommand, HeosCommandHandler};
     use crate::heos_reply::HeosReply;
     use crate::HeosDevice;
 
     #[test]
     fn should_create_valid_client() {
-        let dev = HeosDevice::new(TEST_DEVICE, "1");
+        let dev = HeosDevice::new(TEST_DEVICE_IP, "1");
 
         assert!(dev.is_ok());
     }
 
     #[tokio::test]
     async fn should_connect_and_get_players() {
-        let mut dev = HeosDevice::new(TEST_DEVICE, "1")
+        let mut dev = HeosDevice::new(TEST_DEVICE_IP, "1")
             .expect("Failed to create client");
 
         dev.connect().await
