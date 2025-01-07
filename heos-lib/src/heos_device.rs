@@ -1,4 +1,3 @@
-use std::fmt::format;
 ///
 /// @package heos-dial
 ///
