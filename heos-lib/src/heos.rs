@@ -73,7 +73,7 @@ impl Heos {
 
                             yield Ok(HeosDevice::new(&*url, "0")?);
                         },
-                        Err(err) => println!("{:#?}", err),
+                        Err(err) => yield Err(anyhow!(err)),
                     }
                 }
             }
