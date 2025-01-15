@@ -71,7 +71,7 @@ impl Heos {
                         Ok(location) => {
                             let url = Heos::parse_location(location.as_ref())?;
 
-                            yield HeosDevice::new(&*url, "0")?;
+                            yield Ok(HeosDevice::new(&*url, "0")?);
                         },
                         Err(err) => println!("{:#?}", err),
                     }
