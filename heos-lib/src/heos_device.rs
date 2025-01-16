@@ -43,7 +43,7 @@ impl HeosDevice {
 impl HeosCommandHandler for HeosDevice {
     async fn send_command<'a>(&self, cmd: &HeosCommand<'a>) -> Result<HeosReply> {
         /* Append player id */
-        let mut dev_cmd = cmd.clone().attr("pid", self.player_id.as_str());
+        let dev_cmd = cmd.clone().attr("pid", self.player_id.as_str());
 
         match self.stream.as_ref() {
             Some(stream) => {
