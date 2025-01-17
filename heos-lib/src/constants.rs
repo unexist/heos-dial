@@ -10,6 +10,7 @@
 ///
 
 use std::str;
+#[cfg(test)]
 use const_format::formatcp;
 
 pub(crate) const DEFAULT_PORT: u16 = 1255;
