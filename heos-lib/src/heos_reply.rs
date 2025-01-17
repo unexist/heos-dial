@@ -19,6 +19,7 @@ pub enum HeosReply {
     Players(bool, Vec<HeosDevice>),
     PlayState(bool, HashMap<String, String>),
     PlayAction(bool, HashMap<String, String>),
+    PlayingMedia(bool, HashMap<String, String>),
     Volume(bool, HashMap<String, String>),
 }
 
@@ -37,12 +38,12 @@ impl HeosReply {
                 Self::parse_message(&json, "heos.message")
             )),
 
-            "player/set_volume" | "player/get_volume" => Ok(HeosReply::Volume(
+            "player/play_next" | "player/play_previous" => Ok(HeosReply::PlayAction(
                 "success" == json.get("heos.result").str(),
                 Self::parse_message(&json, "heos.message")
             )),
 
-            "player/play_next" | "player/play_previous" => Ok(HeosReply::PlayAction(
+            "player/set_volume" | "player/get_volume" => Ok(HeosReply::Volume(
                 "success" == json.get("heos.result").str(),
                 Self::parse_message(&json, "heos.message")
             )),

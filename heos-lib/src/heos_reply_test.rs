@@ -35,18 +35,6 @@ mod heos_reply_test {
 "message": "pid='player_id'&state='play_state'"
 }\r\n"###;
 
-    const JSON_SET_VOLUME_REPLY: &'static str = r###"{"heos": {
-"command": "player/set_volume",
-"result": "success",
-"message": "pid='player_id'&level='vol_level'"
-}\r\n"###;
-
-    const JSON_GET_VOLUME_REPLY: &'static str = r###"{"heos": {
-"command": "player/get_volume",
-"result": "success",
-"message": "pid='player_id'&level='vol_level'"
-}\r\n"###;
-
     const JSON_PLAY_NEXT_REPLY: &'static str = r###"{"heos": {
 "command": "player/play_next",
 "result": "success",
@@ -57,6 +45,18 @@ mod heos_reply_test {
 "command": "player/play_previous",
 "result": "success",
 "message": "pid=player_id"
+}\r\n"###;
+
+    const JSON_SET_VOLUME_REPLY: &'static str = r###"{"heos": {
+"command": "player/set_volume",
+"result": "success",
+"message": "pid='player_id'&level='vol_level'"
+}\r\n"###;
+
+    const JSON_GET_VOLUME_REPLY: &'static str = r###"{"heos": {
+"command": "player/get_volume",
+"result": "success",
+"message": "pid='player_id'&level='vol_level'"
 }\r\n"###;
 
     const JSON_MESSAGE: &'static str = r###"{"message": "pid='player_id'&repeat=on_all_or_on_one_or_off&shuffle=on_or_off"}"###;
@@ -91,22 +91,6 @@ mod heos_reply_test {
     }
 
     #[test]
-    fn should_parse_set_volume_reply() {
-        let reply = HeosReply::parse(JSON_SET_VOLUME_REPLY)
-            .expect("Failed to parse");
-
-        assert!(matches!(reply, HeosReply::Volume { .. }));
-    }
-
-    #[test]
-    fn should_parse_get_volume_reply() {
-        let reply = HeosReply::parse(JSON_GET_VOLUME_REPLY)
-            .expect("Failed to parse");
-
-        assert!(matches!(reply, HeosReply::Volume { .. }));
-    }
-
-    #[test]
     fn should_parse_play_next_reply() {
         let reply = HeosReply::parse(JSON_PLAY_NEXT_REPLY)
             .expect("Failed to parse");
@@ -120,6 +104,22 @@ mod heos_reply_test {
             .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::PlayAction { .. }));
+    }
+
+    #[test]
+    fn should_parse_set_volume_reply() {
+        let reply = HeosReply::parse(JSON_SET_VOLUME_REPLY)
+            .expect("Failed to parse");
+
+        assert!(matches!(reply, HeosReply::Volume { .. }));
+    }
+
+    #[test]
+    fn should_parse_get_volume_reply() {
+        let reply = HeosReply::parse(JSON_GET_VOLUME_REPLY)
+            .expect("Failed to parse");
+
+        assert!(matches!(reply, HeosReply::Volume { .. }));
     }
 
     #[test]
