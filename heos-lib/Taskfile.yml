@@ -7,12 +7,12 @@ tasks:
 
   test-*:
     vars:
-      MOD: '{{index .MATCH 0}}'
+      MOD: '_{{index .MATCH 0}}'
     cmds:
-      - cargo test heos_{{.MOD}}_test
+      - cargo test heos{{.MOD}}_test
 
   cap-*:
     vars:
-      MOD: '{{index .MATCH 0}}'
+      MOD: '_{{index .MATCH 0}}'
     cmds:
-      - cargo test heos_{{.MOD}}_test -- --nocapture
+      - cargo test heos{{.MOD}}_test -- --nocapture
