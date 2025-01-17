@@ -45,7 +45,7 @@ impl HeosReply {
 
             "player/get_now_playing_media" => Ok(HeosReply::PlayingMedia(
                 "success" == json.get("heos.result").str(),
-                Self::parse_message(&json, "heos.message")
+                Self::parse_message(&json, "payload")
             )),
 
             "player/set_volume" | "player/get_volume" => Ok(HeosReply::Volume(
