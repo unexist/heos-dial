@@ -11,7 +11,7 @@
 
 #[cfg(test)]
 mod heos_device_test {
-    use crate::constants::TEST_DEVICE_IP;
+    use crate::constants::{TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID};
     use crate::heos_command::{HeosCommand, HeosCommandHandler};
     use crate::heos_reply::HeosReply;
     use crate::HeosDevice;
@@ -41,5 +41,25 @@ mod heos_device_test {
         println!("{:?}", result);
 
         assert!(matches!(result, HeosReply::Players { .. }));
+    }
+
+    #[tokio::test]
+    async fn should_connect_and_get_playing_media() {
+        let mut dev = HeosDevice::new(TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID)
+            .expect("Failed to create client");
+
+        dev.connect().await
+            .expect("Failed to connect to client");
+
+        let cmd = HeosCommand::new()
+            .group("player")
+            .cmd("get_now_playing_media");
+
+        let result = dev.send_command(&cmd).await
+            .expect("Failed to send command");
+
+        println!("{:?}", result);
+
+        assert!(matches!(result, HeosReply::PlayingMedia { .. }));
     }
 }
