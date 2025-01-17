@@ -37,12 +37,12 @@ mod heos_device_test {
             .group("player")
             .cmd("get_players");
 
-        let result = dev.send_command(&cmd).await
+        let reply = dev.send_command(&cmd).await
             .expect("Failed to send command");
 
-        println!("{:?}", result);
+        println!("{:?}", reply);
 
-        assert!(matches!(result, HeosReply::Players { .. }));
+        assert!(matches!(reply, HeosReply::Players { .. }));
     }
 
     #[tokio::test]
@@ -58,11 +58,16 @@ mod heos_device_test {
             .group("player")
             .cmd("get_now_playing_media");
 
-        let result = dev.send_command(&cmd).await
+        let reply = dev.send_command(&cmd).await
             .expect("Failed to send command");
 
-        println!("{:?}", result);
+        println!("{:?}", reply);
 
-        assert!(matches!(result, HeosReply::PlayingMedia { .. }));
+        assert!(matches!(reply, HeosReply::PlayingMedia { .. }));
+
+        if let HeosReply::PlayingMedia(_success, payload) = reply {
+            assert_eq!(payload.get("artist").expect("Failed to parse artist"), "Lekkerfaces");
+            assert_eq!(payload.get("song").expect("Failed to parse song"), "Break Down");
+        }
     }
 }
