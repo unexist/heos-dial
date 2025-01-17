@@ -11,21 +11,23 @@
 
 #[cfg(test)]
 mod heos_device_test {
-    use crate::constants::{TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID};
+    use crate::constants::{TEST_DEVICE_IP, TEST_DEVICE_NAME, TEST_DEVICE_PLAYER_ID};
     use crate::heos_command::{HeosCommand, HeosCommandHandler};
     use crate::heos_reply::HeosReply;
     use crate::HeosDevice;
 
     #[test]
     fn should_create_valid_client() {
-        let dev = HeosDevice::new(TEST_DEVICE_IP, "1");
+        let dev = HeosDevice::new(TEST_DEVICE_NAME,
+                                  TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID);
 
         assert!(dev.is_ok());
     }
 
     #[tokio::test]
     async fn should_connect_and_get_players() {
-        let mut dev = HeosDevice::new(TEST_DEVICE_IP, "1")
+        let mut dev = HeosDevice::new(TEST_DEVICE_NAME,
+                                      TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID)
             .expect("Failed to create client");
 
         dev.connect().await
@@ -45,7 +47,8 @@ mod heos_device_test {
 
     #[tokio::test]
     async fn should_connect_and_get_playing_media() {
-        let mut dev = HeosDevice::new(TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID)
+        let mut dev = HeosDevice::new(TEST_DEVICE_NAME,
+                                      TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID)
             .expect("Failed to create client");
 
         dev.connect().await

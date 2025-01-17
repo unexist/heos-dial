@@ -70,7 +70,8 @@ impl HeosReply {
     pub(crate) fn parse_players_payload(json: &Value, path: &str) -> Vec<HeosDevice> {
         json.get(path).array().iter()
             .map(|v| {
-                HeosDevice::new(v.get("ip").str(),
+                HeosDevice::new(v.get("name").str(),
+                                v.get("ip").str(),
                                 v.get("pid").str()).unwrap()
             })
             .collect()

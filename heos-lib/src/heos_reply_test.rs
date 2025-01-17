@@ -12,6 +12,7 @@
 #[cfg(test)]
 mod heos_reply_test {
     use std::collections::HashMap;
+    use crate::constants::{TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID};
     use crate::heos_reply::HeosReply;
 
     const JSON_GET_PLAYERS_REPLY: &'static str = r###"{"heos": {
@@ -19,8 +20,8 @@ mod heos_reply_test {
 "result": "success",
 "message": ""},
 "payload": [
-{"name": "Living Room (AVR)", "pid": -474905601, "model": "Denon AVR-S660H", "version": "3.34.410", "ip": "10.0.8.37", "network": "wired", "lineout": 0, "serial": "DBNM052317669"},
-{"name": "Studio1", "pid": 844263156, "gid": -622728288, "model": "Denon Home 350", "version": "3.34.425", "ip": "10.0.8.24", "network": "wifi", "lineout": 0, "serial": "BME27220818140"}
+{"name": "Studio1", "pid": 844263156, "gid": -622728288, "model": "Denon Home 350", "version": "3.34.425", "ip": "10.0.8.24", "network": "wifi", "lineout": 0, "serial": "BME27220818140"},
+{"name": "Living Room (AVR)", "pid": -474905601, "model": "Denon AVR-S660H", "version": "3.34.410", "ip": "10.0.8.37", "network": "wired", "lineout": 0, "serial": "DBNM052317669"}
 ]}\r\n"###;
 
     const JSON_SET_PLAY_STATE_REPLY: &'static str = r###"{"heos": {
@@ -165,7 +166,7 @@ mod heos_reply_test {
         let devices = HeosReply::parse_players_payload(&json, "payload");
 
         assert_eq!(devices.len(), 2);
-        assert_eq!(devices[0].player_id, "-474905601");
-        assert_eq!(devices[0].base_url, "10.0.8.37");
+        assert_eq!(devices[0].base_url, TEST_DEVICE_IP);
+        assert_eq!(devices[0].player_id, TEST_DEVICE_PLAYER_ID);
     }
 }

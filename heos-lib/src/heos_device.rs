@@ -18,14 +18,16 @@ use crate::heos_reply::HeosReply;
 
 #[derive(Debug)]
 pub struct HeosDevice {
+    pub(crate) name: String,
     pub(crate) base_url: String,
     pub(crate) player_id: String,
     stream: Option<TcpStream>,
 }
 
 impl HeosDevice {
-    pub fn new(url: &str, pid: &str) -> Result<Self> {
+    pub fn new(name: &str, url: &str, pid: &str) -> Result<Self> {
         Ok(Self {
+            name: name.into(),
             base_url: url.parse()?,
             player_id: pid.into(),
             stream: None,
@@ -83,6 +85,7 @@ impl HeosCommandHandler for HeosDevice {
 impl Clone for HeosDevice {
     fn clone(&self) -> Self {
         Self {
+            name: self.name.clone(),
             base_url: self.base_url.clone(),
             player_id: self.player_id.clone(),
             stream: None,
