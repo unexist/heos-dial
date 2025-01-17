@@ -47,6 +47,24 @@ mod heos_reply_test {
 "message": "pid=player_id"
 }\r\n"###;
 
+    const JSON_GET_NOW_PLAYING_MEDIA_REPLY: &'static str = r###"{"heos": {
+"command": "player/get_now_playing_media",
+"result": "success",
+"message": "pid='player_id'"
+},
+"payload": {
+"type" : "'song'",
+"song": "'song name'",
+"album": "'album name'",
+"artist": "'artist name'",
+"image_url": "'image url'",
+"mid": "'media id'",
+"qid": "'queue id'",
+"sid": source_id
+"album_id": "Album Id'"
+}
+}\r\n"###;
+
     const JSON_SET_VOLUME_REPLY: &'static str = r###"{"heos": {
 "command": "player/set_volume",
 "result": "success",
@@ -104,6 +122,14 @@ mod heos_reply_test {
             .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::PlayAction { .. }));
+    }
+
+    #[test]
+    fn should_parse_get_now_playing_media_reply() {
+        let reply = HeosReply::parse(JSON_GET_NOW_PLAYING_MEDIA_REPLY)
+            .expect("Failed to parse");
+
+        assert!(matches!(reply, HeosReply::PlayingMedia { .. }));
     }
 
     #[test]
