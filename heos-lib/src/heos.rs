@@ -115,7 +115,7 @@ impl Heos {
         }
 
         if stop > start {
-            Ok(location_str[start..stop].to_string())
+            Ok(location_str[start+1..stop].to_string())
         } else {
             Err(anyhow!("Invalid location"))
         }
