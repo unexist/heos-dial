@@ -44,9 +44,8 @@ USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT
         assert_eq!(location, TEST_DEVICE_IP);
     }
 
-    #[ignore]
     #[tokio::test]
-    async fn should_discover_anything() {
+    async fn should_discover_at_least_one() {
         let heos = Heos::new();
 
         let devices = heos.discover().await
