@@ -5,6 +5,10 @@ tasks:
     cmds:
       - cargo test -- --nocapture
 
+  cap:
+    cmds:
+      - cargo test
+
   test-*:
     vars:
       MOD: '_{{index .MATCH 0}}'
