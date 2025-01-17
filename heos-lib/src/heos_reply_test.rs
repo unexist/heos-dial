@@ -54,7 +54,7 @@ mod heos_reply_test {
 "message": "pid='player_id'"
 },
 "payload": {
-"type" : "'song'",
+"type": "'song'",
 "song": "'song name'",
 "album": "'album name'",
 "artist": "'artist name'",
@@ -158,6 +158,14 @@ mod heos_reply_test {
         assert_eq!(attrs.get("repeat").expect("Parsing repeat_on failed"),
                    "on_all_or_on_one_or_off");
         assert_eq!(attrs.get("shuffle").expect("Parsing shuffle failed"), "on_or_off");
+    }
+
+    #[test]
+    fn should_parse_generic_payload() {
+        let json = gjson::parse(JSON_GET_NOW_PLAYING_MEDIA_REPLY);
+        let payload: HashMap<_, _> = HeosReply::parse_generic_payload(&json, "payload");
+
+        assert_eq!(payload.get("artist").expect("Parsing artist failed"), "artist name");
     }
 
     #[test]

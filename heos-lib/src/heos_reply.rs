@@ -45,7 +45,7 @@ impl HeosReply {
 
             "player/get_now_playing_media" => Ok(HeosReply::PlayingMedia(
                 "success" == json.get("heos.result").str(),
-                Self::parse_message(&json, "payload")
+                Self::parse_generic_payload(&json, "payload")
             )),
 
             "player/set_volume" | "player/get_volume" => Ok(HeosReply::Volume(
@@ -65,6 +65,16 @@ impl HeosReply {
                     .and_then(|t| Some((t.0.to_owned(), t.1.to_owned())))
             })
             .collect()
+    }
+
+    pub(crate) fn parse_generic_payload(json: &Value, path: &str) -> HashMap<String, String> {
+        let mut payload: HashMap<String, String> = HashMap::new();
+
+        json.get(path).each(|key, value| {
+            payload.insert(key.to_string(), value.to_string()).is_none()
+        });
+
+        payload
     }
 
     pub(crate) fn parse_players_payload(json: &Value, path: &str) -> Vec<HeosDevice> {
