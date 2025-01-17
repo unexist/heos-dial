@@ -69,11 +69,12 @@ impl Heos {
                 if let Ok(response) = get_next(&socket).await {
                     match Self::parse_discovery_response(&response) {
                         Ok(location) => {
-                            let url = Heos::parse_location(location.as_ref())?;
-
-                            yield Ok(HeosDevice::new(&*url, "0")?);
+                            match Heos::parse_location(location.as_ref()) {
+                                Ok(url) => yield HeosDevice::new(&*url, "0").unwrap(),
+                                Err(err) => println!("Error parse location: {:#?}", err),
+                            }
                         },
-                        Err(err) => println!("{:#?}", err),
+                        Err(err) => println!("Error parse response: {:#?}", err),
                     }
                 }
             }
