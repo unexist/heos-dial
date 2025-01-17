@@ -105,7 +105,7 @@ impl Heos {
         let mut stop: usize = 0;
 
         for c in location_str.char_indices() {
-            if '/' == c.1 && ((0 == start && 0 == stop) || (0 <= start && 0 == stop)) {
+            if '/' == c.1 {
                 start = c.0;
             } else if (':' == c.1 && 0 < start && 0 == stop) || ('/' == c.1 && 0 < start) {
                 stop = c.0;
