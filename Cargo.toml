@@ -3,4 +3,5 @@
 members = [
     #"heos-dial",
     "heos-lib",
+    "heos-tui",
 ]
