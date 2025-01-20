@@ -1,7 +1,7 @@
 //
 /// @package heos-dial
 ///
-/// @file HEOS lib
+/// @file HEOS tui
 /// @copyright 2024-present Christoph Kappel <christoph@unexist.dev>
 /// @version $Id$
 ///
@@ -39,11 +39,6 @@ impl App {
         Ok(())
     }
 
-    /// Renders the user interface.
-    ///
-    /// This is where you add new widgets. See the following resources for more information:
-    /// - <https://docs.rs/ratatui/latest/ratatui/widgets/index.html>
-    /// - <https://github.com/ratatui/ratatui/tree/master/examples>
     fn draw(&mut self, frame: &mut Frame) {
         let title = Line::from("Ratatui Simple Template")
             .bold()
@@ -61,10 +56,6 @@ impl App {
         )
     }
 
-    /// Reads the crossterm events and updates the state of [`App`].
-    ///
-    /// If your application needs to perform work in between handling events, you can use the
-    /// [`event::poll`] function to check if there are any events available with a timeout.
     fn handle_crossterm_events(&mut self) -> Result<()> {
         match event::read()? {
             // it's important to check KeyEventKind::Press to avoid handling key release events
