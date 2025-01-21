@@ -18,10 +18,10 @@ use crate::heos_reply::HeosReply;
 
 #[derive(Debug)]
 pub struct HeosDevice {
-    pub(crate) name: String,
-    pub(crate) base_url: String,
-    pub(crate) player_id: String,
-    stream: Option<TcpStream>,
+    pub name: String,
+    pub base_url: String,
+    pub player_id: String,
+    pub stream: Option<TcpStream>,
 }
 
 impl HeosDevice {
