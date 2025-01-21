@@ -82,6 +82,7 @@ impl<'a> Display for HeosCommand<'a> {
     }
 }
 
-pub(crate) trait HeosCommandHandler {
+pub trait HeosCommandHandler {
+    #[allow(async_fn_in_trait)]
     async fn send_command<'a>(&self, cmd: &HeosCommand<'a>) -> Result<HeosReply>;
 }
