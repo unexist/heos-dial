@@ -9,11 +9,11 @@
 /// See the file LICENSE for details.
 ///
 
-mod constants;
-mod heos;
-mod heos_device;
-mod heos_command;
-mod heos_reply;
+pub mod constants;
+pub mod heos;
+pub mod heos_device;
+pub mod heos_command;
+pub mod heos_reply;
 
 mod heos_test;
 mod heos_device_test;

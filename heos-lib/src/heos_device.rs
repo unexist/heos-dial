@@ -63,9 +63,9 @@ impl HeosCommandHandler for HeosDevice {
 
                     match stream.try_read_buf(&mut buf) {
                         Ok(0) => break,
-                        Ok(n) => {
+                        Ok(_n) => {
                             #[cfg(test)]
-                            println!("Read {} bytes", n);
+                            println!("Read {} bytes", _n);
                         }
                         Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
                             if '\r' == char::from(buf[buf.len() - 2]) && '\n' == char::from(buf[buf.len() - 1]) {

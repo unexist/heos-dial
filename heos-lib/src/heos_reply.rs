@@ -24,7 +24,7 @@ pub enum HeosReply {
 }
 
 impl HeosReply {
-    pub(crate) fn parse(response_str: &str) -> Result<HeosReply> {
+    pub fn parse(response_str: &str) -> Result<HeosReply> {
         let json = gjson::parse(response_str);
 
         match json.get("heos.command").str() {
