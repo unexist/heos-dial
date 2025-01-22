@@ -150,8 +150,7 @@ impl Widget for &mut App {
         let [list_area, item_area] =
             Layout::horizontal([Constraint::Fill(1), Constraint::Fill(5)]).areas(main_area);
 
-        let layout = Layout::vertical([Ratio(1, 4); 4]);
-        let [gauge_area] = layout.areas(main_area);
+        let [gauge_area] = Layout::vertical([Ratio(1, 4); 4]).areas(item_area);
 
 
         App::render_header(header_area, buf);
