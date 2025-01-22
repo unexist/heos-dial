@@ -15,7 +15,7 @@ use ratatui::{
     crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind},
     layout::{Constraint, Layout, Rect},
     style::{
-        palette::tailwind::{BLUE, GREEN, SLATE},
+        palette::tailwind::{RED, BLUE, GREEN, SLATE},
         Color, Modifier, Style, Stylize,
     },
     symbols,
@@ -26,6 +26,8 @@ use ratatui::{
     },
     DefaultTerminal,
 };
+use ratatui::layout::Constraint::Ratio;
+use ratatui::widgets::Gauge;
 use heos_lib::HeosDevice;
 
 const DEV_HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(BLUE.c800);
@@ -34,10 +36,13 @@ const ALT_ROW_BG_COLOR: Color = SLATE.c900;
 const SELECTED_STYLE: Style = Style::new().bg(SLATE.c800).add_modifier(Modifier::BOLD);
 const TEXT_FG_COLOR: Color = SLATE.c200;
 const COMPLETED_TEXT_FG_COLOR: Color = GREEN.c500;
+const GAUGE1_COLOR: Color = RED.c800;
+const CUSTOM_LABEL_COLOR: Color = SLATE.c200;
 
 pub struct App {
     should_exit: bool,
     dev_list: DeviceList,
+    progress: u16,
 }
 
 struct DeviceList {
@@ -58,6 +63,7 @@ impl Default for App {
                 ("Kitchen", "10.0.8.24", "844263156"),
                 ("Living Room (AVR)", "10.0.8.37", "-474905601"),
             ]),
+            progress: 50,
         }
     }
 }
@@ -144,11 +150,16 @@ impl Widget for &mut App {
         let [list_area, item_area] =
             Layout::horizontal([Constraint::Fill(1), Constraint::Fill(5)]).areas(main_area);
 
+        let layout = Layout::vertical([Ratio(1, 4); 4]);
+        let [gauge_area] = layout.areas(main_area);
+
+
         App::render_header(header_area, buf);
         App::render_footer(footer_area, buf);
 
         self.render_list(list_area, buf);
         self.render_selected_item(item_area, buf);
+        self.render_gauge(gauge_area, buf);
     }
 }
 
@@ -221,6 +232,16 @@ impl App {
             .wrap(Wrap { trim: false })
             .render(area, buf);
     }
+
+    fn render_gauge(&self, area: Rect, buf: &mut Buffer) {
+        let title = title_block("Gauge with percentage");
+        Gauge::default()
+            .block(title)
+            .gauge_style(GAUGE1_COLOR)
+            .percent(self.progress)
+            .render(area, buf);
+    }
+
 }
 
 const fn alternate_colors(i: usize) -> Color {
@@ -240,4 +261,13 @@ fn convert_dev_to_list_item(value: &HeosDevice) -> ListItem {
     };
 
     ListItem::new(line)
+}
+
+fn title_block(title: &str) -> Block {
+    let title = Line::from(title).centered();
+    Block::new()
+        .borders(Borders::NONE)
+        .padding(Padding::vertical(1))
+        .title(title)
+        .fg(CUSTOM_LABEL_COLOR)
 }
