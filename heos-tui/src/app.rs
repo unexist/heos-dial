@@ -42,7 +42,6 @@ const CUSTOM_LABEL_COLOR: Color = SLATE.c200;
 pub struct App {
     should_exit: bool,
     dev_list: DeviceList,
-    progress: u16,
 }
 
 struct DeviceList {
@@ -55,24 +54,29 @@ impl Default for App {
         Self {
             should_exit: false,
             dev_list: DeviceList::from_iter([
-                ("Studio1", "10.0.8.24", "844263156"),
-                ("Studio2", "10.0.8.24", "844263156"),
-                ("Fitness", "10.0.8.24", "844263156"),
-                ("1st Floor", "10.0.8.24", "844263156"),
-                ("Floor", "10.0.8.24", "844263156"),
-                ("Kitchen", "10.0.8.24", "844263156"),
-                ("Living Room (AVR)", "10.0.8.37", "-474905601"),
+                ("Studio1", "10.0.8.24", "844263156", 10),
+                ("Studio2", "10.0.8.24", "844263156", 30),
+                ("Fitness", "10.0.8.24", "844263156", 40),
+                ("1st Floor", "10.0.8.24", "844263156", 50),
+                ("Floor", "10.0.8.24", "844263156", 70),
+                ("Kitchen", "10.0.8.24", "844263156", 80),
+                ("Living Room (AVR)", "10.0.8.37", "-474905601", 30),
             ]),
-            progress: 50,
         }
     }
 }
 
-impl FromIterator<(&'static str, &'static str, &'static str)> for DeviceList {
-    fn from_iter<I: IntoIterator<Item = (&'static str, &'static str, &'static str)>>(iter: I) -> Self {
+impl FromIterator<(&'static str, &'static str, &'static str, u16)> for DeviceList {
+    fn from_iter<I: IntoIterator<Item = (&'static str, &'static str, &'static str, u16)>>(iter: I) -> Self {
         let items = iter
             .into_iter()
-            .map(|(name, url, pid)| HeosDevice::new(name, url, pid).unwrap())
+            .map(|(name, url, pid, vol)| {
+                let mut dev = HeosDevice::new(name, url, pid).unwrap();
+
+                dev.volume = vol;
+
+                dev
+            })
             .collect();
         let state = ListState::default();
 
@@ -226,11 +230,15 @@ impl App {
 
     fn render_gauge(&self, area: Rect, buf: &mut Buffer) {
         let title = title_block("Volume");
+        let vol = match self.dev_list.state.selected() {
+            Some(i) => self.dev_list.items[i].volume,
+            None => 0,
+        };
 
         Gauge::default()
             .block(title)
             .gauge_style(GAUGE1_COLOR)
-            .percent(self.progress)
+            .percent(vol)
             .render(area, buf);
     }
 
