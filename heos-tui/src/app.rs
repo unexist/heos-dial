@@ -150,14 +150,14 @@ impl Widget for &mut App {
         let [list_area, item_area] =
             Layout::horizontal([Constraint::Fill(1), Constraint::Fill(5)]).areas(main_area);
 
-        let [gauge_area] = Layout::vertical([Ratio(1, 4); 4]).areas(item_area);
-
+        let [text_area, gauge_area] =
+            Layout::vertical([Constraint::Fill(5), Constraint::Fill(1)]).areas(item_area);
 
         App::render_header(header_area, buf);
         App::render_footer(footer_area, buf);
 
         self.render_list(list_area, buf);
-        self.render_selected_item(item_area, buf);
+        self.render_selected_item(text_area, buf);
         self.render_gauge(gauge_area, buf);
     }
 }
@@ -215,25 +215,18 @@ impl App {
             "Nothing selected...".to_string()
         };
 
-        // We show the list item's info under the list in this paragraph
-        let block = Block::new()
-            .title(Line::raw("Device Info").centered())
-            .borders(Borders::all())
-            .border_set(symbols::border::PLAIN)
-            .border_style(DEV_HEADER_STYLE)
-            .bg(NORMAL_ROW_BG)
-            .padding(Padding::horizontal(1));
+        let title = title_block("Device Info");
 
-        // We can now render the item info
         Paragraph::new(info)
-            .block(block)
+            .block(title)
             .fg(TEXT_FG_COLOR)
             .wrap(Wrap { trim: false })
             .render(area, buf);
     }
 
     fn render_gauge(&self, area: Rect, buf: &mut Buffer) {
-        let title = title_block("Gauge with percentage");
+        let title = title_block("Volume");
+
         Gauge::default()
             .block(title)
             .gauge_style(GAUGE1_COLOR)
@@ -264,9 +257,11 @@ fn convert_dev_to_list_item(value: &HeosDevice) -> ListItem {
 
 fn title_block(title: &str) -> Block {
     let title = Line::from(title).centered();
-    Block::new()
-        .borders(Borders::NONE)
-        .padding(Padding::vertical(1))
-        .title(title)
-        .fg(CUSTOM_LABEL_COLOR)
+
+    Block::default()
+        .borders(Borders::all())
+        .border_set(symbols::border::PLAIN)
+        .border_style(DEV_HEADER_STYLE)
+        .bg(NORMAL_ROW_BG)
+        .padding(Padding::horizontal(1))
 }
