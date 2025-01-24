@@ -26,7 +26,6 @@ use ratatui::{
     },
     DefaultTerminal,
 };
-use ratatui::layout::Constraint::Ratio;
 use ratatui::widgets::Gauge;
 use heos_lib::HeosDevice;
 
