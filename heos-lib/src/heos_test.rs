@@ -12,9 +12,9 @@
 #[cfg(test)]
 mod heos_test {
     use crate::heos::Heos;
+    use crate::constants::{TEST_DEVICE_IP, TEST_LOCATION_STR};
     use const_format::formatcp;
     use futures_util::{pin_mut, StreamExt};
-    use crate::constants::{TEST_DEVICE_IP, TEST_LOCATION_STR};
 
     #[ignore]
     #[test]
