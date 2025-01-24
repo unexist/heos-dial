@@ -417,6 +417,7 @@ dependencies = [
  "color-eyre",
  "crossterm",
  "futures",
+ "futures-util",
  "heos-lib",
  "ratatui",
  "tokio",
