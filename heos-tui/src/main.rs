@@ -1,4 +1,4 @@
-//
+///
 /// @package heos-dial
 ///
 /// @file HEOS tui
@@ -9,15 +9,24 @@
 /// See the file LICENSE for details.
 ///
 
-pub use app::App;
+use app::App;
+use heos_lib::HeosDevice;
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
-pub mod app;
+mod app;
+mod heos;
 
-fn main() -> color_eyre::Result<()> {
+#[tokio::main]
+async fn main() -> color_eyre::Result<()> {
     color_eyre::install()?;
 
+    let dev_list = Arc::new(Mutex::new(Vec::<HeosDevice>::new()));
+
+    heos::discover_devices(Arc::clone(&dev_list)).await;
+
     let terminal = ratatui::init();
-    let result = App::default().run(terminal);
+    let result = App::new(Arc::clone(&dev_list)).run(terminal).await;
 
     ratatui::restore();
 

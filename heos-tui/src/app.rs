@@ -1,4 +1,4 @@
-//
+///
 /// @package heos-dial
 ///
 /// @file HEOS tui
@@ -9,6 +9,7 @@
 /// See the file LICENSE for details.
 ///
 
+use std::sync::Arc;
 use color_eyre::Result;
 use ratatui::{
     buffer::Buffer,
@@ -27,6 +28,7 @@ use ratatui::{
     DefaultTerminal,
 };
 use ratatui::widgets::Gauge;
+use tokio::sync::Mutex;
 use heos_lib::HeosDevice;
 
 const DEV_HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(BLUE.c800);
@@ -40,50 +42,19 @@ const CUSTOM_LABEL_COLOR: Color = SLATE.c200;
 
 pub struct App {
     should_exit: bool,
-    dev_list: DeviceList,
-}
-
-struct DeviceList {
-    items: Vec<HeosDevice>,
-    state: ListState,
-}
-
-impl Default for App {
-    fn default() -> Self {
-        Self {
-            should_exit: false,
-            dev_list: DeviceList::from_iter([
-                ("Studio1", "10.0.8.24", "844263156", 10),
-                ("Studio2", "10.0.8.24", "844263156", 30),
-                ("Fitness", "10.0.8.24", "844263156", 40),
-                ("1st Floor", "10.0.8.24", "844263156", 50),
-                ("Floor", "10.0.8.24", "844263156", 70),
-                ("Kitchen", "10.0.8.24", "844263156", 80),
-                ("Living Room (AVR)", "10.0.8.37", "-474905601", 30),
-            ]),
-        }
-    }
-}
-
-impl FromIterator<(&'static str, &'static str, &'static str, u16)> for DeviceList {
-    fn from_iter<I: IntoIterator<Item = (&'static str, &'static str, &'static str, u16)>>(iter: I) -> Self {
-        let items = iter
-            .into_iter()
-            .map(|(name, url, pid, vol)| {
-                let mut dev = HeosDevice::new(name, url, pid).unwrap();
-
-                dev.volume = vol;
-
-                dev
-            })
-            .collect();
-        let state = ListState::default();
-
-        Self { items, state }
-    }
+    arc_list: Arc<Mutex<Vec<HeosDevice>>>,
+    list_state: ListState,
 }
 
 impl App {
+    pub(crate) fn new(arc_list: Arc<Mutex<Vec<HeosDevice>>>) -> App {
+        Self {
+            should_exit: false,
+            arc_list,
+            list_state: ListState::default(),
+        }
+    }
+
     pub(crate) fn run(mut self, mut terminal: DefaultTerminal) -> Result<()> {
         while !self.should_exit {
             terminal.draw(|frame| frame.render_widget(&mut self, frame.area()))?;
@@ -116,27 +87,27 @@ impl App {
     }
 
     fn select_none(&mut self) {
-        self.dev_list.state.select(None);
+        self.list_state.select(None);
     }
 
     fn select_next(&mut self) {
-        self.dev_list.state.select_next();
+        self.list_state.select_next();
     }
     fn select_previous(&mut self) {
-        self.dev_list.state.select_previous();
+        self.list_state.select_previous();
     }
 
     fn select_first(&mut self) {
-        self.dev_list.state.select_first();
+        self.list_state.select_first();
     }
 
     fn select_last(&mut self) {
-        self.dev_list.state.select_last();
+        self.list_state.select_last();
     }
 
     fn toggle_status(&mut self) {
-        if let Some(i) = self.dev_list.state.selected() {
-            println!("Selected status: {}", self.dev_list.items[i].stream.is_some());
+        if let Some(i) = self.list_state.selected() {
+            println!("Selected status: {}", self.arc_list.lock().items[i].stream.is_some());
         }
     }
 }
@@ -165,7 +136,6 @@ impl Widget for &mut App {
     }
 }
 
-/// Rendering logic for the app
 impl App {
     fn render_header(area: Rect, buf: &mut Buffer) {
         Paragraph::new("Heos devices")
@@ -188,8 +158,7 @@ impl App {
             .border_style(DEV_HEADER_STYLE)
             .bg(NORMAL_ROW_BG);
 
-        let items: Vec<ListItem> = self
-            .dev_list
+        let items: Vec<ListItem> = self.dev_list
             .items
             .iter()
             .enumerate()
@@ -205,11 +174,11 @@ impl App {
             .highlight_symbol(">")
             .highlight_spacing(HighlightSpacing::Always);
 
-        StatefulWidget::render(list, area, buf, &mut self.dev_list.state);
+        StatefulWidget::render(list, area, buf, &mut self.list_state);
     }
 
     fn render_selected_item(&self, area: Rect, buf: &mut Buffer) {
-        let info = if let Some(i) = self.dev_list.state.selected() {
+        let info = if let Some(i) = self.list_state.selected() {
             match self.dev_list.items[i].stream {
                 Some(_) => format!("✓ : {}", self.dev_list.items[i].name),
                 None => format!("󰵙 : {}", self.dev_list.items[i].name),
@@ -229,7 +198,7 @@ impl App {
 
     fn render_gauge(&self, area: Rect, buf: &mut Buffer) {
         let title = title_block("Volume");
-        let vol = match self.dev_list.state.selected() {
+        let vol = match self.list_state.selected() {
             Some(i) => self.dev_list.items[i].volume,
             None => 0,
         };

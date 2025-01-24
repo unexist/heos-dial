@@ -15,9 +15,7 @@ use std::sync::Arc;
 use heos_lib::{Heos, HeosDevice};
 use futures::StreamExt;
 
-pub(crate) async fn discover_devices(list: Arc<Mutex<Vec<HeosDevice>>>) {
-    let arc_list = Arc::clone(&list);
-
+pub(crate) async fn discover_devices(arc_list: Arc<Mutex<Vec<HeosDevice>>>) {
     let devices = Heos::new().discover().await
         .expect("To discover devices");
     pin_mut!(devices);
