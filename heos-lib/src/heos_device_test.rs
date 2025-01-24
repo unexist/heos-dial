@@ -70,4 +70,30 @@ mod heos_device_test {
             assert!(payload.get("song").is_some());
         }
     }
+
+
+    #[tokio::test]
+    async fn should_connect_and_get_volume() {
+        let mut dev = HeosDevice::new(TEST_DEVICE_NAME,
+                                      TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID)
+            .expect("Failed to create client");
+
+        dev.connect().await
+            .expect("Failed to connect to client");
+
+        let cmd = HeosCommand::new()
+            .group("player")
+            .cmd("get_volume");
+
+        let reply = dev.send_command(&cmd).await
+            .expect("Failed to send command");
+
+        println!("{:?}", reply);
+
+        assert!(matches!(reply, HeosReply::Volume { .. }));
+
+        if let HeosReply::Volume(_success, payload) = reply {
+            assert!(payload.get("level").is_some());
+        }
+    }
 }
