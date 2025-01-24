@@ -1,4 +1,4 @@
-//
+///
 /// @package heos-dial
 ///
 /// @file HEOS lib
