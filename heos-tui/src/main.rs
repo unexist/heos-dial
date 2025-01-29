@@ -11,8 +11,7 @@
 
 use app::App;
 use heos_lib::HeosDevice;
-use std::sync::Arc;
-use tokio::sync::Mutex;
+use arc_swap::ArcSwap;
 
 mod app;
 mod heos;
@@ -21,12 +20,12 @@ mod heos;
 async fn main() -> color_eyre::Result<()> {
     color_eyre::install()?;
 
-    let dev_list = Arc::new(Mutex::new(Vec::<HeosDevice>::new()));
+    let arc_list = ArcSwap::from_pointee(Vec::<HeosDevice>::new());
 
-    heos::discover_devices(Arc::clone(&dev_list)).await;
+    heos::discover_devices(arc_list).await;
 
     let terminal = ratatui::init();
-    let result = App::new(Arc::clone(&dev_list)).run(terminal).await;
+    let result = App::new(arc_list).run(terminal).await;
 
     ratatui::restore();
 
