@@ -106,7 +106,7 @@ impl App {
 
     async fn toggle_status(&mut self) {
         if let Some(i) = self.list_state.selected() {
-            if let Some(item) = self.arc_list.load().get(i) {
+            if let Some(item) = self.arc_list.load().to_vec().get(i) {
                 println!("Selected status: {}", item.stream.is_some());
             }
         }
