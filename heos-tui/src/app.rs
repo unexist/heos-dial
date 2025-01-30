@@ -10,6 +10,7 @@
 ///
 
 use std::sync::Arc;
+use arc_swap::ArcSwap;
 use color_eyre::Result;
 use ratatui::{
     buffer::Buffer,
@@ -42,7 +43,7 @@ const CUSTOM_LABEL_COLOR: Color = SLATE.c200;
 
 pub struct App {
     should_exit: bool,
-    arc_list: Arc<Mutex<Vec<HeosDevice>>>,
+    arc_list: ArcSwap<Vec<HeosDevice>>,
     list_state: ListState,
 }
 
@@ -105,9 +106,11 @@ impl App {
         self.list_state.select_last();
     }
 
-    fn toggle_status(&mut self) {
+    async fn toggle_status(&mut self) {
         if let Some(i) = self.list_state.selected() {
-            println!("Selected status: {}", self.arc_list.lock().items[i].stream.is_some());
+            if let Some(item) = self.arc_list.load().get(i) {
+                println!("Selected status: {}", item.stream.is_some());
+            }
         }
     }
 }
@@ -158,8 +161,7 @@ impl App {
             .border_style(DEV_HEADER_STYLE)
             .bg(NORMAL_ROW_BG);
 
-        let items: Vec<ListItem> = self.dev_list
-            .items
+        let items: Vec<ListItem> = self.arc_list.load()
             .iter()
             .enumerate()
             .map(|(i, dev_item)| {
