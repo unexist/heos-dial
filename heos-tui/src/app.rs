@@ -9,7 +9,6 @@
 /// See the file LICENSE for details.
 ///
 
-use std::sync::Arc;
 use arc_swap::ArcSwap;
 use color_eyre::Result;
 use ratatui::{
@@ -29,7 +28,6 @@ use ratatui::{
     DefaultTerminal,
 };
 use ratatui::widgets::Gauge;
-use tokio::sync::Mutex;
 use heos_lib::HeosDevice;
 
 const DEV_HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(BLUE.c800);
@@ -48,7 +46,7 @@ pub struct App {
 }
 
 impl App {
-    pub(crate) fn new(arc_list: Arc<Mutex<Vec<HeosDevice>>>) -> App {
+    pub(crate) fn new(arc_list: ArcSwap<Vec<HeosDevice>>) -> App {
         Self {
             should_exit: false,
             arc_list,
@@ -161,7 +159,7 @@ impl App {
             .border_style(DEV_HEADER_STYLE)
             .bg(NORMAL_ROW_BG);
 
-        let items: Vec<ListItem> = self.arc_list.load()
+        let items: Vec<ListItem> = self.arc_list.load().to_vec()
             .iter()
             .enumerate()
             .map(|(i, dev_item)| {
@@ -181,9 +179,13 @@ impl App {
 
     fn render_selected_item(&self, area: Rect, buf: &mut Buffer) {
         let info = if let Some(i) = self.list_state.selected() {
-            match self.dev_list.items[i].stream {
-                Some(_) => format!("✓ : {}", self.dev_list.items[i].name),
-                None => format!("󰵙 : {}", self.dev_list.items[i].name),
+            if let Some(dev) = self.arc_list.load().to_vec().get(i) {
+                match dev.stream {
+                    Some(_) => format!("✓ : {}", dev.name),
+                    None => format!("󰵙 : {}", dev.name),
+                }
+            } else {
+                "Nothing selected...".to_string()
             }
         } else {
             "Nothing selected...".to_string()
@@ -201,7 +203,13 @@ impl App {
     fn render_gauge(&self, area: Rect, buf: &mut Buffer) {
         let title = title_block("Volume");
         let vol = match self.list_state.selected() {
-            Some(i) => self.dev_list.items[i].volume,
+            Some(i) => {
+                if let Some(dev) = self.arc_list.load().to_vec().get(i) {
+                    dev.volume
+                } else {
+                    0
+                }
+            },
             None => 0,
         };
 
