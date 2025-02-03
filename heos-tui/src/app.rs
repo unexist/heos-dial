@@ -10,6 +10,7 @@
 ///
 
 use arc_swap::ArcSwap;
+use std::sync::Arc;
 use color_eyre::Result;
 use ratatui::{
     buffer::Buffer,
@@ -41,15 +42,15 @@ const CUSTOM_LABEL_COLOR: Color = SLATE.c200;
 
 pub struct App {
     should_exit: bool,
-    arc_list: ArcSwap<Vec<HeosDevice>>,
+    dev_list: Arc<ArcSwap<Vec<HeosDevice>>>,
     list_state: ListState,
 }
 
 impl App {
-    pub(crate) fn new(arc_list: ArcSwap<Vec<HeosDevice>>) -> App {
+    pub(crate) fn new(dev_list: Arc<ArcSwap<Vec<HeosDevice>>>) -> App {
         Self {
             should_exit: false,
-            arc_list,
+            dev_list,
             list_state: ListState::default(),
         }
     }
@@ -106,7 +107,7 @@ impl App {
 
     async fn toggle_status(&mut self) {
         if let Some(i) = self.list_state.selected() {
-            if let Some(item) = self.arc_list.load().to_vec().get(i) {
+            if let Some(item) = self.dev_list.load().get(i) {
                 println!("Selected status: {}", item.stream.is_some());
             }
         }
@@ -159,7 +160,7 @@ impl App {
             .border_style(DEV_HEADER_STYLE)
             .bg(NORMAL_ROW_BG);
 
-        let items: Vec<ListItem> = self.arc_list.load().to_vec()
+        let items: Vec<ListItem> = self.dev_list.load()
             .iter()
             .enumerate()
             .map(|(i, dev_item)| {
@@ -179,7 +180,7 @@ impl App {
 
     fn render_selected_item(&self, area: Rect, buf: &mut Buffer) {
         let info = if let Some(i) = self.list_state.selected() {
-            if let Some(dev) = self.arc_list.load().to_vec().get(i) {
+            if let Some(dev) = self.dev_list.load().get(i) {
                 match dev.stream {
                     Some(_) => format!("✓ : {}", dev.name),
                     None => format!("󰵙 : {}", dev.name),
@@ -204,7 +205,7 @@ impl App {
         let title = title_block("Volume");
         let vol = match self.list_state.selected() {
             Some(i) => {
-                if let Some(dev) = self.arc_list.load().to_vec().get(i) {
+                if let Some(dev) = self.dev_list.load().get(i) {
                     dev.volume
                 } else {
                     0
