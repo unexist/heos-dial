@@ -25,19 +25,11 @@ ST: {urn}\r\n\
 MX: 5\r\n\
 MAN: \"ssdp:discover\"\r\n\r\n" , urn = TARGET_URN);
 
-#[derive(Default)]
 pub struct Heos {
-    pub(crate) _devices: Vec<HeosDevice>,
 }
 
 impl Heos {
-    pub fn new() -> Self {
-        Self {
-            _devices: vec![]
-        }
-    }
-
-    pub async fn discover(&self) -> Result<impl Stream<Item = HeosDevice>>  {
+    pub async fn discover() -> Result<impl Stream<Item = HeosDevice>>  {
         let any: SocketAddr = ([0, 0, 0, 0], 0).into();
         let socket = UdpSocket::bind(any).await?;
         socket.join_multicast_v4(Ipv4Addr::new(239, 255, 255, 250),
@@ -69,8 +61,8 @@ impl Heos {
                 if let Ok(response) = get_next(&socket).await {
                     match Self::parse_discovery_response(&response) {
                         Ok(location) => {
-                            match Heos::parse_location(location.as_ref()) {
-                                Ok(url) => yield HeosDevice::new("", &*url, "0").unwrap(),
+                            match Self::parse_location(location.as_ref()) {
+                                Ok(url) => yield HeosDevice::new(&*url, &*url, "0").unwrap(),
                                 Err(err) => println!("Error parse location: {:#?}", err),
                             }
                         },

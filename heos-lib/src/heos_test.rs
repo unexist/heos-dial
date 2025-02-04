@@ -46,9 +46,7 @@ USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT
 
     #[tokio::test]
     async fn should_discover_at_least_one() {
-        let heos = Heos::new();
-
-        let devices = heos.discover().await
+        let devices = Heos::discover().await
             .expect("To discover devices");
         pin_mut!(devices);
 
