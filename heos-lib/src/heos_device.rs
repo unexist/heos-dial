@@ -42,6 +42,12 @@ impl HeosDevice {
 
         Ok(())
     }
+
+    pub async fn update(&mut self) -> Result<()> {
+        self.connect().await?;
+
+        Ok(())
+    }
 }
 
 impl HeosCommandHandler for HeosDevice {

@@ -25,6 +25,21 @@ mod heos_device_test {
     }
 
     #[tokio::test]
+    async fn should_update_own_info() {
+        let mut dev = HeosDevice::new("", TEST_DEVICE_IP, "")
+            .expect("Failed to create client");
+
+        assert_eq!(dev.name, "");
+        assert_eq!(dev.player_id, "");
+
+        dev.update().await
+            .expect("Failed to update client");
+
+        assert_eq!(dev.name, TEST_DEVICE_NAME);
+    }
+
+
+    #[tokio::test]
     async fn should_connect_and_get_players() {
         let mut dev = HeosDevice::new(TEST_DEVICE_NAME,
                                       TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID)
