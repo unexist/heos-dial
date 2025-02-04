@@ -10,23 +10,37 @@
 ///
 
 use app::App;
-use heos_lib::HeosDevice;
+use heos_lib::{Heos, HeosDevice};
 use arc_swap::ArcSwap;
 use std::sync::Arc;
+use futures::pin_mut;
+use futures_util::StreamExt;
 
 mod app;
-mod heos;
 
 #[tokio::main]
 async fn main() -> color_eyre::Result<()> {
     color_eyre::install()?;
 
-    let dev_list = Arc::new(ArcSwap::from_pointee(Vec::<HeosDevice>::new()));
+    let arc_list = Arc::new(ArcSwap::from_pointee(Vec::<HeosDevice>::new()));
+    let dev_list = Arc::clone(&arc_list);
 
-    heos::discover_devices(Arc::clone(&dev_list)).await;
+    tokio::spawn(async move {
+        let devices = Heos::discover().await
+            .expect("To discover devices");
+        pin_mut!(devices);
+
+        while let Some(dev) = devices.next().await {
+            let mut swap_list = dev_list.load().to_vec();
+
+            swap_list.push(dev);
+
+            dev_list.swap(Arc::from(swap_list));
+        }
+    });
 
     let terminal = ratatui::init();
-    let result = App::new(Arc::clone(&dev_list)).run(terminal);
+    let result = App::new(Arc::clone(&arc_list)).run(terminal);
 
     ratatui::restore();
 
