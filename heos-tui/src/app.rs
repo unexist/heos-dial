@@ -246,6 +246,7 @@ fn title_block(title: &str) -> Block {
     let title = Line::from(title).centered();
 
     Block::default()
+        .title(title)
         .borders(Borders::all())
         .border_set(symbols::border::PLAIN)
         .border_style(DEV_HEADER_STYLE)
