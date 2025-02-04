@@ -160,7 +160,9 @@ impl App {
             .border_style(DEV_HEADER_STYLE)
             .bg(NORMAL_ROW_BG);
 
-        let items: Vec<ListItem> = self.dev_list.load()
+        let dev_list = self.dev_list.load();
+
+        let items: Vec<ListItem> = dev_list
             .iter()
             .enumerate()
             .map(|(i, dev_item)| {
