@@ -26,7 +26,7 @@ async fn main() -> color_eyre::Result<()> {
     heos::discover_devices(Arc::clone(&dev_list)).await;
 
     let terminal = ratatui::init();
-    let result = App::new(Arc::clone(&dev_list)).run(terminal).await;
+    let result = App::new(Arc::clone(&dev_list)).run(terminal);
 
     ratatui::restore();
 
