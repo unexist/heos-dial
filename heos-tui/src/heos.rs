@@ -15,16 +15,18 @@ use std::sync::Arc;
 use heos_lib::{Heos, HeosDevice};
 use futures::StreamExt;
 
-pub(crate) async fn discover_devices(arc_list: Arc<ArcSwap<Vec<HeosDevice>>>) {
+pub(crate) async fn discover_devices(dev_list: Arc<ArcSwap<Vec<HeosDevice>>>) {
     let devices = Heos::new().discover().await
         .expect("To discover devices");
     pin_mut!(devices);
 
     match devices.next().await {
         Some(dev) => {
-            let mut dev_list = arc_list.load();
+            let mut swap_list = dev_list.load().to_vec();
 
-            dev_list.push(dev);
+            swap_list.push(dev);
+
+            dev_list.swap(Arc::from(swap_list));
         },
         None => println!("Failed to discover devices"),
     }
