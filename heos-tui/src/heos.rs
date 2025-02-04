@@ -22,6 +22,8 @@ pub(crate) async fn discover_devices(dev_list: Arc<ArcSwap<Vec<HeosDevice>>>) {
 
     match devices.next().await {
         Some(dev) => {
+            println!("Discovered device {:#?}", dev);
+
             let mut swap_list = dev_list.load().to_vec();
 
             swap_list.push(dev);
