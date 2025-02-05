@@ -413,6 +413,7 @@ dependencies = [
  "const_format",
  "futures-util",
  "gjson",
+ "lazy_static",
  "tokio",
 ]
 
