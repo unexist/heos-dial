@@ -161,14 +161,27 @@ impl App {
 
         let dev_list = self.dev_list.load();
 
-        let items: Vec<ListItem> = dev_list
+        let mut items: Vec<ListItem> = dev_list
             .iter()
             .enumerate()
             .map(|(i, dev_item)| {
                 let color = alternate_colors(i);
-                convert_dev_to_list_item(dev_item).bg(color)
+
+                let line = match dev_item.stream {
+                    Some(_) => {
+                        Line::styled(format!(" ✓ {}", dev_item.name), COMPLETED_TEXT_FG_COLOR)
+                    }
+                    None => Line::styled(format!(" 󰵙 {}", dev_item.name), TEXT_FG_COLOR),
+                };
+
+                ListItem::new(line).bg(color)
             })
             .collect();
+
+        // Check whether list is empty
+        if items.is_empty() {
+            items.push(ListItem::new("No devices found"));
+        }
 
         let list = List::new(items)
             .block(block)
@@ -230,17 +243,6 @@ const fn alternate_colors(i: usize) -> Color {
     } else {
         ALT_ROW_BG_COLOR
     }
-}
-
-fn convert_dev_to_list_item(value: &HeosDevice) -> ListItem {
-    let line = match value.stream {
-        Some(_) => {
-            Line::styled(format!(" ✓ {}", value.name), COMPLETED_TEXT_FG_COLOR)
-        }
-        None => Line::styled(format!(" 󰵙 {}", value.name), TEXT_FG_COLOR),
-    };
-
-    ListItem::new(line)
 }
 
 fn title_block(title: &str) -> Block {
