@@ -12,9 +12,18 @@
 #[cfg(test)]
 mod heos_test {
     use crate::heos::Heos;
-    use crate::constants::{TEST_DEVICE_IP, TEST_LOCATION_STR};
+    use crate::constants::{TEST_LOCATION_STR};
     use const_format::formatcp;
     use futures_util::{pin_mut, StreamExt};
+    use lazy_static::lazy_static;
+
+    #[macro_use]
+    extern crate lazy_static;
+
+    lazy_static! {
+        static ref DEV_IP: &'static str = std::env::var("TEST_DEVICE_IP")
+            .expect("Failed to get TEST_DEVICE_IP").as_str();
+    }
 
     #[ignore]
     #[test]
@@ -41,7 +50,7 @@ USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT
         let location = Heos::parse_location(TEST_LOCATION_STR)
             .expect("Failed to parse location");
 
-        assert_eq!(location, TEST_DEVICE_IP);
+        assert_eq!(location, *DEV_IP);
     }
 
     #[tokio::test]

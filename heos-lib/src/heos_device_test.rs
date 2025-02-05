@@ -11,22 +11,31 @@
 
 #[cfg(test)]
 mod heos_device_test {
-    use crate::constants::{TEST_DEVICE_IP, TEST_DEVICE_NAME, TEST_DEVICE_PLAYER_ID};
+    use lazy_static::lazy_static;
     use crate::heos_command::{HeosCommand, HeosCommandHandler};
     use crate::heos_reply::HeosReply;
     use crate::HeosDevice;
 
+    #[macro_use]
+    extern crate lazy_static;
+
+    lazy_static! {
+        static ref DEV_NAME: &'static str = std::env::var("TEST_DEVICE_NAME")
+            .expect("Failed to get TEST_DEVICE_NAME").as_str();
+        static ref DEV_IP: &'static str = std::env::var("TEST_DEVICE_IP")
+            .expect("Failed to get TEST_DEVICE_IP").as_str();
+    }
+
     #[test]
     fn should_create_valid_client() {
-        let dev = HeosDevice::new(TEST_DEVICE_NAME,
-                                  TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID);
+        let dev = HeosDevice::new(*DEV_NAME, *DEV_IP, "");
 
         assert!(dev.is_ok());
     }
 
     #[tokio::test]
     async fn should_update_own_info() {
-        let mut dev = HeosDevice::new("", TEST_DEVICE_IP, "")
+        let mut dev = HeosDevice::new("", *DEV_IP, "")
             .expect("Failed to create client");
 
         assert_eq!(dev.name, "");
@@ -35,14 +44,13 @@ mod heos_device_test {
         dev.update().await
             .expect("Failed to update client");
 
-        assert_eq!(dev.name, TEST_DEVICE_NAME);
+        assert_eq!(dev.name, *DEV_NAME);
     }
 
 
     #[tokio::test]
     async fn should_connect_and_get_players() {
-        let mut dev = HeosDevice::new(TEST_DEVICE_NAME,
-                                      TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID)
+        let mut dev = HeosDevice::new(*DEV_NAME, *DEV_IP, "")
             .expect("Failed to create client");
 
         dev.connect().await
@@ -62,8 +70,7 @@ mod heos_device_test {
 
     #[tokio::test]
     async fn should_connect_and_get_playing_media() {
-        let mut dev = HeosDevice::new(TEST_DEVICE_NAME,
-                                      TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID)
+        let mut dev = HeosDevice::new(*DEV_NAME, *DEV_IP, "")
             .expect("Failed to create client");
 
         dev.connect().await
@@ -89,8 +96,7 @@ mod heos_device_test {
 
     #[tokio::test]
     async fn should_connect_and_get_volume() {
-        let mut dev = HeosDevice::new(TEST_DEVICE_NAME,
-                                      TEST_DEVICE_IP, TEST_DEVICE_PLAYER_ID)
+        let mut dev = HeosDevice::new(*DEV_NAME, *DEV_IP, "")
             .expect("Failed to create client");
 
         dev.connect().await
