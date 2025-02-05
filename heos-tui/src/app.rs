@@ -38,7 +38,6 @@ const SELECTED_STYLE: Style = Style::new().bg(SLATE.c800).add_modifier(Modifier:
 const TEXT_FG_COLOR: Color = SLATE.c200;
 const COMPLETED_TEXT_FG_COLOR: Color = GREEN.c500;
 const GAUGE1_COLOR: Color = RED.c800;
-const CUSTOM_LABEL_COLOR: Color = SLATE.c200;
 
 pub struct App {
     should_exit: bool,
@@ -105,7 +104,7 @@ impl App {
         self.list_state.select_last();
     }
 
-    async fn toggle_status(&mut self) {
+    fn toggle_status(&mut self) {
         if let Some(i) = self.list_state.selected() {
             if let Some(item) = self.dev_list.load().get(i) {
                 println!("Selected status: {}", item.stream.is_some());
