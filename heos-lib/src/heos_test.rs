@@ -12,7 +12,6 @@
 #[cfg(test)]
 mod heos_test {
     use crate::heos::Heos;
-    use crate::constants::{TEST_LOCATION_STR};
     use const_format::formatcp;
     use futures_util::{pin_mut, StreamExt};
     use lazy_static::lazy_static;
@@ -23,15 +22,18 @@ mod heos_test {
     lazy_static! {
         static ref DEV_IP: &'static str = std::env::var("TEST_DEVICE_IP")
             .expect("Failed to get TEST_DEVICE_IP").as_str();
+
+        static ref DEV_LOCATION: &'static str =
+            formatcp!("http://{ip}:60006/upnp/desc/aios_device/aios_device.xml",
+                ip = std::env::var("TEST_DEVICE_IP").expect("Failed to get TEST_DEVICE_IP").as_str());
     }
 
-    #[ignore]
     #[test]
     fn should_parse_discovery_response() {
         const RAW_REPLY: &'static str = formatcp!("HTTP/1.1 200 OK\r\n\
 CACHE-CONTROL: max-age=180\r\n\
 EXT:\r\n\
-LOCATION: {location}\r\n\
+LOCATION: location\r\n\
 VERSIONS.UPNP.HEOS.COM: 10,668205267,801394619,363364703,1840750642,105553199,-316033077,1711326982,-838802320,-170053632,363364703\r\n\
 NETWORKID.UPNP.HEOS.COM: d424dda645d7\r\n\
 BOOTID.UPNP.ORG: 1947595085\r\n\
@@ -39,15 +41,15 @@ IPCACHE.URL.UPNP.HEOS.COM: /ajax/upnp/get_device_info\r\n\
 SERVER: LINUX UPnP/1.0 Denon-Heos/316763a47eba7769d9be106fb4f3617c5393a2b7\r\n\
 ST: urn:schemas-denon-com:device:ACT-Denon:1\r\n\
 USN: uuid:60f346a0-9018-49e7-b77e-4a14ad25b96f::urn:schemas-denon-com:device:ACT-Denon:1\r\n\r\n",
-            location = TEST_LOCATION_STR);
+            location = DEV_LOCATION);
 
         assert!(Heos::parse_discovery_response(RAW_REPLY)
-            .is_ok_and(|location| location == TEST_LOCATION_STR));
+            .is_ok_and(|location| location == *DEV_LOCATION));
     }
 
     #[test]
     fn should_parse_location() {
-        let location = Heos::parse_location(TEST_LOCATION_STR)
+        let location = Heos::parse_location(*DEV_LOCATION)
             .expect("Failed to parse location");
 
         assert_eq!(location, *DEV_IP);
