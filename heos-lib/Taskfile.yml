@@ -23,3 +23,7 @@ tasks:
       MOD: '_{{index .MATCH 0}}'
     cmds:
       - cargo test heos{{.MOD}}_test -- --nocapture
+
+  clean:
+    cmds:
+      - cargo clean

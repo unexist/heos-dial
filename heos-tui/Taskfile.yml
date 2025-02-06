@@ -12,3 +12,7 @@ tasks:
   run:
     cmds:
       - cargo run
+
+  clean:
+    cmds:
+      - cargo clean
