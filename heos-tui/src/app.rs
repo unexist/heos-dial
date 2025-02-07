@@ -169,9 +169,9 @@ impl App {
 
                 let line = match dev_item.stream {
                     Some(_) => {
-                        Line::styled(format!(" ✓ {}", dev_item.name), COMPLETED_TEXT_FG_COLOR)
+                        Line::styled(format!(" 🔊 {}", dev_item.name), COMPLETED_TEXT_FG_COLOR)
                     }
-                    None => Line::styled(format!(" 󰵙 {}", dev_item.name), TEXT_FG_COLOR),
+                    None => Line::styled(format!(" 🔈 {}", dev_item.name), TEXT_FG_COLOR),
                 };
 
                 ListItem::new(line).bg(color)
@@ -196,8 +196,8 @@ impl App {
         let info = if let Some(i) = self.list_state.selected() {
             if let Some(dev) = self.dev_list.load().get(i) {
                 match dev.stream {
-                    Some(_) => format!("✓ : {}", dev.name),
-                    None => format!("󰵙 : {}", dev.name),
+                    Some(_) => format!("🔊 : {}", dev.name),
+                    None => format!(" 🔈 : {}", dev.name),
                 }
             } else {
                 "Nothing selected...".to_string()
