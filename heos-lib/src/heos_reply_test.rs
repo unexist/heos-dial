@@ -15,10 +15,15 @@ mod heos_reply_test {
     use crate::heos_reply::HeosReply;
     use pretty_assertions::assert_eq;
 
+    macro_rules! test_asset {
+        ($s:expr) => {
+            include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/", $s))
+        }
+    }
+
     #[test]
     fn should_parse_get_players_reply() {
-        let input = include_str!(
-            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/get_players.json"));
+        let input = test_asset!("get_players.json");
         let reply = HeosReply::parse(input).expect("Failed to parse");
 
         if let HeosReply::Players(success, devices) = reply {
@@ -31,8 +36,7 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_set_play_state_reply() {
-        let input = include_str!(
-            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/set_play_state.json"));
+        let input = test_asset!("set_play_state.json");
         let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
@@ -41,8 +45,7 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_get_play_state_reply() {
-        let input = include_str!(
-            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/get_play_state.json"));
+        let input = test_asset!("get_play_state.json");
         let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
@@ -51,8 +54,7 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_play_next_reply() {
-        let input = include_str!(
-            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/play_next.json"));
+        let input = test_asset!("play_next.json");
         let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
@@ -61,8 +63,7 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_play_previous_reply() {
-        let input = include_str!(
-            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/play_previous.json"));
+        let input = test_asset!("play_previous.json");
         let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
@@ -71,8 +72,7 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_get_now_playing_media_reply() {
-        let input = include_str!(
-            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/get_now_playing_media.json"));
+        let input = test_asset!("get_now_playing_media.json");
         let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
@@ -81,8 +81,7 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_set_volume_reply() {
-        let input = include_str!(
-            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/set_volume.json"));
+        let input = test_asset!("set_volume.json");
         let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
@@ -91,8 +90,7 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_get_volume_reply() {
-        let input = include_str!(
-            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/get_volume.json"));
+        let input = test_asset!("get_volume.json");
         let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
@@ -101,8 +99,7 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_message() {
-        let input = include_str!(
-            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/message.json"));
+        let input = test_asset!("message.json");
         let json = gjson::parse(input);
         let attrs: HashMap<_, _> = HeosReply::parse_message(&json, "message");
 
@@ -114,8 +111,7 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_generic_payload() {
-        let input = include_str!(
-            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/get_now_playing_media.json"));
+        let input = test_asset!("get_now_playing_media.json");
         let json = gjson::parse(input);
         let payload: HashMap<_, _> = HeosReply::parse_generic_payload(&json, "payload");
 
@@ -125,7 +121,7 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_players_payload() {
-        let input = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/get_players.json"));
+        let input = test_asset!("get_players.json");
         let json = gjson::parse(input);
         let devices = HeosReply::parse_players_payload(&json, "payload");
 
