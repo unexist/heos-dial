@@ -8,6 +8,7 @@ license-file = "LICENSE"
 homepage = "https://unexist.dev"
 repository = "https://hg.unexist.dev/heos-dial"
 edition = "2021"
+exclude = ["/test_assets", "/slumber.yml", "/Taskfile.yml"]
 
 [dependencies]
 anyhow = "1.0.95"
@@ -18,4 +19,4 @@ futures-util = "0.3.31"
 gjson = "0.8.1"
 
 [dev-dependencies]
-lazy_static = "1.5.0"
+pretty_assertions = "1.4.1"
