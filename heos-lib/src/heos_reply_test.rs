@@ -11,17 +11,9 @@
 
 #[cfg(test)]
 mod heos_reply_test {
-    use lazy_static::lazy_static;
     use std::collections::HashMap;
     use crate::heos_reply::HeosReply;
-
-    #[macro_use]
-    extern crate lazy_static;
-
-    lazy_static! {
-        static ref DEV_IP: &'static str = std::env::var("TEST_DEVICE_IP")
-            .expect("Failed to get TEST_DEVICE_IP").as_str();
-    }
+    use pretty_assertions::assert_eq;
 
     const JSON_GET_PLAYERS_REPLY: &'static str = r###"{"heos": {
 "command": "player/get_players",
@@ -90,8 +82,9 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_get_players_reply() {
-        let reply = HeosReply::parse(JSON_GET_PLAYERS_REPLY)
-            .expect("Failed to parse");
+        let input = include_str!("test_assets/get_players_reply.json")
+            .expect("Could not read file");
+        let reply = HeosReply::parse(input).expect("Failed to parse");
 
         if let HeosReply::Players(success, devices) = reply {
             assert!(success);
@@ -182,6 +175,6 @@ mod heos_reply_test {
         let devices = HeosReply::parse_players_payload(&json, "payload");
 
         assert_eq!(devices.len(), 2);
-        assert_eq!(devices[0].base_url, *DEV_IP);
+        assert_eq!(devices[0].base_url, env!("TEST_DEVICE_IP"));
     }
 }

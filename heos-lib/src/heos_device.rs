@@ -37,10 +37,14 @@ impl HeosDevice {
     }
 
     pub async fn connect(&mut self) -> Result<()> {
-        self.stream = Some(TcpStream::connect(
-            format!("{}:{}", self.base_url, DEFAULT_PORT)).await?);
-
-        Ok(())
+        /* Sanity check to prevent re-connection */
+        Ok(match self.stream {
+            Some(_) => (),
+            None => {
+                self.stream = Some(TcpStream::connect(
+                    format!("{}:{}", self.base_url, DEFAULT_PORT)).await?)
+            }
+        })
     }
 
     pub async fn update(&mut self) -> Result<()> {

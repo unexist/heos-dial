@@ -12,6 +12,7 @@
 #[cfg(test)]
 mod heos_commands_test {
     use crate::heos_command::HeosCommand;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn should_generate_valid_heos_commands() {

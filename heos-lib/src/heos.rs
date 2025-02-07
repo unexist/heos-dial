@@ -62,7 +62,7 @@ impl Heos {
                     match Self::parse_discovery_response(&response) {
                         Ok(location) => {
                             match Self::parse_location(location.as_ref()) {
-                                Ok(url) => yield HeosDevice::new(&*url, &*url, "0").unwrap(),
+                                Ok(url) => yield HeosDevice::new(&*url, &*url, "0").unwrap(), // FIXME: ? doesn't work
                                 Err(err) => println!("Error parse location: {:#?}", err),
                             }
                         },
