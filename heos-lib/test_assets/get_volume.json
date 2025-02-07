@@ -1,0 +1,7 @@
+{
+  "heos": {
+    "command": "player/get_volume",
+    "result": "success",
+    "message": "pid='player_id'&level='vol_level'"
+  }
+}

@@ -15,75 +15,10 @@ mod heos_reply_test {
     use crate::heos_reply::HeosReply;
     use pretty_assertions::assert_eq;
 
-    const JSON_GET_PLAYERS_REPLY: &'static str = r###"{"heos": {
-"command": "player/get_players",
-"result": "success",
-"message": ""},
-"payload": [
-{"name": "Studio1", "pid": 844263156, "gid": -622728288, "model": "Denon Home 350", "version": "3.34.425", "ip": "10.0.8.24", "network": "wifi", "lineout": 0, "serial": "BME27220818140"},
-{"name": "Living Room (AVR)", "pid": -474905601, "model": "Denon AVR-S660H", "version": "3.34.410", "ip": "10.0.8.37", "network": "wired", "lineout": 0, "serial": "DBNM052317669"}
-]}\r\n"###;
-
-    const JSON_SET_PLAY_STATE_REPLY: &'static str = r###"{"heos": {
-"command": "player/get_play_state",
-"result": "success",
-"message": "pid='player_id'&state='play_state'"
-}\r\n"###;
-
-    const JSON_GET_PLAY_STATE_REPLY: &'static str = r###"{"heos": {
-"command": "player/set_play_state",
-"result": "success",
-"message": "pid='player_id'&state='play_state'"
-}\r\n"###;
-
-    const JSON_PLAY_NEXT_REPLY: &'static str = r###"{"heos": {
-"command": "player/play_next",
-"result": "success",
-"message": "pid=player_id"
-}\r\n"###;
-
-    const JSON_PLAY_PREVIOUS_REPLY: &'static str = r###"{"heos": {
-"command": "player/play_previous",
-"result": "success",
-"message": "pid=player_id"
-}\r\n"###;
-
-    const JSON_GET_NOW_PLAYING_MEDIA_REPLY: &'static str = r###"{"heos": {
-"command": "player/get_now_playing_media",
-"result": "success",
-"message": "pid='player_id'"
-},
-"payload": {
-"type": "'song'",
-"song": "'song name'",
-"album": "'album name'",
-"artist": "'artist name'",
-"image_url": "'image url'",
-"mid": "'media id'",
-"qid": "'queue id'",
-"sid": source_id
-"album_id": "Album Id'"
-}
-}\r\n"###;
-
-    const JSON_SET_VOLUME_REPLY: &'static str = r###"{"heos": {
-"command": "player/set_volume",
-"result": "success",
-"message": "pid='player_id'&level='vol_level'"
-}\r\n"###;
-
-    const JSON_GET_VOLUME_REPLY: &'static str = r###"{"heos": {
-"command": "player/get_volume",
-"result": "success",
-"message": "pid='player_id'&level='vol_level'"
-}\r\n"###;
-
-    const JSON_MESSAGE: &'static str = r###"{"message": "pid='player_id'&repeat=on_all_or_on_one_or_off&shuffle=on_or_off"}"###;
-
     #[test]
     fn should_parse_get_players_reply() {
-        let input = include_str!("test_assets/get_players_reply.json")
-            .expect("Could not read file");
+        let input = include_str!(
+            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/get_players.json"));
         let reply = HeosReply::parse(input).expect("Failed to parse");
 
         if let HeosReply::Players(success, devices) = reply {
@@ -96,7 +31,9 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_set_play_state_reply() {
-        let reply = HeosReply::parse(JSON_SET_PLAY_STATE_REPLY)
+        let input = include_str!(
+            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/set_play_state.json"));
+        let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::PlayState { .. }));
@@ -104,7 +41,9 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_get_play_state_reply() {
-        let reply = HeosReply::parse(JSON_GET_PLAY_STATE_REPLY)
+        let input = include_str!(
+            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/get_play_state.json"));
+        let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::PlayState { .. }));
@@ -112,7 +51,9 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_play_next_reply() {
-        let reply = HeosReply::parse(JSON_PLAY_NEXT_REPLY)
+        let input = include_str!(
+            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/play_next.json"));
+        let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::PlayAction { .. }));
@@ -120,7 +61,9 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_play_previous_reply() {
-        let reply = HeosReply::parse(JSON_PLAY_PREVIOUS_REPLY)
+        let input = include_str!(
+            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/play_previous.json"));
+        let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::PlayAction { .. }));
@@ -128,7 +71,9 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_get_now_playing_media_reply() {
-        let reply = HeosReply::parse(JSON_GET_NOW_PLAYING_MEDIA_REPLY)
+        let input = include_str!(
+            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/get_now_playing_media.json"));
+        let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::PlayingMedia { .. }));
@@ -136,7 +81,9 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_set_volume_reply() {
-        let reply = HeosReply::parse(JSON_SET_VOLUME_REPLY)
+        let input = include_str!(
+            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/set_volume.json"));
+        let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::Volume { .. }));
@@ -144,7 +91,9 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_get_volume_reply() {
-        let reply = HeosReply::parse(JSON_GET_VOLUME_REPLY)
+        let input = include_str!(
+            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/get_volume.json"));
+        let reply = HeosReply::parse(input)
             .expect("Failed to parse");
 
         assert!(matches!(reply, HeosReply::Volume { .. }));
@@ -152,7 +101,9 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_message() {
-        let json = gjson::parse(JSON_MESSAGE);
+        let input = include_str!(
+            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/message.json"));
+        let json = gjson::parse(input);
         let attrs: HashMap<_, _> = HeosReply::parse_message(&json, "message");
 
         assert_eq!(attrs.get("pid").expect("Parsing pid failed"), "'player_id'");
@@ -163,15 +114,19 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_generic_payload() {
-        let json = gjson::parse(JSON_GET_NOW_PLAYING_MEDIA_REPLY);
+        let input = include_str!(
+            concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/get_now_playing_media.json"));
+        let json = gjson::parse(input);
         let payload: HashMap<_, _> = HeosReply::parse_generic_payload(&json, "payload");
 
-        assert_eq!(payload.get("artist").expect("Parsing artist failed"), "artist name");
+        assert_eq!(payload.get("artist").expect("Parsing artist failed"), "'artist name'");
+        assert_eq!(payload.get("album").expect("Parsing album failed"), "'album name'");
     }
 
     #[test]
     fn should_parse_players_payload() {
-        let json = gjson::parse(JSON_GET_PLAYERS_REPLY);
+        let input = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/get_players.json"));
+        let json = gjson::parse(input);
         let devices = HeosReply::parse_players_payload(&json, "payload");
 
         assert_eq!(devices.len(), 2);

@@ -1,0 +1,18 @@
+{
+  "heos": {
+    "command": "player/get_now_playing_media",
+    "result": "success",
+    "message": "pid='player_id'"
+  },
+  "payload": {
+    "type": "'song'",
+    "song": "'song name'",
+    "album": "'album name'",
+    "artist": "'artist name'",
+    "image_url": "'image url'",
+    "mid": "'media id'",
+    "qid": "'queue id'",
+    "sid": "source_id",
+    "album_id": "Album Id'"
+  }
+}

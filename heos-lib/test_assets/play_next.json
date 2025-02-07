@@ -1,0 +1,7 @@
+{
+  "heos": {
+    "command": "player/play_next",
+    "result": "success",
+    "message": "pid=player_id"
+  }
+}
