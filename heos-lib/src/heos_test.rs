@@ -12,28 +12,30 @@
 #[cfg(test)]
 mod heos_test {
     use crate::heos::Heos;
+    use crate::test_asset;
     use const_format::formatcp;
     use futures_util::{pin_mut, StreamExt};
     use pretty_assertions::assert_eq;
 
     #[test]
     fn should_parse_discovery_response() {
-        let reply = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/discovery_response.txt"));
         let location = formatcp!("http://{ip}:60006/upnp/desc/aios_device/aios_device.xml",
                 ip = env!("TEST_DEVICE_IP"));
 
-        assert!(Heos::parse_discovery_response(reply)
-            .is_ok_and(|parsed_location| parsed_location == location));
+        let parsed  = Heos::parse_discovery_response(test_asset!("discovery_response.txt"))
+            .expect("Failed to parse location");
+
+        assert_eq!(parsed, location);
     }
 
     #[test]
     fn should_parse_location() {
         let input = formatcp!("http://{ip}:60006/upnp/desc/aios_device/aios_device.xml",
                 ip = env!("TEST_DEVICE_IP"));
-        let location = Heos::parse_location(input)
+        let parsed = Heos::parse_location(input)
             .expect("Failed to parse location");
 
-        assert_eq!(location, *env!("TEST_DEVICE_IP"));
+        assert_eq!(parsed, *env!("TEST_DEVICE_IP"));
     }
 
     #[test]

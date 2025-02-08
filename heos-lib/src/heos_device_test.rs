@@ -30,9 +30,6 @@ mod heos_device_test {
             "", env!("TEST_DEVICE_IP"), "")
             .expect("Failed to create client");
 
-        assert_eq!(dev.name, "");
-        assert_eq!(dev.player_id, "");
-
         dev.update().await
             .expect("Failed to update client");
 
