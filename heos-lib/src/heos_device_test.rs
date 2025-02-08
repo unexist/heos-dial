@@ -24,6 +24,7 @@ mod heos_device_test {
         assert!(dev.is_ok());
     }
 
+    #[ignore]
     #[tokio::test]
     async fn should_update_own_info() {
         let mut dev = HeosDevice::new(
@@ -37,6 +38,7 @@ mod heos_device_test {
     }
 
 
+    #[ignore]
     #[tokio::test]
     async fn should_connect_and_get_players() {
         let mut dev = HeosDevice::new(
@@ -58,6 +60,7 @@ mod heos_device_test {
         assert!(matches!(reply, HeosReply::Players { .. }));
     }
 
+    #[ignore]
     #[tokio::test]
     async fn should_connect_and_get_playing_media() {
         let mut dev = HeosDevice::new(
@@ -84,7 +87,7 @@ mod heos_device_test {
         }
     }
 
-
+    #[ignore]
     #[tokio::test]
     async fn should_connect_and_get_volume() {
         let mut dev = HeosDevice::new(

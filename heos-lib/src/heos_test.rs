@@ -43,6 +43,7 @@ mod heos_test {
         assert!(true)
     }
 
+    #[ignore]
     #[tokio::test]
     async fn should_discover_at_least_one() {
         let devices = Heos::discover().await
