@@ -19,6 +19,7 @@ mod heos_test;
 mod heos_device_test;
 mod heos_command_test;
 mod heos_reply_test;
+mod macros;
 
 pub use heos::Heos;
 pub use heos_device::HeosDevice;

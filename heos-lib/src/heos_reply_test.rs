@@ -14,12 +14,7 @@ mod heos_reply_test {
     use std::collections::HashMap;
     use crate::heos_reply::HeosReply;
     use pretty_assertions::assert_eq;
-
-    macro_rules! test_asset {
-        ($s:expr) => {
-            include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/test_assets/", $s))
-        }
-    }
+    use crate::test_asset;
 
     #[test]
     fn should_parse_get_players_reply() {
