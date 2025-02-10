@@ -29,6 +29,19 @@ mod heos_reply_test {
         }
     }
 
+      #[test]
+    fn should_parse_get_groups_reply() {
+        let reply = HeosReply::parse(test_asset!("get_groups.json"))
+            .expect("Failed to parse");
+
+        if let HeosReply::Groups(success, groups) = reply {
+            assert!(success);
+            assert_eq!(groups.len(), 2);
+        } else {
+            panic!("Wrong reply type");
+        }
+    }
+
     #[test]
     fn should_parse_set_play_state_reply() {
         let reply = HeosReply::parse(test_asset!("set_play_state.json"))

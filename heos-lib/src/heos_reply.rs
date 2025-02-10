@@ -12,11 +12,13 @@
 use anyhow::{anyhow, Result};
 use gjson::Value;
 use std::collections::HashMap;
+use crate::heos_group::HeosGroup;
 use crate::HeosDevice;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum HeosReply {
     Players(bool, Vec<HeosDevice>),
+    Groups(bool, Vec<HeosGroup>),
     PlayState(bool, HashMap<String, String>),
     PlayAction(bool, HashMap<String, String>),
     PlayingMedia(bool, HashMap<String, String>),
