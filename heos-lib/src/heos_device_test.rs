@@ -24,6 +24,13 @@ mod heos_device_test {
             .expect("Failed to create device")
     }
 
+    #[rstest]
+    fn should_clone_and_compare_with_itself(heos_device: HeosDevice) {
+        let cloned = heos_device.clone();
+
+        assert_eq!(heos_device, cloned);
+    }
+
     #[ignore]
     #[rstest]
     #[tokio::test]
