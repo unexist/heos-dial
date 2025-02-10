@@ -14,19 +14,19 @@ tasks:
 
   test-full:
     cmds:
-      - cargo test -- --include--ignored
+      - cargo test -- --include-ignored
 
   test-*:
     vars:
       MOD: '_{{index .MATCH 0}}'
     cmds:
-      - cargo test heos{{.MOD}}_test -- --include--ignored
+      - cargo test heos{{.MOD}}_test -- --include-ignored
 
   cap-*:
     vars:
       MOD: '_{{index .MATCH 0}}'
     cmds:
-      - cargo test heos{{.MOD}}_test -- --nocapture --include--ignored
+      - cargo test heos{{.MOD}}_test -- --nocapture --include-ignored
 
   clean:
     cmds:
