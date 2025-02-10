@@ -35,6 +35,11 @@ impl HeosReply {
                 Self::parse_players_payload(&json, "payload")
             )),
 
+            "player/get_groups" => Ok(HeosReply::Groups(
+                "success" == json.get("heos.result").str(),
+                Self::parse_groups_payload(&json, "payload")
+            )),
+
             "player/get_play_state" | "player/set_play_state" => Ok(HeosReply::PlayState(
                 "success" == json.get("heos.result").str(),
                 Self::parse_message(&json, "heos.message")
@@ -85,6 +90,19 @@ impl HeosReply {
                 HeosDevice::new(v.get("name").str(),
                                 v.get("ip").str(),
                                 v.get("pid").str()).unwrap()
+            })
+            .collect()
+    }
+
+    pub(crate) fn parse_groups_payload(json: &Value, path: &str) -> Vec<HeosGroup> {
+        json.get(path).array().iter()
+            .map(|v| {
+                let mut group = HeosGroup::new(v.get("name").str(),
+                                               v.get("gid").str());
+
+                group.players = Some(Self::parse_players_payload(v, "players"));
+
+                group
             })
             .collect()
     }

@@ -36,7 +36,7 @@ mod heos_reply_test {
 
         if let HeosReply::Groups(success, groups) = reply {
             assert!(success);
-            assert_eq!(groups.len(), 2);
+            assert_eq!(groups.len(), 1);
         } else {
             panic!("Wrong reply type");
         }
@@ -125,5 +125,14 @@ mod heos_reply_test {
 
         assert_eq!(devices.len(), 2);
         assert_eq!(devices[0].base_url, env!("TEST_DEVICE_IP"));
+    }
+
+    #[test]
+    fn should_parse_groups_payload() {
+        let json = gjson::parse(test_asset!("get_groups.json"));
+        let groups = HeosReply::parse_players_payload(&json, "payload");
+
+        assert_eq!(groups.len(), 1);
+        assert_eq!(groups[0].name, env!("TEST_GROUP_NAME"));
     }
 }
