@@ -20,3 +20,4 @@ gjson = "0.8.1"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
+rstest = "0.24.0"
