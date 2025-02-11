@@ -12,17 +12,18 @@
 pub mod constants;
 pub mod heos;
 pub mod heos_device;
+pub mod heos_group;
 pub mod heos_command;
 pub mod heos_reply;
+mod macros;
 
 mod heos_test;
 mod heos_device_test;
+mod heos_group_test;
 mod heos_command_test;
 mod heos_reply_test;
-mod macros;
-mod heos_group;
-mod heos_group_test;
 
 pub use heos::Heos;
 pub use heos_device::HeosDevice;
+pub use heos_group::HeosGroup;
 pub use heos_reply::HeosReply;
