@@ -19,7 +19,7 @@ mod heos_reply_test {
     #[test]
     fn should_parse_get_players_reply() {
         let reply = HeosReply::parse(test_asset!("get_players.json"))
-            .expect("Failed to parse");
+            .expect("Failed to parse get_players.json");
 
         if let HeosReply::Players(success, devices) = reply {
             assert!(success);
@@ -30,22 +30,9 @@ mod heos_reply_test {
     }
 
     #[test]
-    fn should_parse_get_player_info_reply() {
-        let reply = HeosReply::parse(test_asset!("get_player_info.json"))
-            .expect("Failed to parse");
-
-        if let HeosReply::PlayerInfo(success, device) = reply {
-            assert!(success);
-            assert_eq!(device.name, env!("TEST_DEVICE_NAME"));
-        } else {
-            panic!("Wrong reply type");
-        }
-    }
-
-      #[test]
     fn should_parse_get_groups_reply() {
         let reply = HeosReply::parse(test_asset!("get_groups.json"))
-            .expect("Failed to parse");
+            .expect("Failed to parse get_groups.json");
 
         if let HeosReply::Groups(success, groups) = reply {
             assert!(success);
@@ -56,9 +43,22 @@ mod heos_reply_test {
     }
 
     #[test]
+    fn should_parse_get_player_info_reply() {
+        let reply = HeosReply::parse(test_asset!("get_player_info.json"))
+            .expect("Failed to parse get_player_info.json");
+
+        if let HeosReply::PlayerInfo(success, device) = reply {
+            assert!(success);
+            assert_eq!(device.name, env!("TEST_DEVICE_NAME"));
+        } else {
+            panic!("Wrong reply type");
+        }
+    }
+
+    #[test]
     fn should_parse_get_group_info_reply() {
         let reply = HeosReply::parse(test_asset!("get_group_info.json"))
-            .expect("Failed to parse");
+            .expect("Failed to parse get_group_info.json");
 
         if let HeosReply::GroupInfo(success, group) = reply {
             assert!(success);
@@ -71,7 +71,7 @@ mod heos_reply_test {
     #[test]
     fn should_parse_set_play_state_reply() {
         let reply = HeosReply::parse(test_asset!("set_play_state.json"))
-            .expect("Failed to parse");
+            .expect("Failed to parse set_play_state.json");
 
         assert!(matches!(reply, HeosReply::PlayState { .. }));
     }
@@ -79,7 +79,7 @@ mod heos_reply_test {
     #[test]
     fn should_parse_get_play_state_reply() {
         let reply = HeosReply::parse(test_asset!("get_play_state.json"))
-            .expect("Failed to parse");
+            .expect("Failed to parse get_play_state.json");
 
         assert!(matches!(reply, HeosReply::PlayState { .. }));
     }
@@ -87,7 +87,7 @@ mod heos_reply_test {
     #[test]
     fn should_parse_play_next_reply() {
         let reply = HeosReply::parse(test_asset!("play_next.json"))
-            .expect("Failed to parse");
+            .expect("Failed to parse play_next.json");
 
         assert!(matches!(reply, HeosReply::PlayAction { .. }));
     }
@@ -95,7 +95,7 @@ mod heos_reply_test {
     #[test]
     fn should_parse_play_previous_reply() {
         let reply = HeosReply::parse(test_asset!("play_previous.json"))
-            .expect("Failed to parse");
+            .expect("Failed to parse play_previous.json");
 
         assert!(matches!(reply, HeosReply::PlayAction { .. }));
     }
@@ -103,7 +103,7 @@ mod heos_reply_test {
     #[test]
     fn should_parse_get_now_playing_media_reply() {
         let reply = HeosReply::parse(test_asset!("get_now_playing_media.json"))
-            .expect("Failed to parse");
+            .expect("Failed to parse get_now_playing_media.json");
 
         assert!(matches!(reply, HeosReply::PlayingMedia { .. }));
     }
@@ -111,7 +111,7 @@ mod heos_reply_test {
     #[test]
     fn should_parse_set_volume_reply() {
         let reply = HeosReply::parse(test_asset!("set_volume.json"))
-            .expect("Failed to parse");
+            .expect("Failed to parse set_volume.json");
 
         assert!(matches!(reply, HeosReply::Volume { .. }));
     }
@@ -119,7 +119,7 @@ mod heos_reply_test {
     #[test]
     fn should_parse_get_volume_reply() {
         let reply = HeosReply::parse(test_asset!("get_volume.json"))
-            .expect("Failed to parse");
+            .expect("Failed to parse get_volume.json");
 
         assert!(matches!(reply, HeosReply::Volume { .. }));
     }
