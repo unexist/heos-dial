@@ -130,9 +130,10 @@ mod heos_reply_test {
     #[test]
     fn should_parse_groups_payload() {
         let json = gjson::parse(test_asset!("get_groups.json"));
-        let groups = HeosReply::parse_players_payload(&json, "payload");
+        let groups = HeosReply::parse_groups_payload(&json, "payload");
 
         assert_eq!(groups.len(), 1);
-        assert_eq!(groups[0].name, env!("TEST_GROUP_NAME"));
+        assert_eq!(groups[0].name, format!("'{}'", env!("TEST_GROUP_NAME")));
+        assert!(groups[0].players.is_some());
     }
 }
