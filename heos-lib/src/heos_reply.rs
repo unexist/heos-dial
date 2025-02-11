@@ -19,6 +19,8 @@ use crate::HeosDevice;
 pub enum HeosReply {
     Players(bool, Vec<HeosDevice>),
     Groups(bool, Vec<HeosGroup>),
+    PlayerInfo(bool, HeosDevice),
+    GroupInfo(bool, HeosGroup),
     PlayState(bool, HashMap<String, String>),
     PlayAction(bool, HashMap<String, String>),
     PlayingMedia(bool, HashMap<String, String>),
@@ -38,6 +40,16 @@ impl HeosReply {
             "player/get_groups" => Ok(HeosReply::Groups(
                 "success" == json.get("heos.result").str(),
                 Self::parse_groups_payload(&json, "payload")
+            )),
+
+            "player/get_player_info" => Ok(HeosReply::PlayerInfo(
+                "success" == json.get("heos.result").str(),
+                Self::parse_player(&json.get("payload"))
+            )),
+
+            "player/get_group_info" => Ok(HeosReply::GroupInfo(
+                "success" == json.get("heos.result").str(),
+                Self::parse_group(&json.get("payload"))
             )),
 
             "player/get_play_state" | "player/set_play_state" => Ok(HeosReply::PlayState(
@@ -74,6 +86,18 @@ impl HeosReply {
             .collect()
     }
 
+    pub fn parse_player(json: &Value) -> HeosDevice {
+        HeosDevice::new(json.get("name").str(),
+                        json.get("ip").str(),
+                        json.get("pid").str()).unwrap()
+    }
+
+    pub fn parse_group(json: &Value) -> HeosGroup {
+        HeosGroup::new(json.get("name").str(),
+                       json.get("gid").str())
+    }
+
+
     pub(crate) fn parse_generic_payload(json: &Value, path: &str) -> HashMap<String, String> {
         let mut payload: HashMap<String, String> = HashMap::new();
 
@@ -86,19 +110,14 @@ impl HeosReply {
 
     pub(crate) fn parse_players_payload(json: &Value, path: &str) -> Vec<HeosDevice> {
         json.get(path).array().iter()
-            .map(|v| {
-                HeosDevice::new(v.get("name").str(),
-                                v.get("ip").str(),
-                                v.get("pid").str()).unwrap()
-            })
+            .map(|v| Self::parse_player(v))
             .collect()
     }
 
     pub(crate) fn parse_groups_payload(json: &Value, path: &str) -> Vec<HeosGroup> {
         json.get(path).array().iter()
             .map(|v| {
-                let mut group = HeosGroup::new(v.get("name").str(),
-                                               v.get("gid").str());
+                let mut group = Self::parse_group(v);
 
                 group.players = Some(Self::parse_players_payload(v, "players"));
 
