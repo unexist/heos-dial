@@ -1,0 +1,18 @@
+{
+  "heos": {
+    "command": "player/get_player_info",
+    "result": "success",
+    "message": "pid='player_id'"
+  },
+  "payload": {
+    "name": "'player name'",
+    "pid": "player id'",
+    "gid": "group id'",
+    "model": "'player model'",
+    "version": "'player version'",
+    "network": "wired",
+    "lineout": "level type",
+    "control": "control option",
+    "serial": "serial number"
+  }
+}
