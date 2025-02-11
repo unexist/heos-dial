@@ -41,7 +41,6 @@ mod heos_device_test {
         assert_eq!(heos_device.name, env!("TEST_DEVICE_NAME"));
     }
 
-
     #[ignore]
     #[rstest]
     #[tokio::test]

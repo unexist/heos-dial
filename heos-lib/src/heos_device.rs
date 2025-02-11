@@ -50,6 +50,19 @@ impl HeosDevice {
     pub async fn update(&mut self) -> Result<()> {
         self.connect().await?;
 
+        let cmd = HeosCommand::new()
+            .group("player")
+            .cmd("get_player_info");
+
+        let reply = self.send_command(&cmd).await?;
+
+        if let HeosReply::PlayerInfo(success, device) = reply {
+            if success {
+                self.name = device.name;
+                self.player_id = device.player_id;
+            }
+        }
+
         Ok(())
     }
 }
