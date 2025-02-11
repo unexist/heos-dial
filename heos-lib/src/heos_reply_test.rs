@@ -29,6 +29,19 @@ mod heos_reply_test {
         }
     }
 
+    #[test]
+    fn should_parse_get_player_info_reply() {
+        let reply = HeosReply::parse(test_asset!("get_player_info.json"))
+            .expect("Failed to parse");
+
+        if let HeosReply::PlayerInfo(success, device) = reply {
+            assert!(success);
+            assert_eq!(device.name, env!("TEST_DEVICE_NAME"));
+        } else {
+            panic!("Wrong reply type");
+        }
+    }
+
       #[test]
     fn should_parse_get_groups_reply() {
         let reply = HeosReply::parse(test_asset!("get_groups.json"))
@@ -37,6 +50,19 @@ mod heos_reply_test {
         if let HeosReply::Groups(success, groups) = reply {
             assert!(success);
             assert_eq!(groups.len(), 1);
+        } else {
+            panic!("Wrong reply type");
+        }
+    }
+
+    #[test]
+    fn should_parse_get_group_info_reply() {
+        let reply = HeosReply::parse(test_asset!("get_group_info.json"))
+            .expect("Failed to parse");
+
+        if let HeosReply::GroupInfo(success, group) = reply {
+            assert!(success);
+            assert_eq!(group.name, env!("TEST_GROUP_NAME"));
         } else {
             panic!("Wrong reply type");
         }
