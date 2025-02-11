@@ -9,13 +9,14 @@
 /// See the file LICENSE for details.
 ///
 
-pub mod constants;
+mod constants;
+mod macros;
+
 pub mod heos;
 pub mod heos_device;
 pub mod heos_group;
 pub mod heos_command;
 pub mod heos_reply;
-mod macros;
 
 mod heos_test;
 mod heos_device_test;
