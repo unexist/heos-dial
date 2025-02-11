@@ -10,7 +10,7 @@
 ///
 
 #[cfg(test)]
-mod heos_device_test {
+mod heos_group_test {
     use pretty_assertions::assert_eq;
     use rstest::{fixture, rstest};
     use crate::heos_group::HeosGroup;
