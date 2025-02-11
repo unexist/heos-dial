@@ -38,11 +38,6 @@ mod heos_test {
         assert_eq!(parsed, *env!("TEST_DEVICE_IP"));
     }
 
-    #[test]
-    fn should_parse_device_description() {
-        assert!(true)
-    }
-
     #[ignore]
     #[tokio::test]
     async fn should_discover_at_least_one() {
