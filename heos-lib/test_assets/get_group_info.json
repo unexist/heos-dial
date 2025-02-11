@@ -4,22 +4,20 @@
     "result": "success",
     "message": "gid='group_id'"
   },
-  "payload": [
-    {
-      "name": "'All'",
-      "gid": 1,
-      "players": [
-        {
-          "name": "Studio1",
-          "pid": 844263156,
-          "role": "leader"
-        },
-        {
-          "name": "Living Room (AVR)",
-          "pid": -474905601,
-          "role": "member"
-        }
-      ]
-    }
-  ]
+  "payload": {
+    "name": "All",
+    "gid": 1,
+    "players": [
+      {
+        "name": "Studio1",
+        "pid": 844263156,
+        "role": "leader"
+      },
+      {
+        "name": "Living Room (AVR)",
+        "pid": -474905601,
+        "role": "member"
+      }
+    ]
+  }
 }

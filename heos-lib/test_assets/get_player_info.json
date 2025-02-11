@@ -5,9 +5,9 @@
     "message": "pid='player_id'"
   },
   "payload": {
-    "name": "'player name'",
-    "pid": "player id'",
-    "gid": "group id'",
+    "name": "Studio1",
+    "pid": 844263156,
+    "gid": -622728288,
     "model": "'player model'",
     "version": "'player version'",
     "network": "wired",
