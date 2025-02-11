@@ -7,17 +7,17 @@
   "payload": [
     {
       "name": "'All'",
-      "gid": "group id 1'",
+      "gid": 1,
       "players": [
         {
           "name": "Studio1",
           "pid": 844263156,
-          "role": "player role 1 (leader or member)'"
+          "role": "leader"
         },
         {
           "name": "Living Room (AVR)",
           "pid": -474905601,
-          "role": "player role 2 (leader or member)'"
+          "role": "member"
         }
       ]
     }
