@@ -68,11 +68,8 @@ impl HeosDevice {
 }
 
 impl HeosCommandHandler for HeosDevice {
-    async fn send_command<'a>(&self, cmd: &HeosCommand<'a>) -> Result<HeosReply> {
-        /* Sanity check for connection */
-        if self.stream.is_none() {
-            return Err(anyhow!("No stream open"))
-        }
+    async fn send_command<'a>(&mut self, cmd: &HeosCommand<'a>) -> Result<HeosReply> {
+        self.connect().await?;
 
         /* Append player id */
         let dev_cmd = cmd.clone().attr("pid", self.player_id.as_str());

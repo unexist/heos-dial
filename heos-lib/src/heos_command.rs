@@ -84,5 +84,5 @@ impl<'a> Display for HeosCommand<'a> {
 
 pub trait HeosCommandHandler {
     #[allow(async_fn_in_trait)]
-    async fn send_command<'a>(&self, cmd: &HeosCommand<'a>) -> Result<HeosReply>;
+    async fn send_command<'a>(&mut self, cmd: &HeosCommand<'a>) -> Result<HeosReply>;
 }
