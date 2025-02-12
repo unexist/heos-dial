@@ -10,11 +10,12 @@
 ///
 
 use app::App;
-use heos_lib::{Heos, HeosDevice};
+use heos_lib::{Heos, HeosDevice, HeosReply};
 use arc_swap::ArcSwap;
 use std::sync::Arc;
 use futures::pin_mut;
 use futures_util::StreamExt;
+use heos_lib::heos_command::{HeosCommand, HeosCommandHandler};
 
 mod app;
 
@@ -30,12 +31,23 @@ async fn main() -> color_eyre::Result<()> {
             .expect("To discover devices");
         pin_mut!(devices);
 
-        while let Some(dev) = devices.next().await {
-            let mut swap_list = dev_list.load().to_vec();
+        let cmd = HeosCommand::new()
+            .group("player")
+            .cmd("get_players");
 
-            swap_list.push(dev);
+        while let Some(mut dev) = devices.next().await {
 
-            dev_list.swap(Arc::from(swap_list));
+            /* Ask first device for other known devices */
+            let reply = dev.send_command(&cmd).await
+                .expect("To send command");
+
+            if let HeosReply::Players(success, devices) = reply {
+                if success {
+                    dev_list.swap(Arc::from(devices));
+
+                    break;
+                }
+            }
         }
     });
 
