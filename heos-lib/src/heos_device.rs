@@ -77,7 +77,7 @@ impl HeosDevice {
 
         if let HeosReply::Volume(success, attrs) = reply {
             if success {
-                self.volume = attrs.get("level").unwrap().into()?;
+                self.volume = attrs.get("level").unwrap().parse::<u16>()?;
             }
         }
 
