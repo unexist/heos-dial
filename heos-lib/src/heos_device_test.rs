@@ -34,11 +34,21 @@ mod heos_device_test {
     #[ignore]
     #[rstest]
     #[tokio::test]
-    async fn should_update_own_info(mut heos_device: HeosDevice) {
-        heos_device.update().await
+    async fn should_update_info(mut heos_device: HeosDevice) {
+        heos_device.update_info().await
             .expect("Failed to update client");
 
         assert_eq!(heos_device.name, env!("TEST_DEVICE_NAME"));
+    }
+
+    #[ignore]
+    #[rstest]
+    #[tokio::test]
+    async fn should_update_volume(mut heos_device: HeosDevice) {
+        heos_device.update_volume().await
+            .expect("Failed to update client");
+
+        assert!(heos_device.volume > 0);
     }
 
     #[ignore]
