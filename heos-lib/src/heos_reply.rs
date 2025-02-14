@@ -67,7 +67,7 @@ impl HeosReply {
                 Self::parse_generic_payload(&json, "payload")
             )),
 
-            "player/set_volume" | "player/get_volume" => Ok(HeosReply::Volume(
+            "player/set_volume" | "player/get_volume" | "group/set_volume" | "group/get_volume" => Ok(HeosReply::Volume(
                 "success" == json.get("heos.result").str(),
                 Self::parse_message(&json, "heos.message")
             )),
