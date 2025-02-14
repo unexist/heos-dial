@@ -47,7 +47,7 @@ impl HeosDevice {
         })
     }
 
-    pub async fn update(&mut self) -> Result<()> {
+    pub async fn update_info(&mut self) -> Result<()> {
         self.connect().await?;
 
         let cmd = HeosCommand::new()
@@ -60,6 +60,24 @@ impl HeosDevice {
             if success {
                 self.name = device.name;
                 self.player_id = device.player_id;
+            }
+        }
+
+        Ok(())
+    }
+
+    pub async fn update_volume(&mut self) -> Result<()> {
+        self.connect().await?;
+
+        let cmd = HeosCommand::new()
+            .group("player")
+            .cmd("get_volume");
+
+        let reply = self.send_command(&cmd).await?;
+
+        if let HeosReply::Volume(success, attrs) = reply {
+            if success {
+                self.volume = attrs.get("level").unwrap().into()?;
             }
         }
 
