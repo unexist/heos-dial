@@ -161,5 +161,9 @@ mod heos_reply_test {
         assert_eq!(groups.len(), 1);
         assert_eq!(groups[0].name, format!("'{}'", env!("TEST_GROUP_NAME")));
         assert!(groups[0].players.is_some());
+
+        let player = groups[0].players.unwrap().first().unwrap();
+
+        assert_ne!(player.group_id.len(), 0);
     }
 }
