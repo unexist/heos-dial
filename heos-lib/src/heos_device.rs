@@ -21,6 +21,7 @@ pub struct HeosDevice {
     pub name: String,
     pub base_url: String,
     pub player_id: String,
+    pub group_id: String,
     pub volume: u16,
     pub stream: Option<TcpStream>,
 }
@@ -31,6 +32,7 @@ impl HeosDevice {
             name: name.into(),
             base_url: url.parse()?,
             player_id: pid.into(),
+            group_id: Default::default(),
             volume: 0,
             stream: None,
         })
@@ -133,6 +135,7 @@ impl Clone for HeosDevice {
             name: self.name.clone(),
             base_url: self.base_url.clone(),
             player_id: self.player_id.clone(),
+            group_id: self.group_id.clone(),
             volume: self.volume,
             stream: None,
         }
