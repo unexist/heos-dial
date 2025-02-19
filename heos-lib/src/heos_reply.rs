@@ -110,7 +110,13 @@ impl HeosReply {
 
     pub(crate) fn parse_players_payload(json: &Value, path: &str) -> Vec<HeosDevice> {
         json.get(path).array().iter()
-            .map(|v| Self::parse_player(v))
+            .map(|v| {
+                let mut player = Self::parse_player(v);
+
+                player.group_id = v.get("group_id").str().into();
+
+                player
+            })
             .collect()
     }
 
