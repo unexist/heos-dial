@@ -36,7 +36,7 @@ mod heos_reply_test {
 
         if let HeosReply::Groups(success, groups) = reply {
             assert!(success);
-            assert_eq!(groups.len(), 1);
+            assert_eq!(groups.len(), 2);
         } else {
             panic!("Wrong reply type");
         }
@@ -158,12 +158,12 @@ mod heos_reply_test {
         let json = gjson::parse(test_asset!("get_groups.json"));
         let groups = HeosReply::parse_groups_payload(&json, "payload");
 
-        assert_eq!(groups.len(), 1);
-        assert_eq!(groups[0].name, format!("'{}'", env!("TEST_GROUP_NAME")));
+        assert_eq!(groups.len(), 2);
+        assert_eq!(groups[0].name, env!("TEST_GROUP_NAME"));
         assert!(groups[0].players.is_some());
 
-        let player = groups[0].players.unwrap().first().unwrap();
-
-        assert_ne!(player.group_id.len(), 0);
+        if let Some(players) = groups[0].players.as_ref() {
+            assert_eq!(players.first().unwrap().group_id, "-1859434560");
+        }
     }
 }
