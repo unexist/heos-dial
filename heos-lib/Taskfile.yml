@@ -2,7 +2,7 @@ version: '3'
 env:
   TEST_DEVICE_NAME: '{{.TEST_DEVICE_NAME | default "Studio1"}}'
   TEST_DEVICE_IP: '{{.TEST_DEVICE_IP | default "10.0.8.24"}}'
-  TEST_GROUP_NAME: '{{.TEST_GROUP_NAME | default "All"}}'
+  TEST_GROUP_NAME: '{{.TEST_GROUP_NAME | default "Almost"}}'
 
 tasks:
   test:
