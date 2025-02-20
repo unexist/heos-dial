@@ -6,18 +6,49 @@
   },
   "payload": [
     {
-      "name": "'All'",
-      "gid": 1,
+      "name": "Almost",
+      "gid": -1859434560,
       "players": [
+        {
+          "name": "Kitchen",
+          "pid": -1441236068,
+          "role": "member"
+        },
+        {
+          "name": "1st Floor",
+          "pid": -1859434560,
+          "role": "leader"
+        },
+        {
+          "name": "Living Room",
+          "pid": 1007626657,
+          "role": "member"
+        },
+        {
+          "name": "Fitness",
+          "pid": 715874815,
+          "role": "member"
+        },
+        {
+          "name": "Floor",
+          "pid": -622728288,
+          "role": "member"
+        }
+      ]
+    },
+    {
+      "name": "Studio",
+      "gid": 844263156,
+      "players": [
+        {
+          "name": "Studio2",
+          "pid": -993072137,
+          "role": "member"
+        },
         {
           "name": "Studio1",
           "pid": 844263156,
           "role": "leader"
-        },
-        {
-          "name": "Living Room (AVR)",
-          "pid": -474905601,
-          "role": "member"
         }
       ]
     }
