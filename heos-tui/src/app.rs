@@ -42,7 +42,8 @@ const GAUGE1_COLOR: Color = RED.c800;
 pub struct App {
     should_exit: bool,
     dev_list: Arc<ArcSwap<Vec<HeosDevice>>>,
-    list_state: ListState,
+    dev_list_state: ListState,
+    group_list_state: ListState,
 }
 
 impl App {
@@ -50,7 +51,8 @@ impl App {
         Self {
             should_exit: false,
             dev_list,
-            list_state: ListState::default(),
+            dev_list_state: ListState::default(),
+            group_list_state: ListState::default(),
         }
     }
 
@@ -86,26 +88,26 @@ impl App {
     }
 
     fn select_none(&mut self) {
-        self.list_state.select(None);
+        self.dev_list_state.select(None);
     }
 
     fn select_next(&mut self) {
-        self.list_state.select_next();
+        self.dev_list_state.select_next();
     }
     fn select_previous(&mut self) {
-        self.list_state.select_previous();
+        self.dev_list_state.select_previous();
     }
 
     fn select_first(&mut self) {
-        self.list_state.select_first();
+        self.dev_list_state.select_first();
     }
 
     fn select_last(&mut self) {
-        self.list_state.select_last();
+        self.dev_list_state.select_last();
     }
 
     fn toggle_status(&mut self) {
-        if let Some(i) = self.list_state.selected() {
+        if let Some(i) = self.dev_list_state.selected() {
             if let Some(item) = self.dev_list.load().get(i) {
                 println!("Selected status: {}", item.stream.is_some());
             }
@@ -122,8 +124,11 @@ impl Widget for &mut App {
         ])
             .areas(area);
 
-        let [list_area, item_area] =
+        let [lists_area, item_area] =
             Layout::horizontal([Constraint::Fill(1), Constraint::Fill(5)]).areas(main_area);
+
+        let [dev_list_area, group_list_area] =
+            Layout::vertical([Constraint::Fill(5), Constraint::Fill(3)]).areas(lists_area);
 
         let [text_area, gauge_area] =
             Layout::vertical([Constraint::Fill(5), Constraint::Fill(1)]).areas(item_area);
@@ -131,7 +136,9 @@ impl Widget for &mut App {
         App::render_header(header_area, buf);
         App::render_footer(footer_area, buf);
 
-        self.render_list(list_area, buf);
+        self.render_dev_list(dev_list_area, buf);
+        self.render_group_list(group_list_area, buf);
+
         self.render_selected_item(text_area, buf);
         self.render_gauge(gauge_area, buf);
     }
@@ -151,7 +158,7 @@ impl App {
             .render(area, buf);
     }
 
-    fn render_list(&mut self, area: Rect, buf: &mut Buffer) {
+    fn render_dev_list(&mut self, area: Rect, buf: &mut Buffer) {
         let block = Block::new()
             .title(Line::raw("Device List").centered())
             .borders(Borders::all())
@@ -189,11 +196,30 @@ impl App {
             .highlight_symbol(">")
             .highlight_spacing(HighlightSpacing::Always);
 
-        StatefulWidget::render(list, area, buf, &mut self.list_state);
+        StatefulWidget::render(list, area, buf, &mut self.dev_list_state);
+    }
+
+    fn render_group_list(&mut self, area: Rect, buf: &mut Buffer) {
+        let block = Block::new()
+            .title(Line::raw("Group List").centered())
+            .borders(Borders::all())
+            .border_set(symbols::border::PLAIN)
+            .border_style(DEV_HEADER_STYLE)
+            .bg(NORMAL_ROW_BG);
+
+        let mut items: Vec<ListItem> = vec![ListItem::new("No groups found")];
+
+        let list = List::new(items)
+            .block(block)
+            .highlight_style(SELECTED_STYLE)
+            .highlight_symbol(">")
+            .highlight_spacing(HighlightSpacing::Always);
+
+        StatefulWidget::render(list, area, buf, &mut self.group_list_state);
     }
 
     fn render_selected_item(&self, area: Rect, buf: &mut Buffer) {
-        let info = if let Some(i) = self.list_state.selected() {
+        let info = if let Some(i) = self.dev_list_state.selected() {
             if let Some(dev) = self.dev_list.load().get(i) {
                 match dev.stream {
                     Some(_) => format!("🔊 : {}", dev.name),
@@ -217,7 +243,7 @@ impl App {
 
     fn render_gauge(&self, area: Rect, buf: &mut Buffer) {
         let title = title_block("Volume");
-        let vol = match self.list_state.selected() {
+        let vol = match self.dev_list_state.selected() {
             Some(i) => {
                 if let Some(dev) = self.dev_list.load().get(i) {
                     dev.volume
