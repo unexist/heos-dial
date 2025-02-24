@@ -1,0 +1,191 @@
+///
+/// @package heos-dial
+///
+/// @file HEOS tui
+/// @copyright 2024-present Christoph Kappel <christoph@unexist.dev>
+/// @version $Id$
+///
+/// This program can be distributed under the terms of the GNU GPLv3.
+/// See the file LICENSE for details.
+///
+
+use ratatui::{style::{Color, Style}, symbols, widgets::{Block, Paragraph}};
+use ratatui::buffer::Buffer;
+use ratatui::layout::{Constraint, Layout, Rect};
+use ratatui::prelude::{Line, Modifier, StatefulWidget, Stylize, Widget};
+use ratatui::style::palette::tailwind::{BLUE, GREEN, RED, SLATE};
+use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding, Wrap};
+use crate::app::App;
+
+const DEV_HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(BLUE.c800);
+const NORMAL_ROW_BG: Color = SLATE.c950;
+const ALT_ROW_BG_COLOR: Color = SLATE.c900;
+const SELECTED_STYLE: Style = Style::new().bg(SLATE.c800).add_modifier(Modifier::BOLD);
+const TEXT_FG_COLOR: Color = SLATE.c200;
+const COMPLETED_TEXT_FG_COLOR: Color = GREEN.c500;
+const GAUGE1_COLOR: Color = RED.c800;
+
+impl Widget for &mut App {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        let [header_area, main_area, footer_area] = Layout::vertical([
+            Constraint::Length(2),
+            Constraint::Fill(1),
+            Constraint::Length(1),
+        ])
+            .areas(area);
+
+        let [lists_area, item_area] =
+            Layout::horizontal([Constraint::Fill(1), Constraint::Fill(5)]).areas(main_area);
+
+        let [dev_list_area, group_list_area] =
+            Layout::vertical([Constraint::Fill(5), Constraint::Fill(3)]).areas(lists_area);
+
+        let [text_area, gauge_area] =
+            Layout::vertical([Constraint::Fill(5), Constraint::Fill(1)]).areas(item_area);
+
+        render_header(header_area, buf);
+        render_footer(footer_area, buf);
+
+        render_dev_list(self, dev_list_area, buf);
+        render_group_list(self, group_list_area, buf);
+
+        render_selected_item(self, text_area, buf);
+        render_gauge(self, gauge_area, buf);
+    }
+}
+
+fn render_header(area: Rect, buf: &mut Buffer) {
+    Paragraph::new("Heos devices")
+        .bold()
+        .centered()
+        .render(area, buf);
+}
+
+fn render_footer(area: Rect, buf: &mut Buffer) {
+    Paragraph::new("Use ↓↑ to move, ← to unselect, → to change status, g/G to go top/bottom.")
+        .centered()
+        .render(area, buf);
+}
+
+fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
+    let block = Block::new()
+        .title(Line::raw("Device List").centered())
+        .borders(Borders::all())
+        .border_set(symbols::border::PLAIN)
+        .border_style(DEV_HEADER_STYLE)
+        .bg(NORMAL_ROW_BG);
+
+    let dev_list = app.dev_list.load();
+
+    let mut items: Vec<ListItem> = dev_list
+        .iter()
+        .enumerate()
+        .map(|(i, dev_item)| {
+            let color = alternate_colors(i);
+
+            let line = match dev_item.stream {
+                Some(_) => {
+                    Line::styled(format!(" 🔊 {}", dev_item.name), COMPLETED_TEXT_FG_COLOR)
+                }
+                None => Line::styled(format!(" 🔈 {}", dev_item.name), TEXT_FG_COLOR),
+            };
+
+            ListItem::new(line).bg(color)
+        })
+        .collect();
+
+    // Check whether list is empty
+    if items.is_empty() {
+        items.push(ListItem::new("No devices found"));
+    }
+
+    let list = List::new(items)
+        .block(block)
+        .highlight_style(SELECTED_STYLE)
+        .highlight_symbol(">")
+        .highlight_spacing(HighlightSpacing::Always);
+
+    StatefulWidget::render(list, area, buf, &mut app.dev_list_state);
+}
+
+fn render_group_list(app: &mut App, area: Rect, buf: &mut Buffer) {
+    let block = Block::new()
+        .title(Line::raw("Group List").centered())
+        .borders(Borders::all())
+        .border_set(symbols::border::PLAIN)
+        .border_style(DEV_HEADER_STYLE)
+        .bg(NORMAL_ROW_BG);
+
+    let items: Vec<ListItem> = vec![ListItem::new("No groups found")];
+
+    let list = List::new(items)
+        .block(block)
+        .highlight_style(SELECTED_STYLE)
+        .highlight_symbol(">")
+        .highlight_spacing(HighlightSpacing::Always);
+
+    StatefulWidget::render(list, area, buf, &mut app.group_list_state);
+}
+
+fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
+    let info = if let Some(i) = app.dev_list_state.selected() {
+        if let Some(dev) = app.dev_list.load().get(i) {
+            match dev.stream {
+                Some(_) => format!("🔊 : {}", dev.name),
+                None => format!(" 🔈 : {}", dev.name),
+            }
+        } else {
+            "Nothing selected...".to_string()
+        }
+    } else {
+        "Nothing selected...".to_string()
+    };
+
+    let title = title_block("Device Info");
+
+    Paragraph::new(info)
+        .block(title)
+        .fg(TEXT_FG_COLOR)
+        .wrap(Wrap { trim: false })
+        .render(area, buf);
+}
+
+fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
+    let title = title_block("Volume");
+    let vol = match app.dev_list_state.selected() {
+        Some(i) => {
+            if let Some(dev) = app.dev_list.load().get(i) {
+                dev.volume
+            } else {
+                0
+            }
+        },
+        None => 0,
+    };
+
+    Gauge::default()
+        .block(title)
+        .gauge_style(GAUGE1_COLOR)
+        .percent(vol)
+        .render(area, buf);
+}
+
+const fn alternate_colors(i: usize) -> Color {
+    if i % 2 == 0 {
+        NORMAL_ROW_BG
+    } else {
+        ALT_ROW_BG_COLOR
+    }
+}
+
+fn title_block(title: &str) -> Block {
+    let title = Line::from(title).centered();
+
+    Block::default()
+        .title(title)
+        .borders(Borders::all())
+        .border_set(symbols::border::PLAIN)
+        .border_style(DEV_HEADER_STYLE)
+        .bg(NORMAL_ROW_BG)
+        .padding(Padding::horizontal(1))
+}
