@@ -1,4 +1,3 @@
-use std::error;
 ///
 /// @package heos-dial
 ///
@@ -10,6 +9,7 @@ use std::error;
 /// See the file LICENSE for details.
 ///
 
+use std::error;
 use arc_swap::ArcSwap;
 use heos_lib::HeosDevice;
 use ratatui::widgets::ListState;
@@ -50,6 +50,7 @@ impl App {
     pub(crate) fn select_next(&mut self) {
         self.dev_list_state.select_next();
     }
+
     pub(crate) fn select_previous(&mut self) {
         self.dev_list_state.select_previous();
     }

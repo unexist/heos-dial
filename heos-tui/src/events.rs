@@ -17,16 +17,14 @@ use tokio::sync::mpsc;
 
 use crate::app::AppResult;
 
-/// Terminal events.
 #[derive(Clone, Copy, Debug)]
 pub enum Event {
     Tick,
+    Redraw,
     Key(KeyEvent),
-    Mouse(MouseEvent),
     Resize(u16, u16),
 }
 
-/// Terminal event handler.
 #[allow(dead_code)]
 #[derive(Debug)]
 pub struct EventHandler {
@@ -61,12 +59,10 @@ impl EventHandler {
                           _sender.send(Event::Key(key)).unwrap();
                         }
                       },
-                      CrosstermEvent::Mouse(mouse) => {
-                        _sender.send(Event::Mouse(mouse)).unwrap();
-                      },
                       CrosstermEvent::Resize(x, y) => {
                         _sender.send(Event::Resize(x, y)).unwrap();
                       },
+                      CrosstermEvent::Mouse(mouse) => { },
                       CrosstermEvent::FocusLost => { },
                       CrosstermEvent::FocusGained => { },
                       CrosstermEvent::Paste(_) => { },
@@ -82,7 +78,6 @@ impl EventHandler {
         }
     }
 
-    /// Receive the next event from the handler thread.
     pub async fn next(&mut self) -> AppResult<Event> {
         self.receiver
             .recv()
