@@ -23,14 +23,12 @@ pub struct App {
     pub(crate) dev_list_state: ListState,
     pub(crate) group_list_state: ListState,
     pub running: bool,
-    pub counter: u8,
 }
 
 impl App {
     pub(crate) fn new(dev_list: Arc<ArcSwap<Vec<HeosDevice>>>) -> App {
         Self {
             running: true,
-            counter: 0,
             dev_list,
             dev_list_state: ListState::default(),
             group_list_state: ListState::default(),
@@ -63,23 +61,19 @@ impl App {
         self.dev_list_state.select_last();
     }
 
+    pub(crate) fn increase_volume(&mut self) {
+        unimplemented!();
+    }
+
+    pub(crate) fn decrease_volume(&mut self) {
+        unimplemented!();
+    }
+
     pub(crate) fn toggle_status(&mut self) {
         if let Some(i) = self.dev_list_state.selected() {
             if let Some(item) = self.dev_list.load().get(i) {
                 println!("Selected status: {}", item.stream.is_some());
             }
-        }
-    }
-
-    pub(crate) fn increment_counter(&mut self) {
-        if let Some(res) = self.counter.checked_add(1) {
-            self.counter = res;
-        }
-    }
-
-    pub(crate) fn decrement_counter(&mut self) {
-        if let Some(res) = self.counter.checked_sub(1) {
-            self.counter = res;
         }
     }
 }
