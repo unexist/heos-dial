@@ -16,7 +16,6 @@ path = "../heos-lib"
 [dependencies]
 crossterm = { version = "0.28.1", features = ["event-stream"] }
 ratatui = "0.29.0"
-color-eyre = "0.6.3"
 tokio = { version = "1.43.0", features = ["full"] }
 futures = "0.3.31"
 futures-util = "0.3.31"
