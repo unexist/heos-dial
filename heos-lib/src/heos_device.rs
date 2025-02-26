@@ -19,6 +19,7 @@ use crate::heos_reply::HeosReply;
 #[derive(Debug)]
 pub struct HeosDevice {
     pub name: String,
+    pub model: String,
     pub base_url: String,
     pub player_id: String,
     pub group_id: String,
@@ -30,6 +31,7 @@ impl HeosDevice {
     pub fn new(name: &str, url: &str, pid: &str) -> Result<Self> {
         Ok(Self {
             name: name.into(),
+            model: Default::default(),
             base_url: url.parse()?,
             player_id: pid.into(),
             group_id: Default::default(),
@@ -133,6 +135,7 @@ impl Clone for HeosDevice {
     fn clone(&self) -> Self {
         Self {
             name: self.name.clone(),
+            model: self.model.clone(),
             base_url: self.base_url.clone(),
             player_id: self.player_id.clone(),
             group_id: self.group_id.clone(),

@@ -87,9 +87,13 @@ impl HeosReply {
     }
 
     pub fn parse_player(json: &Value) -> HeosDevice {
-        HeosDevice::new(json.get("name").str(),
-                        json.get("ip").str(),
-                        json.get("pid").str()).unwrap()
+        let mut player = HeosDevice::new(json.get("name").str(),
+                                         json.get("ip").str(),
+                                         json.get("pid").str()).unwrap();
+
+        player.model = json.get("model").str().into();
+
+        player
     }
 
     pub fn parse_group(json: &Value) -> HeosGroup {
