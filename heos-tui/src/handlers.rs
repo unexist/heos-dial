@@ -15,10 +15,10 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
     match key_event.code {
         /* Navigation */
-        KeyCode::Char('h') | KeyCode::Left => app.decrease_volume(),
+        KeyCode::Char('h') | KeyCode::Left => app.decrease_volume(1),
         KeyCode::Char('j') | KeyCode::Down => app.select_next(),
         KeyCode::Char('k') | KeyCode::Up => app.select_previous(),
-        KeyCode::Char('l') | KeyCode::Right => app.increase_volume(),
+        KeyCode::Char('l') | KeyCode::Right => app.increase_volume(1),
 
         KeyCode::Char('g') | KeyCode::Home => app.select_first(),
         KeyCode::Char('G') | KeyCode::End => app.select_last(),
