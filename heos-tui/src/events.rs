@@ -17,6 +17,7 @@ use tokio::sync::mpsc;
 
 use crate::app::AppResult;
 
+#[allow(dead_code)]
 #[derive(Clone, Copy, Debug)]
 pub enum Event {
     Tick,
