@@ -62,17 +62,17 @@ impl App {
     }
 
     pub(crate) fn increase_volume(&mut self) {
-        unimplemented!();
+        eprintln!("Increase volume");
     }
 
     pub(crate) fn decrease_volume(&mut self) {
-        unimplemented!();
+        eprintln!("Decrease volume");
     }
 
     pub(crate) fn toggle_status(&mut self) {
         if let Some(i) = self.dev_list_state.selected() {
             if let Some(item) = self.dev_list.load().get(i) {
-                println!("Selected status: {}", item.stream.is_some());
+                eprintln!("Selected status: {}", item.stream.is_some());
             }
         }
     }
