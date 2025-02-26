@@ -16,7 +16,6 @@ use ratatui::prelude::{Line, Modifier, StatefulWidget, Stylize, Widget};
 use ratatui::style::palette::tailwind::{BLUE, GREEN, RED, SLATE};
 use ratatui::text::Span;
 use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding, Wrap};
-use heos_lib::HeosDevice;
 use crate::app::App;
 
 const DEV_HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(BLUE.c800);
@@ -139,7 +138,7 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
 
     let mut lines = vec![];
 
-    if let Some(dev) = get_selected_device(app) {
+    if let Some(dev) = app.get_selected_device() {
         lines.push(Line::styled(match dev.stream {
             Some(_) => format!("{:^4} : {}", "🔊", dev.name),
             None => format!("{:^4} : {}", "🔈", dev.name),
@@ -161,7 +160,7 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
 
 fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
     let title = title_block("Volume");
-    let vol = match get_selected_device(app) {
+    let vol = match app.get_selected_device() {
         Some(dev) => dev.volume,
         None => 0,
     };
@@ -193,10 +192,4 @@ fn title_block(title: &str) -> Block {
         .padding(Padding::horizontal(1))
 }
 
-fn get_selected_device(app: &App) -> Option<HeosDevice> {
-     if let Some(i) = app.dev_list_state.selected() {
-         return app.dev_list.load().get(i).cloned();
-     }
 
-    None
-}

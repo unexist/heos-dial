@@ -61,19 +61,25 @@ impl App {
         self.dev_list_state.select_last();
     }
 
-    pub(crate) fn increase_volume(&mut self) {
+    pub(crate) fn increase_volume(&mut self, _step: u8) {
         eprintln!("Increase volume");
     }
 
-    pub(crate) fn decrease_volume(&mut self) {
+    pub(crate) fn decrease_volume(&mut self, _step: u8) {
         eprintln!("Decrease volume");
     }
 
     pub(crate) fn toggle_status(&mut self) {
-        if let Some(i) = self.dev_list_state.selected() {
-            if let Some(item) = self.dev_list.load().get(i) {
-                eprintln!("Selected status: {}", item.stream.is_some());
-            }
+        if let Some(dev) = self.get_selected_device() {
+            eprintln!("Selected status: {}", dev.stream.is_some());
         }
+    }
+
+    pub(crate) fn get_selected_device(&self) -> Option<HeosDevice> {
+        if let Some(i) = self.dev_list_state.selected() {
+            return self.dev_list.load().get(i).cloned();
+        }
+
+        None
     }
 }
