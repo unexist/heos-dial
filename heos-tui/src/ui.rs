@@ -70,7 +70,7 @@ fn render_footer(area: Rect, buf: &mut Buffer) {
     ]);
 
     Paragraph::new(lines)
-        .left_aligned()
+        .centered()
         .render(area, buf);
 }
 
@@ -144,6 +144,7 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
             None => format!(" 🔈 : {}", dev.name),
         }, style));
 
+        lines.push(Line::styled(format!(" ™ : {}", dev.model), style));
         lines.push(Line::styled(format!(" 🖧 : {}", dev.base_url), style));
         lines.push(Line::styled(format!(" 🆔  : {}", dev.player_id), style));
     } else {
