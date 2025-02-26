@@ -14,22 +14,20 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
     match key_event.code {
-        KeyCode::Char('h') | KeyCode::Left => {
-            app.select_none();
-            app.decrement_counter();
-        },
+        /* Navigation */
+        KeyCode::Char('h') | KeyCode::Left => app.decrease_volume(),
         KeyCode::Char('j') | KeyCode::Down => app.select_next(),
         KeyCode::Char('k') | KeyCode::Up => app.select_previous(),
+        KeyCode::Char('l') | KeyCode::Right => app.increase_volume(),
+
         KeyCode::Char('g') | KeyCode::Home => app.select_first(),
         KeyCode::Char('G') | KeyCode::End => app.select_last(),
-        KeyCode::Char('l') | KeyCode::Right | KeyCode::Enter => {
-            app.toggle_status();
-            app.increment_counter();
-        },
 
-        KeyCode::Esc | KeyCode::Char('q') => app.quit(),
+        KeyCode::Esc => app.select_none(),
+        KeyCode::Enter => app.toggle_status(),
 
-        // Exit application on `Ctrl-C`
+        /* Exit keys */
+        KeyCode::Char('q') => app.quit(),
         KeyCode::Char('c') | KeyCode::Char('C') => {
             if key_event.modifiers == KeyModifiers::CONTROL {
                 app.quit();
