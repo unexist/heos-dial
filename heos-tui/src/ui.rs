@@ -91,8 +91,9 @@ fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
             let color = alternate_colors(i);
 
             let line = match dev_item.stream {
-                Some(_) => Line::styled(format!(" 🔊 {}", dev_item.name), COMPLETED_TEXT_FG_COLOR),
-                None => Line::styled(format!(" 🔈 {}", dev_item.name), TEXT_FG_COLOR),
+                Some(_) => Line::styled(
+                    format!("{:^5} {}", "🔊", dev_item.name), COMPLETED_TEXT_FG_COLOR),
+                None => Line::styled(format!("{:^5} {}", "🔈", dev_item.name), TEXT_FG_COLOR),
             };
 
             ListItem::new(line).bg(color)
@@ -140,13 +141,13 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
 
     if let Some(dev) = get_selected_device(app) {
         lines.push(Line::styled(match dev.stream {
-            Some(_) => format!(" 🔊 : {}", dev.name),
-            None => format!(" 🔈 : {}", dev.name),
+            Some(_) => format!("{:^4} : {}", "🔊", dev.name),
+            None => format!("{:^4} : {}", "🔈", dev.name),
         }, style));
 
-        lines.push(Line::styled(format!(" ™ : {}", dev.model), style));
-        lines.push(Line::styled(format!(" 🖧 : {}", dev.base_url), style));
-        lines.push(Line::styled(format!(" 🆔  : {}", dev.player_id), style));
+        lines.push(Line::styled(format!("{:^5} : {}", "™", dev.model), style));
+        lines.push(Line::styled(format!("{:^5} : {}", "🖧", dev.base_url), style));
+        lines.push(Line::styled(format!("{:^4} : {}", "🆔", dev.player_id), style));
     } else {
         lines.push(Line::raw("Nothing selected yet".to_string()));
     }
