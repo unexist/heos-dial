@@ -60,8 +60,12 @@ async fn main() -> AppResult<()> {
             let reply = dev.send_command(&cmd).await
                 .expect("To send command");
 
-            if let HeosReply::Players(success, devices) = reply {
+            if let HeosReply::Players(success, mut devices) = reply {
                 if success {
+                    for dev in &mut devices {
+                        dev.update_volume().await.expect("To update volume");
+                    }
+
                     dev_list.swap(Arc::from(devices));
 
                     break;
