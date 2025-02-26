@@ -14,7 +14,9 @@ use ratatui::buffer::Buffer;
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::{Line, Modifier, StatefulWidget, Stylize, Widget};
 use ratatui::style::palette::tailwind::{BLUE, GREEN, RED, SLATE};
+use ratatui::text::Span;
 use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding, Wrap};
+use heos_lib::HeosDevice;
 use crate::app::App;
 
 const DEV_HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(BLUE.c800);
@@ -62,8 +64,13 @@ fn render_header(area: Rect, buf: &mut Buffer) {
 }
 
 fn render_footer(area: Rect, buf: &mut Buffer) {
-    Paragraph::new("Use ↓↑ to move, ← to unselect, → to change status, g/G to go top/bottom.")
-        .centered()
+    let lines = Line::from(vec![
+        Span::raw("Use ↓ /↑ to move, ← /→  to lower/raise volume, g/G to go top/bottom."),
+        Span::raw("Test"),
+    ]);
+
+    Paragraph::new(lines)
+        .left_aligned()
         .render(area, buf);
 }
 
@@ -84,9 +91,7 @@ fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
             let color = alternate_colors(i);
 
             let line = match dev_item.stream {
-                Some(_) => {
-                    Line::styled(format!(" 🔊 {}", dev_item.name), COMPLETED_TEXT_FG_COLOR)
-                }
+                Some(_) => Line::styled(format!(" 🔊 {}", dev_item.name), COMPLETED_TEXT_FG_COLOR),
                 None => Line::styled(format!(" 🔈 {}", dev_item.name), TEXT_FG_COLOR),
             };
 
@@ -128,14 +133,10 @@ fn render_group_list(app: &mut App, area: Rect, buf: &mut Buffer) {
 }
 
 fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
-    let info = if let Some(i) = app.dev_list_state.selected() {
-        if let Some(dev) = app.dev_list.load().get(i) {
-            match dev.stream {
-                Some(_) => format!("🔊 : {}", dev.name),
-                None => format!(" 🔈 : {}", dev.name),
-            }
-        } else {
-            "Nothing selected...".to_string()
+    let info = if let Some(dev) = get_selected_device(app) {
+        match dev.stream {
+            Some(_) => format!("🔊 : {}", dev.name),
+            None => format!(" 🔈 : {}", dev.name),
         }
     } else {
         "Nothing selected...".to_string()
@@ -149,6 +150,8 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
         .wrap(Wrap { trim: false })
         .render(area, buf);
 }
+
+
 
 fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
     let title = title_block("Volume");
@@ -171,7 +174,7 @@ fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
 }
 
 const fn alternate_colors(i: usize) -> Color {
-    if i % 2 == 0 {
+    if 0 == i % 2 {
         NORMAL_ROW_BG
     } else {
         ALT_ROW_BG_COLOR
@@ -188,4 +191,12 @@ fn title_block(title: &str) -> Block {
         .border_style(DEV_HEADER_STYLE)
         .bg(NORMAL_ROW_BG)
         .padding(Padding::horizontal(1))
+}
+
+fn get_selected_device(app: &App) -> Option<HeosDevice> {
+     if let Some(i) = app.dev_list_state.selected() {
+         return app.dev_list.load().get(i).cloned();
+     }
+
+    None
 }
