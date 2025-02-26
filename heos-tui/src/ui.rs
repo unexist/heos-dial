@@ -133,36 +133,34 @@ fn render_group_list(app: &mut App, area: Rect, buf: &mut Buffer) {
 }
 
 fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
-    let info = if let Some(dev) = get_selected_device(app) {
-        match dev.stream {
-            Some(_) => format!("🔊 : {}", dev.name),
-            None => format!(" 🔈 : {}", dev.name),
-        }
-    } else {
-        "Nothing selected...".to_string()
-    };
-
     let title = title_block("Device Info");
+    let style = Style::new().italic();
 
-    Paragraph::new(info)
+    let mut lines = vec![];
+
+    if let Some(dev) = get_selected_device(app) {
+        lines.push(Line::styled(match dev.stream {
+            Some(_) => format!(" 🔊 : {}", dev.name),
+            None => format!(" 🔈 : {}", dev.name),
+        }, style));
+
+        lines.push(Line::styled(format!(" 🖧 : {}", dev.base_url), style));
+        lines.push(Line::styled(format!(" 🆔  : {}", dev.player_id), style));
+    } else {
+        lines.push(Line::raw("Nothing selected yet".to_string()));
+    }
+
+    Paragraph::new(lines)
         .block(title)
         .fg(TEXT_FG_COLOR)
         .wrap(Wrap { trim: false })
         .render(area, buf);
 }
 
-
-
 fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
     let title = title_block("Volume");
-    let vol = match app.dev_list_state.selected() {
-        Some(i) => {
-            if let Some(dev) = app.dev_list.load().get(i) {
-                dev.volume
-            } else {
-                0
-            }
-        },
+    let vol = match get_selected_device(app) {
+        Some(dev) => dev.volume,
         None => 0,
     };
 
