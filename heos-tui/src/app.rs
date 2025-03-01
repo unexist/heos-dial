@@ -11,9 +11,10 @@
 
 use std::error;
 use arc_swap::ArcSwap;
-use heos_lib::HeosDevice;
+use heos_lib::{HeosDevice, HeosReply};
 use ratatui::widgets::ListState;
 use std::sync::Arc;
+use heos_lib::heos_command::{HeosCommand, HeosCommandHandler};
 
 pub type AppResult<T> = Result<T, Box<dyn error::Error>>;
 
@@ -61,12 +62,38 @@ impl App {
         self.dev_list_state.select_last();
     }
 
-    pub(crate) fn increase_volume(&mut self, _step: u8) {
-        eprintln!("Increase volume");
-    }
+    pub(crate) fn set_volume(&mut self, step: i16) {
+        if let Some(i) = self.dev_list_state.selected() {
+            let mut binding = self.dev_list.load_full();
 
-    pub(crate) fn decrease_volume(&mut self, _step: u8) {
-        eprintln!("Decrease volume");
+            let dev = binding.get_mut(i).unwrap();
+
+            tokio::spawn(async move {
+                let new_level = i16::try_from(dev.volume).unwrap() + step;
+
+                let level : u16 = if 0 > new_level {
+                    0
+                } else {
+                    u16::try_from(new_level).unwrap()
+                };
+
+                let level_str = level.to_string();
+
+                let cmd = HeosCommand::new()
+                    .group("player")
+                    .cmd("set_volume")
+                    .attr("level", &*level_str);
+
+                let reply = dev.send_command(&cmd).await.unwrap();
+
+                if let HeosReply::Volume(success, _) = reply {
+                    eprintln!("success={}, level={}", success, level);
+                    if success {
+                        dev.volume = level;
+                    }
+                }
+            });
+        }
     }
 
     pub(crate) fn toggle_status(&mut self) {
