@@ -64,9 +64,7 @@ impl App {
 
     pub(crate) fn set_volume(&mut self, step: i16) {
         if let Some(i) = self.dev_list_state.selected() {
-            let mut binding = self.dev_list.load_full();
-
-            let dev = binding.get_mut(i).unwrap();
+            let dev = self.dev_list.load().get_mut(i).unwrap();
 
             tokio::spawn(async move {
                 let new_level = i16::try_from(dev.volume).unwrap() + step;
