@@ -39,10 +39,11 @@ async fn main() -> AppResult<()> {
     let mut tui = Tui::new(terminal, events);
     tui.init()?;
 
+    /* Create swap list */
     let arc_list = Arc::new(ArcSwap::from_pointee(Vec::<HeosDevice>::new()));
-    let dev_list = Arc::clone(&arc_list);
 
     let mut app = App::new(Arc::clone(&arc_list));
+    let dev_list = Arc::clone(&arc_list);
 
     /* Start discovery */
     tokio::spawn(async move {
