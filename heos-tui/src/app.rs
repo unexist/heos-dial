@@ -9,7 +9,8 @@
 /// See the file LICENSE for details.
 ///
 
-use std::error;
+use std::{error, fmt};
+use std::fmt::{Display, Formatter};
 use arc_swap::ArcSwap;
 use heos_lib::{HeosDevice, HeosReply};
 use ratatui::widgets::ListState;
@@ -24,6 +25,18 @@ pub struct App {
     pub(crate) dev_list_state: ListState,
     pub(crate) group_list_state: ListState,
     pub running: bool,
+}
+
+#[derive(Debug)]
+pub(crate) enum PlayerState {
+    Play,
+    Stop,
+}
+
+impl Display for PlayerState {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }
 
 impl App {
@@ -93,6 +106,36 @@ impl App {
                     if success {
                         dev.volume = level;
 
+                        dev_list.swap(Arc::from(vec_list));
+                    }
+                }
+            });
+        }
+    }
+
+    pub(crate) fn set_state(&mut self, state: PlayerState) {
+        if let Some(i) = self.dev_list_state.selected() {
+            let dev_list = Arc::clone(&self.dev_list);
+
+            tokio::spawn(async move {
+                let swap_list = dev_list.swap(Arc::from(Vec::default()));
+                let mut vec_list = swap_list.to_vec();
+
+                let mut dev = vec_list.get_mut(i).unwrap();
+
+                let state_str = state.to_string();
+
+                let cmd = HeosCommand::new()
+                    .group("player")
+                    .cmd("set_volume")
+                    .attr("state", &*state_str);
+
+                let reply = dev.send_command(&cmd).await.unwrap();
+
+                if let HeosReply::PlayState(success, _) = reply {
+                    eprintln!("success={}, state={}", success, state_str);
+
+                    if success {
                         dev_list.swap(Arc::from(vec_list));
                     }
                 }
