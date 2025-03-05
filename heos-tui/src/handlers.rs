@@ -11,6 +11,7 @@
 
 use crate::app::{App, AppResult};
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+use crate::app;
 
 pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
     match key_event.code {
@@ -22,6 +23,10 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
 
         KeyCode::Char('g') | KeyCode::Home => app.select_first(),
         KeyCode::Char('G') | KeyCode::End => app.select_last(),
+
+        /* Player */
+        KeyCode::Char('s') => app.set_state(app::PlayerState::Play),
+        KeyCode::Char('p') => app.set_state(app::PlayerState::Stop),
 
         KeyCode::Esc => app.select_none(),
         KeyCode::Enter => app.toggle_status(),
