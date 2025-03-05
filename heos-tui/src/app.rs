@@ -64,9 +64,13 @@ impl App {
 
     pub(crate) fn set_volume(&mut self, step: i16) {
         if let Some(i) = self.dev_list_state.selected() {
-            let dev = self.dev_list.load().get_mut(i).unwrap();
+            let dev_list = Arc::clone(&self.dev_list);
 
             tokio::spawn(async move {
+                let swap_list = dev_list.swap(Arc::from(Vec::default()));
+                let mut vec_list = swap_list.to_vec();
+
+                let mut dev = vec_list.get_mut(i).unwrap();
                 let new_level = i16::try_from(dev.volume).unwrap() + step;
 
                 let level : u16 = if 0 > new_level {
@@ -88,6 +92,8 @@ impl App {
                     eprintln!("success={}, level={}", success, level);
                     if success {
                         dev.volume = level;
+
+                        dev_list.swap(Arc::from(vec_list));
                     }
                 }
             });
