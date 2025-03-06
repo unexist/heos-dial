@@ -14,7 +14,6 @@ use crate::events::{Event, EventHandler};
 use crate::handlers::handle_key_events;
 use crate::tui::Tui;
 use app::App;
-use arc_swap::ArcSwap;
 use futures::pin_mut;
 use futures_util::StreamExt;
 use heos_lib::heos_command::{HeosCommand, HeosCommandHandler};
@@ -22,7 +21,7 @@ use heos_lib::{Heos, HeosDevice, HeosReply};
 use ratatui::backend::CrosstermBackend;
 use ratatui::Terminal;
 use std::io;
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 
 mod app;
 mod ui;
@@ -40,10 +39,10 @@ async fn main() -> AppResult<()> {
     tui.init()?;
 
     /* Create swap list */
-    let arc_list = Arc::new(ArcSwap::from_pointee(Vec::<HeosDevice>::new()));
+    let orig_list = Arc::new(RwLock::new(Vec::<HeosDevice>::new()));
 
-    let mut app = App::new(Arc::clone(&arc_list));
-    let dev_list = Arc::clone(&arc_list);
+    let mut app = App::new(Arc::clone(&orig_list));
+    let dev_list = Arc::clone(&orig_list);
 
     /* Start discovery */
     tokio::spawn(async move {
@@ -67,7 +66,10 @@ async fn main() -> AppResult<()> {
                         dev.update_volume().await.expect("To update volume");
                     }
 
-                    dev_list.swap(Arc::from(devices));
+                    /* Replace vec */
+                    let mut write_list = dev_list.write().unwrap();
+
+                    let _ = std::mem::replace(&mut *write_list, devices);
 
                     break;
                 }

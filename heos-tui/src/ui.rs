@@ -16,6 +16,7 @@ use ratatui::prelude::{Line, Modifier, StatefulWidget, Stylize, Widget};
 use ratatui::style::palette::tailwind::{BLUE, GREEN, RED, SLATE};
 use ratatui::text::Span;
 use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding, Wrap};
+use heos_lib::HeosDevice;
 use crate::app::App;
 
 const DEV_HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(BLUE.c800);
@@ -64,7 +65,7 @@ fn render_header(area: Rect, buf: &mut Buffer) {
 
 fn render_footer(area: Rect, buf: &mut Buffer) {
     let lines = Line::from(vec![
-        Span::raw("Use ↓ /↑ to move, ← /→  to lower/raise volume, g/G to go top/bottom."),
+        Span::raw("Use ↓ /↑ to move, ← /→  to lower/raise volume, g/G to go top/bottom, p to play, s to stop."),
         Span::raw("Test"),
     ]);
 
@@ -81,7 +82,7 @@ fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
         .border_style(DEV_HEADER_STYLE)
         .bg(NORMAL_ROW_BG);
 
-    let dev_list = app.dev_list.load();
+    let dev_list = app.dev_list.read().unwrap();
 
     let mut items: Vec<ListItem> = dev_list
         .iter()
@@ -91,15 +92,17 @@ fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
 
             let line = match dev_item.stream {
                 Some(_) => Line::styled(
-                    format!("{:^5} {}", "🔊", dev_item.name), COMPLETED_TEXT_FG_COLOR),
-                None => Line::styled(format!("{:^5} {}", "🔈", dev_item.name), TEXT_FG_COLOR),
+                    format!("{:^5} {}", "🔊",
+                            dev_item.name), COMPLETED_TEXT_FG_COLOR),
+                None => Line::styled(format!("{:^5} {}", "🔈",
+                                             dev_item.name), TEXT_FG_COLOR),
             };
 
             ListItem::new(line).bg(color)
         })
         .collect();
 
-    // Check whether list is empty
+    /* Check whether list is empty */
     if items.is_empty() {
         items.push(ListItem::new("No devices found"));
     }
@@ -138,7 +141,7 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
 
     let mut lines = vec![];
 
-    if let Some(dev) = app.get_selected_device() {
+    if let Some(dev) = get_selected_device(app) {
         lines.push(Line::styled(match dev.stream {
             Some(_) => format!("{:^4} : {}", "🔊", dev.name),
             None => format!("{:^4} : {}", "🔈", dev.name),
@@ -160,7 +163,7 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
 
 fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
     let title = title_block("Volume");
-    let vol = match app.get_selected_device() {
+    let vol = match get_selected_device(app) {
         Some(dev) => dev.volume,
         None => 0,
     };
@@ -192,4 +195,10 @@ fn title_block(title: &str) -> Block {
         .padding(Padding::horizontal(1))
 }
 
+fn get_selected_device(app: &App) -> Option<HeosDevice> {
+    if let Some(i) = app.dev_list_state.selected() {
+        return app.dev_list.read().unwrap().get(i).cloned();
+    }
 
+    None
+}

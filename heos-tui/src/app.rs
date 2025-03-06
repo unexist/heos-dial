@@ -11,17 +11,16 @@
 
 use std::{error, fmt};
 use std::fmt::{Display, Formatter};
-use arc_swap::ArcSwap;
 use heos_lib::{HeosDevice, HeosReply};
 use ratatui::widgets::ListState;
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 use heos_lib::heos_command::{HeosCommand, HeosCommandHandler};
 
 pub type AppResult<T> = Result<T, Box<dyn error::Error>>;
 
 #[derive(Debug)]
 pub struct App {
-    pub(crate) dev_list: Arc<ArcSwap<Vec<HeosDevice>>>,
+    pub(crate) dev_list: Arc<RwLock<Vec<HeosDevice>>>,
     pub(crate) dev_list_state: ListState,
     pub(crate) group_list_state: ListState,
     pub running: bool,
@@ -40,7 +39,7 @@ impl Display for PlayerState {
 }
 
 impl App {
-    pub(crate) fn new(dev_list: Arc<ArcSwap<Vec<HeosDevice>>>) -> App {
+    pub(crate) fn new(dev_list: Arc<RwLock<Vec<HeosDevice>>>) -> App {
         Self {
             running: true,
             dev_list,
@@ -80,10 +79,13 @@ impl App {
             let dev_list = Arc::clone(&self.dev_list);
 
             tokio::spawn(async move {
-                let swap_list = dev_list.swap(Arc::from(Vec::default()));
-                let mut vec_list = swap_list.to_vec();
+                let read_list = dev_list.read().await;
 
-                let mut dev = vec_list.get_mut(i).unwrap();
+                let mut dev = read_list.get(i).unwrap().clone();
+
+                drop(read_list);
+
+                /* Calculate new volume level */
                 let new_level = i16::try_from(dev.volume).unwrap() + step;
 
                 let level : u16 = if 0 > new_level {
@@ -104,9 +106,11 @@ impl App {
                 if let HeosReply::Volume(success, _) = reply {
                     eprintln!("success={}, level={}", success, level);
                     if success {
-                        dev.volume = level;
+                        let mut write_list = dev_list.write().unwrap();
 
-                        dev_list.swap(Arc::from(vec_list));
+                        let mut dev = write_list.get_mut(i).unwrap();
+
+                        dev.volume = level;
                     }
                 }
             });
@@ -118,10 +122,11 @@ impl App {
             let dev_list = Arc::clone(&self.dev_list);
 
             tokio::spawn(async move {
-                let swap_list = dev_list.swap(Arc::from(Vec::default()));
-                let mut vec_list = swap_list.to_vec();
+                let read_list = dev_list.read().unwrap();
 
-                let mut dev = vec_list.get_mut(i).unwrap();
+                let mut dev = read_list.get(i).unwrap().clone();
+
+                drop(read_list);
 
                 let state_str = state.to_string();
 
@@ -134,26 +139,12 @@ impl App {
 
                 if let HeosReply::PlayState(success, _) = reply {
                     eprintln!("success={}, state={}", success, state_str);
-
-                    if success {
-                        dev_list.swap(Arc::from(vec_list));
-                    }
                 }
             });
         }
     }
 
-    pub(crate) fn toggle_status(&mut self) {
-        if let Some(dev) = self.get_selected_device() {
-            eprintln!("Selected status: {}", dev.stream.is_some());
-        }
-    }
-
-    pub(crate) fn get_selected_device(&self) -> Option<HeosDevice> {
-        if let Some(i) = self.dev_list_state.selected() {
-            return self.dev_list.load().get(i).cloned();
-        }
-
-        None
+    pub(crate) fn toggle_status(&self) {
+        eprintln!("Toggle status");
     }
 }

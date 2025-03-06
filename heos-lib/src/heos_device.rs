@@ -112,7 +112,8 @@ impl HeosCommandHandler for HeosDevice {
                             println!("Read {} bytes", _n);
                         }
                         Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
-                            if '\r' == char::from(buf[buf.len() - 2]) && '\n' == char::from(buf[buf.len() - 1]) {
+                            if '\r' == char::from(buf[buf.len() - 2])
+                                && '\n' == char::from(buf[buf.len() - 1]) {
                                 break;
                             }
                         }
