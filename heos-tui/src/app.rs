@@ -15,6 +15,7 @@ use heos_lib::{HeosDevice, HeosReply};
 use ratatui::widgets::ListState;
 use std::sync::{Arc, RwLock};
 use heos_lib::heos_command::{HeosCommand, HeosCommandHandler};
+use log::info;
 
 pub type AppResult<T> = Result<T, Box<dyn error::Error>>;
 
@@ -104,7 +105,8 @@ impl App {
                 let reply = dev.send_command(&cmd).await.unwrap();
 
                 if let HeosReply::Volume(success, _) = reply {
-                    eprintln!("success={}, level={}", success, level);
+                    info!("set_volume: success={}, level={}", success, level);
+
                     if success {
                         let mut write_list = dev_list.write().unwrap();
 
@@ -138,7 +140,7 @@ impl App {
                 let reply = dev.send_command(&cmd).await.unwrap();
 
                 if let HeosReply::PlayState(success, _) = reply {
-                    eprintln!("success={}, state={}", success, state_str);
+                    info!("set_state: success={}, state={}", success, state_str);
                 }
             });
         }

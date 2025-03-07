@@ -15,6 +15,7 @@ use ratatui::backend::Backend;
 use ratatui::Terminal;
 use std::io;
 use std::panic;
+use tui_logger::{init_logger, set_default_level, LevelFilter};
 use crate::events::EventHandler;
 
 #[derive(Debug)]
@@ -46,6 +47,9 @@ impl<B: Backend> Tui<B> {
 
         self.terminal.hide_cursor()?;
         self.terminal.clear()?;
+
+        init_logger(LevelFilter::Info)?;
+        set_default_level(LevelFilter::Info);
 
         Ok(())
     }

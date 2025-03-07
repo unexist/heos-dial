@@ -22,6 +22,7 @@ use ratatui::backend::CrosstermBackend;
 use ratatui::Terminal;
 use std::io;
 use std::sync::{Arc, RwLock};
+use log::info;
 
 mod app;
 mod ui;
@@ -65,6 +66,8 @@ async fn main() -> AppResult<()> {
                     for dev in &mut devices {
                         dev.update_volume().await.expect("To update volume");
                     }
+
+                    info!("discover: devices={}", devices.len());
 
                     /* Replace vec */
                     let mut write_list = dev_list.write().unwrap();

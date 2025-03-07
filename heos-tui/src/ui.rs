@@ -16,6 +16,7 @@ use ratatui::prelude::{Line, Modifier, StatefulWidget, Stylize, Widget};
 use ratatui::style::palette::tailwind::{BLUE, GREEN, RED, SLATE};
 use ratatui::text::Span;
 use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding, Wrap};
+use tui_logger::{TuiLoggerLevelOutput, TuiLoggerSmartWidget};
 use heos_lib::HeosDevice;
 use crate::app::App;
 
@@ -42,8 +43,9 @@ impl Widget for &mut App {
         let [dev_list_area, group_list_area] =
             Layout::vertical([Constraint::Fill(5), Constraint::Fill(3)]).areas(lists_area);
 
-        let [text_area, gauge_area] =
-            Layout::vertical([Constraint::Fill(5), Constraint::Fill(1)]).areas(item_area);
+        let [text_area, gauge_area, log_area] =
+            Layout::vertical([Constraint::Fill(5), Constraint::Fill(1), Constraint::Fill(2)])
+                .areas(item_area);
 
         render_header(header_area, buf);
         render_footer(footer_area, buf);
@@ -53,6 +55,7 @@ impl Widget for &mut App {
 
         render_selected_item(self, text_area, buf);
         render_gauge(self, gauge_area, buf);
+        render_logger(self, log_area, buf);
     }
 }
 
@@ -172,6 +175,22 @@ fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
         .block(title)
         .gauge_style(GAUGE1_COLOR)
         .percent(vol)
+        .render(area, buf);
+}
+
+fn render_logger(_app: &App, area: Rect, buf: &mut Buffer) {
+    TuiLoggerSmartWidget::default()
+        .style_error(Style::default().fg(Color::Red))
+        .style_debug(Style::default().fg(Color::Green))
+        .style_warn(Style::default().fg(Color::Yellow))
+        .style_trace(Style::default().fg(Color::Magenta))
+        .style_info(Style::default().fg(Color::Cyan))
+        .output_separator(':')
+        .output_timestamp(Some("%H:%M:%S".to_string()))
+        .output_level(Some(TuiLoggerLevelOutput::Abbreviated))
+        .output_target(true)
+        .output_file(true)
+        .output_line(true)
         .render(area, buf);
 }
 
