@@ -77,13 +77,13 @@ impl App {
     pub(crate) fn set_volume(&mut self, step: i16) {
         if let Some(i) = self.dev_list_state.selected() {
             let dev_list = Arc::clone(&self.dev_list);
+            let read_list = dev_list.read().unwrap();
+
+            let mut dev = read_list.get(i).unwrap().clone();
+
+            drop(read_list);
 
             tokio::spawn(async move {
-                let read_list = dev_list.read().await;
-
-                let mut dev = read_list.get(i).unwrap().clone();
-
-                drop(read_list);
 
                 /* Calculate new volume level */
                 let new_level = i16::try_from(dev.volume).unwrap() + step;
@@ -120,13 +120,13 @@ impl App {
     pub(crate) fn set_state(&mut self, state: PlayerState) {
         if let Some(i) = self.dev_list_state.selected() {
             let dev_list = Arc::clone(&self.dev_list);
+            let read_list = dev_list.read().unwrap();
+
+            let mut dev = read_list.get(i).unwrap().clone();
+
+            drop(read_list);
 
             tokio::spawn(async move {
-                let read_list = dev_list.read().unwrap();
-
-                let mut dev = read_list.get(i).unwrap().clone();
-
-                drop(read_list);
 
                 let state_str = state.to_string();
 
