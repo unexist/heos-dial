@@ -16,7 +16,7 @@ use ratatui::prelude::{Line, Modifier, StatefulWidget, Stylize, Widget};
 use ratatui::style::palette::tailwind::{BLUE, GREEN, RED, SLATE};
 use ratatui::text::Span;
 use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding, Wrap};
-use tui_logger::{TuiLoggerLevelOutput, TuiLoggerSmartWidget};
+use tui_logger::{TuiLoggerLevelOutput, TuiLoggerWidget};
 use heos_lib::HeosDevice;
 use crate::app::App;
 
@@ -179,18 +179,15 @@ fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
 }
 
 fn render_logger(_app: &App, area: Rect, buf: &mut Buffer) {
-    TuiLoggerSmartWidget::default()
-        .style_error(Style::default().fg(Color::Red))
-        .style_debug(Style::default().fg(Color::Green))
-        .style_warn(Style::default().fg(Color::Yellow))
-        .style_trace(Style::default().fg(Color::Magenta))
-        .style_info(Style::default().fg(Color::Cyan))
-        .output_separator(':')
-        .output_timestamp(Some("%H:%M:%S".to_string()))
-        .output_level(Some(TuiLoggerLevelOutput::Abbreviated))
-        .output_target(true)
-        .output_file(true)
-        .output_line(true)
+    TuiLoggerWidget::default()
+        .block(title_block("Heos Logs"))
+        .output_separator('|')
+        .output_timestamp(Some("%F %H:%M:%S%.3f".to_string()))
+        .output_level(Some(TuiLoggerLevelOutput::Long))
+        .output_target(false)
+        .output_file(false)
+        .output_line(false)
+        .style(Style::default().fg(Color::White))
         .render(area, buf);
 }
 
