@@ -110,6 +110,7 @@ impl App {
                     if success {
                         let mut write_list = dev_list.write().unwrap();
 
+                        #[allow(unused_mut)]
                         let mut dev = write_list.get_mut(i).unwrap();
 
                         dev.volume = level;
