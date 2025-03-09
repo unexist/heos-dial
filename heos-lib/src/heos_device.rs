@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 ///
 /// @package heos-dial
 ///
@@ -149,5 +150,11 @@ impl Clone for HeosDevice {
 impl PartialEq for HeosDevice {
     fn eq(&self, other: &Self) -> bool {
         self.player_id == other.player_id
+    }
+}
+
+impl Display for HeosDevice {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} ({})", self.name, self.base_url)
     }
 }
