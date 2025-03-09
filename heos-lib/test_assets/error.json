@@ -1,0 +1,7 @@
+{
+  "heos": {
+    "command": "command_group/command",
+    "result": "fail",
+    "message": "eid=error_id&text=error text&command_arguments"
+  }
+}

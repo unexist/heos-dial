@@ -125,6 +125,14 @@ mod heos_reply_test {
     }
 
     #[test]
+    fn should_parse_error_reply() {
+        let reply = HeosReply::parse(test_asset!("error.json"))
+            .expect("Failed to parse error.json");
+
+        assert!(matches!(reply, HeosReply::Error { .. }));
+    }
+
+    #[test]
     fn should_parse_message() {
         let json = gjson::parse(test_asset!("message.json"));
         let attrs: HashMap<_, _> = HeosReply::parse_message(&json, "message");
