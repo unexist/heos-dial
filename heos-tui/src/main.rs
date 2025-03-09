@@ -45,40 +45,7 @@ async fn main() -> AppResult<()> {
     let mut app = App::new(Arc::clone(&orig_list));
     let dev_list = Arc::clone(&orig_list);
 
-    /* Start discovery */
-    tokio::spawn(async move {
-        let devices = Heos::discover().await
-            .expect("To discover devices");
-        pin_mut!(devices);
-
-        let cmd = HeosCommand::new()
-            .group("player")
-            .cmd("get_players");
-
-        while let Some(mut dev) = devices.next().await {
-
-            /* Ask first device for other known devices */
-            let reply = dev.send_command(&cmd).await
-                .expect("To send command");
-
-            if let HeosReply::Players(success, mut devices) = reply {
-                if success {
-                    for dev in &mut devices {
-                        dev.update_volume().await.expect("To update volume");
-                    }
-
-                    info!("discover: devices={}", devices.len());
-
-                    /* Replace vec */
-                    let mut write_list = dev_list.write().unwrap();
-
-                    let _ = std::mem::replace(&mut *write_list, devices);
-
-                    break;
-                }
-            }
-        }
-    });
+    tokio::spawn(start_discovery(dev_list));
 
     /* Kick off main loop */
     while app.running {
@@ -95,4 +62,41 @@ async fn main() -> AppResult<()> {
     tui.exit()?;
 
     Ok(())
+}
+
+async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>) {
+    let devices = Heos::discover().await
+        .expect("To discover devices");
+    pin_mut!(devices);
+
+    info!("discovery: start");
+
+    let cmd = HeosCommand::new()
+        .group("player")
+        .cmd("get_players");
+
+    while let Some(mut dev) = devices.next().await {
+        /* Ask first device for other known devices */
+        let reply = dev.send_command(&cmd).await
+            .expect("To send command");
+
+        if let HeosReply::Players(success, mut devices) = reply {
+            if success {
+                info!("discovery: devices={}", devices.len());
+
+                for dev in &mut devices {
+                    dev.update_volume().await.expect("To update volume");
+
+                    info!("discovery: updated volume for {}", dev);
+                }
+
+                /* Replace vec */
+                let mut write_list = dev_list.write().unwrap();
+
+                let _ = std::mem::replace(&mut *write_list, devices);
+
+                break;
+            }
+        }
+    }
 }
