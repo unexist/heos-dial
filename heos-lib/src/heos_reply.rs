@@ -25,16 +25,23 @@ pub enum HeosReply {
     PlayAction(bool, HashMap<String, String>),
     PlayingMedia(bool, HashMap<String, String>),
     Volume(bool, HashMap<String, String>),
+    Error(bool, String, HashMap<String, String>),
 }
 
 impl HeosReply {
     pub fn parse(response_str: &str) -> Result<HeosReply> {
         let json = gjson::parse(response_str);
 
+        /* Check for error */
+        if "fail".eq(json.get("heos.result").str()) {
+            return Ok(HeosReply::Error(false, json.get("heos.command").to_string(),
+                Self::parse_message(&json, "heos.message")))
+        }
+
         match json.get("heos.command").str() {
             "player/get_players" => Ok(HeosReply::Players(
                 "success" == json.get("heos.result").str(),
-                Self::parse_players_payload(&json, "payload")
+                Self::parse_players_payload(&json, "payload", "")
             )),
 
             "player/get_groups" => Ok(HeosReply::Groups(
@@ -112,12 +119,12 @@ impl HeosReply {
         payload
     }
 
-    pub(crate) fn parse_players_payload(json: &Value, path: &str) -> Vec<HeosDevice> {
+    pub(crate) fn parse_players_payload(json: &Value, path: &str, group_id: &str) -> Vec<HeosDevice> {
         json.get(path).array().iter()
             .map(|v| {
                 let mut player = Self::parse_player(v);
 
-                player.group_id = v.get("group_id").str().into();
+                player.group_id = group_id.to_string();
 
                 player
             })
@@ -129,7 +136,7 @@ impl HeosReply {
             .map(|v| {
                 let mut group = Self::parse_group(v);
 
-                group.players = Some(Self::parse_players_payload(v, "players"));
+                group.players = Some(Self::parse_players_payload(v, "players", &*group.group_id));
 
                 group
             })
