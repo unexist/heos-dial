@@ -69,13 +69,15 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>) {
         .expect("To discover devices");
     pin_mut!(devices);
 
-    info!("discovery: start");
+    info!("discovery: Start");
 
     let cmd = HeosCommand::new()
         .group("player")
         .cmd("get_players");
 
     while let Some(mut dev) = devices.next().await {
+        info!("discovery: Requesting known devices from {}", dev);
+
         /* Ask first device for other known devices */
         let reply = dev.send_command(&cmd).await
             .expect("To send command");
@@ -87,7 +89,7 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>) {
                 for dev in &mut devices {
                     dev.update_volume().await.expect("To update volume");
 
-                    info!("discovery: updated volume for {}", dev);
+                    info!("discovery: Updated volume for {}", dev);
                 }
 
                 /* Replace vec */
