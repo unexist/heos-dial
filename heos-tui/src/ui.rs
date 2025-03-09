@@ -13,7 +13,7 @@ use ratatui::{style::{Color, Style}, symbols, widgets::{Block, Paragraph}};
 use ratatui::buffer::Buffer;
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::{Line, Modifier, StatefulWidget, Stylize, Widget};
-use ratatui::style::palette::tailwind::{BLUE, GREEN, RED, SLATE};
+use ratatui::style::palette::tailwind::{BLUE, GREEN, SLATE};
 use ratatui::text::Span;
 use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding, Wrap};
 use tui_logger::{TuiLoggerLevelOutput, TuiLoggerWidget};
@@ -26,7 +26,7 @@ const ALT_ROW_BG_COLOR: Color = SLATE.c900;
 const SELECTED_STYLE: Style = Style::new().bg(SLATE.c800).add_modifier(Modifier::BOLD);
 const TEXT_FG_COLOR: Color = SLATE.c200;
 const COMPLETED_TEXT_FG_COLOR: Color = GREEN.c500;
-const GAUGE1_COLOR: Color = RED.c800;
+const GAUGE1_COLOR: Color = GREEN.c500;
 
 impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
@@ -41,10 +41,10 @@ impl Widget for &mut App {
             Layout::horizontal([Constraint::Fill(1), Constraint::Fill(5)]).areas(main_area);
 
         let [dev_list_area, group_list_area] =
-            Layout::vertical([Constraint::Fill(5), Constraint::Fill(3)]).areas(lists_area);
+            Layout::vertical([Constraint::Fill(4), Constraint::Fill(2)]).areas(lists_area);
 
         let [text_area, gauge_area, log_area] =
-            Layout::vertical([Constraint::Fill(5), Constraint::Fill(1), Constraint::Fill(2)])
+            Layout::vertical([Constraint::Fill(3), Constraint::Fill(1), Constraint::Fill(2)])
                 .areas(item_area);
 
         render_header(header_area, buf);
