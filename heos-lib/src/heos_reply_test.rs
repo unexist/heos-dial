@@ -155,7 +155,7 @@ mod heos_reply_test {
     #[test]
     fn should_parse_players_payload() {
         let json = gjson::parse(test_asset!("get_players.json"));
-        let devices = HeosReply::parse_players_payload(&json, "payload");
+        let devices = HeosReply::parse_players_payload(&json, "payload", "");
 
         assert_eq!(devices.len(), 2);
         assert_eq!(devices[0].base_url, env!("TEST_DEVICE_IP"));
