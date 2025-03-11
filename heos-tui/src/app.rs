@@ -15,7 +15,7 @@ use heos_lib::{HeosDevice, HeosReply};
 use ratatui::widgets::ListState;
 use std::sync::{Arc, RwLock};
 use heos_lib::heos_command::{HeosCommand, HeosCommandHandler};
-use log::info;
+use log::{error, info};
 
 pub type AppResult<T> = Result<T, Box<dyn error::Error>>;
 
@@ -86,7 +86,7 @@ impl App {
 
             tokio::spawn(async move {
 
-                /* Calculate new volume level */
+                /* Calculate and normalize new volume level */
                 let new_level = i16::try_from(dev.volume).unwrap() + step;
 
                 let level : u16 = if 0 > new_level {
@@ -96,6 +96,8 @@ impl App {
                 };
 
                 let level_str = level.to_string();
+
+                info!("set_volume: level={}", level);
 
                 let cmd = HeosCommand::new()
                     .group("player")
@@ -115,6 +117,8 @@ impl App {
 
                         dev.volume = level;
                     }
+                } else if let HeosReply::Error(success, command, _) = reply {
+                    error!("set_volume: success={}, command={:?}", success, command);
                 }
             });
         }
@@ -130,6 +134,7 @@ impl App {
             drop(read_list);
 
             tokio::spawn(async move {
+                info!("set_state: state={}", state);
 
                 let state_str = state.to_string();
 
@@ -142,6 +147,8 @@ impl App {
 
                 if let HeosReply::PlayState(success, _) = reply {
                     info!("set_state: success={}, state={}", success, state_str);
+                } else if let HeosReply::Error(success, command, _) = reply {
+                    error!("set_state: success={}, command={:?}", success, command);
                 }
             });
         }
