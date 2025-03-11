@@ -140,7 +140,7 @@ impl App {
 
                 let cmd = HeosCommand::new()
                     .group("player")
-                    .cmd("set_volume")
+                    .cmd("set_state")
                     .attr("state", &*state_str);
 
                 let reply = dev.send_command(&cmd).await.unwrap();
