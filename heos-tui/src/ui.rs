@@ -20,13 +20,13 @@ use tui_logger::{TuiLoggerLevelOutput, TuiLoggerWidget};
 use heos_lib::HeosDevice;
 use crate::app::App;
 
-const DEV_HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(BLUE.c800);
-const NORMAL_ROW_BG: Color = SLATE.c950;
-const ALT_ROW_BG_COLOR: Color = SLATE.c900;
+const HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(BLUE.c800);
 const SELECTED_STYLE: Style = Style::new().bg(SLATE.c800).add_modifier(Modifier::BOLD);
-const TEXT_FG_COLOR: Color = SLATE.c200;
-const COMPLETED_TEXT_FG_COLOR: Color = GREEN.c500;
-const GAUGE1_COLOR: Color = GREEN.c500;
+const NORMAL_TEXT_FG_COLOR: Color = SLATE.c200;
+const ACTIVE_TEXT_FG_COLOR: Color = GREEN.c500;
+const NORMAL_ROW_BG_COLOR: Color = SLATE.c950;
+const ALT_ROW_BG_COLOR: Color = SLATE.c900;
+const VOLUME_GAUGE_COLOR: Color = GREEN.c500;
 
 impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
@@ -82,8 +82,8 @@ fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
         .title(Line::raw("Device List").centered())
         .borders(Borders::all())
         .border_set(symbols::border::PLAIN)
-        .border_style(DEV_HEADER_STYLE)
-        .bg(NORMAL_ROW_BG);
+        .border_style(HEADER_STYLE)
+        .bg(NORMAL_ROW_BG_COLOR);
 
     let dev_list = app.dev_list.read().unwrap();
 
@@ -95,9 +95,9 @@ fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
 
             let line = match dev_item.volume {
                 x if 0 < x => Line::styled(
-                    format!("{:^5} {}", "🔊", dev_item.name), COMPLETED_TEXT_FG_COLOR),
+                    format!("{:^5} {}", "🔊", dev_item.name), ACTIVE_TEXT_FG_COLOR),
                 _ => Line::styled(
-                    format!("{:^5} {}", "🔈", dev_item.name), TEXT_FG_COLOR),
+                    format!("{:^5} {}", "🔈", dev_item.name), NORMAL_TEXT_FG_COLOR),
             };
 
             ListItem::new(line).bg(color)
@@ -123,8 +123,8 @@ fn render_group_list(app: &mut App, area: Rect, buf: &mut Buffer) {
         .title(Line::raw("Group List").centered())
         .borders(Borders::all())
         .border_set(symbols::border::PLAIN)
-        .border_style(DEV_HEADER_STYLE)
-        .bg(NORMAL_ROW_BG);
+        .border_style(HEADER_STYLE)
+        .bg(NORMAL_ROW_BG_COLOR);
 
     let group_list = app.group_list.read().unwrap();
 
@@ -135,7 +135,7 @@ fn render_group_list(app: &mut App, area: Rect, buf: &mut Buffer) {
             let color = alternate_colors(i);
 
             let line = Line::styled(format!("{:^5} {}", "∑",
-                                            group_item.name), TEXT_FG_COLOR);
+                                            group_item.name), NORMAL_TEXT_FG_COLOR);
 
             ListItem::new(line).bg(color)
         })
@@ -176,7 +176,7 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
 
     Paragraph::new(lines)
         .block(title)
-        .fg(TEXT_FG_COLOR)
+        .fg(NORMAL_TEXT_FG_COLOR)
         .wrap(Wrap { trim: false })
         .render(area, buf);
 }
@@ -190,7 +190,7 @@ fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
 
     Gauge::default()
         .block(title)
-        .gauge_style(GAUGE1_COLOR)
+        .gauge_style(VOLUME_GAUGE_COLOR)
         .percent(vol)
         .render(area, buf);
 }
@@ -215,7 +215,7 @@ fn render_logger(_app: &App, area: Rect, buf: &mut Buffer) {
 
 const fn alternate_colors(i: usize) -> Color {
     if 0 == i % 2 {
-        NORMAL_ROW_BG
+        NORMAL_ROW_BG_COLOR
     } else {
         ALT_ROW_BG_COLOR
     }
@@ -228,8 +228,8 @@ fn title_block(title: &str) -> Block {
         .title(title)
         .borders(Borders::all())
         .border_set(symbols::border::PLAIN)
-        .border_style(DEV_HEADER_STYLE)
-        .bg(NORMAL_ROW_BG)
+        .border_style(HEADER_STYLE)
+        .bg(NORMAL_ROW_BG_COLOR)
         .padding(Padding::horizontal(1))
 }
 
