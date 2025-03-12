@@ -97,7 +97,7 @@ impl App {
 
                 let level_str = level.to_string();
 
-                info!("set_volume: level={}", level);
+                info!("set_volume: level={}", level_str);
 
                 let cmd = HeosCommand::new()
                     .group("player")
@@ -135,9 +135,9 @@ impl App {
             drop(read_list);
 
             tokio::spawn(async move {
-                info!("set_play_state: state={}", state);
+                let state_str = state.to_string().to_lowercase();
 
-                let state_str = state.to_string();
+                info!("set_play_state: state={}", state_str);
 
                 let cmd = HeosCommand::new()
                     .group("player")
