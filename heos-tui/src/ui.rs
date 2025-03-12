@@ -13,15 +13,16 @@ use ratatui::{style::{Color, Style}, symbols, widgets::{Block, Paragraph}};
 use ratatui::buffer::Buffer;
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::{Line, Modifier, StatefulWidget, Stylize, Widget};
-use ratatui::style::palette::tailwind::{BLUE, GREEN, SLATE};
+use ratatui::style::palette::tailwind::{GREEN, SLATE};
 use ratatui::text::Span;
 use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding, Wrap};
 use tui_logger::{TuiLoggerLevelOutput, TuiLoggerWidget};
 use heos_lib::HeosDevice;
-use crate::app::App;
+use std::cmp::PartialEq;
+use crate::app::{App, Focus};
 
-const HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(BLUE.c800);
-const SELECTED_STYLE: Style = Style::new().bg(SLATE.c800).add_modifier(Modifier::BOLD);
+const HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(SLATE.c800);
+const SELECTED_STYLE: Style = Style::new().fg(GREEN.c100).bg(SLATE.c800).add_modifier(Modifier::BOLD);
 const NORMAL_TEXT_FG_COLOR: Color = SLATE.c200;
 const ACTIVE_TEXT_FG_COLOR: Color = GREEN.c500;
 const NORMAL_ROW_BG_COLOR: Color = SLATE.c950;
@@ -67,7 +68,7 @@ fn render_header(area: Rect, buf: &mut Buffer) {
 
 fn render_footer(area: Rect, buf: &mut Buffer) {
     let lines = Line::from(vec![
-        Span::raw("Use ↓ /↑ to move, ← /→  to lower/raise volume, g/G to go top/bottom, p to play, s to stop."),
+        Span::raw("Use ↓ /↑ to move, ← /→  to lower/raise volume, g/d to select lists, p to play, s to stop."),
     ]);
 
     Paragraph::new(lines)
@@ -76,11 +77,16 @@ fn render_footer(area: Rect, buf: &mut Buffer) {
 }
 
 fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
+    let style = match app.focus_state {
+        Focus::Devices => SELECTED_STYLE,
+        _ => HEADER_STYLE,
+    };
+
     let block = Block::new()
-        .title(Line::raw("Device List").centered())
+        .title(Line::raw("Device List (d)").centered())
         .borders(Borders::all())
         .border_set(symbols::border::PLAIN)
-        .border_style(HEADER_STYLE)
+        .border_style(style)
         .bg(NORMAL_ROW_BG_COLOR);
 
     let dev_list = app.dev_list.read().unwrap();
@@ -116,12 +122,23 @@ fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
     StatefulWidget::render(list, area, buf, &mut app.dev_list_state);
 }
 
+impl PartialEq for Focus {
+    fn eq(&self, other: &Self) -> bool {
+        self == other
+    }
+}
+
 fn render_group_list(app: &mut App, area: Rect, buf: &mut Buffer) {
+    let style = match app.focus_state {
+        Focus::Groups => SELECTED_STYLE,
+        _ => HEADER_STYLE,
+    };
+
     let block = Block::new()
-        .title(Line::raw("Group List").centered())
+        .title(Line::raw("Group List (g)").centered())
         .borders(Borders::all())
         .border_set(symbols::border::PLAIN)
-        .border_style(HEADER_STYLE)
+        .border_style(style)
         .bg(NORMAL_ROW_BG_COLOR);
 
     let group_list = app.group_list.read().unwrap();
@@ -207,7 +224,6 @@ fn render_logger(_app: &App, area: Rect, buf: &mut Buffer) {
         .output_target(false)
         .output_file(false)
         .output_line(false)
-        .style(Style::default().fg(Color::White))
         .render(area, buf);
 }
 

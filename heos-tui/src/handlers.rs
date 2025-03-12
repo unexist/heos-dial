@@ -21,8 +21,12 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
         KeyCode::Char('k') | KeyCode::Up => app.select_previous(),
         KeyCode::Char('l') | KeyCode::Right => app.set_volume(1),
 
-        KeyCode::Char('g') | KeyCode::Home => app.select_first(),
-        KeyCode::Char('G') | KeyCode::End => app.select_last(),
+        KeyCode::Home => app.select_first(),
+        KeyCode::End => app.select_last(),
+
+        /* List selection */
+        KeyCode::Char('d') => app.select_list(app::Focus::Devices),
+        KeyCode::Char('g') => app.select_list(app::Focus::Groups),
 
         /* Player */
         KeyCode::Char('p') => app.set_play_state(app::PlayerState::Play),

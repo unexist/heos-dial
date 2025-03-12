@@ -17,6 +17,8 @@ use std::sync::{Arc, RwLock};
 use heos_lib::heos_command::{HeosCommand, HeosCommandHandler};
 use log::{error, info};
 
+pub type AppResult<T> = Result<T, Box<dyn error::Error>>;
+
 #[derive(Debug)]
 pub(crate) enum PlayerState {
     Play,
@@ -29,7 +31,19 @@ impl Display for PlayerState {
     }
 }
 
-pub type AppResult<T> = Result<T, Box<dyn error::Error>>;
+#[derive(Debug, Default)]
+pub(crate) enum Focus {
+    #[default]
+    Devices,
+
+    Groups,
+}
+
+impl Display for Focus {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
 
 #[derive(Debug)]
 pub struct App {
@@ -37,6 +51,7 @@ pub struct App {
     pub(crate) group_list: Arc<RwLock<Vec<HeosGroup>>>,
     pub(crate) dev_list_state: ListState,
     pub(crate) group_list_state: ListState,
+    pub(crate) focus_state: Focus,
     pub running: bool,
 }
 
@@ -48,6 +63,7 @@ impl App {
             group_list,
             dev_list_state: ListState::default(),
             group_list_state: ListState::default(),
+            focus_state: Focus::default(),
         }
     }
 
@@ -75,6 +91,10 @@ impl App {
 
     pub(crate) fn select_last(&mut self) {
         self.dev_list_state.select_last();
+    }
+
+    pub(crate) fn select_list(&mut self, focus_state: Focus) {
+        self.focus_state = focus_state;
     }
 
     pub(crate) fn set_volume(&mut self, step: i16) {
