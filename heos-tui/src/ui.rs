@@ -34,8 +34,7 @@ impl Widget for &mut App {
             Constraint::Length(2),
             Constraint::Fill(1),
             Constraint::Length(1),
-        ])
-            .areas(area);
+        ]).areas(area);
 
         let [lists_area, item_area] =
             Layout::horizontal([Constraint::Fill(1), Constraint::Fill(5)]).areas(main_area);
@@ -69,7 +68,6 @@ fn render_header(area: Rect, buf: &mut Buffer) {
 fn render_footer(area: Rect, buf: &mut Buffer) {
     let lines = Line::from(vec![
         Span::raw("Use ↓ /↑ to move, ← /→  to lower/raise volume, g/G to go top/bottom, p to play, s to stop."),
-        Span::raw("Test"),
     ]);
 
     Paragraph::new(lines)
