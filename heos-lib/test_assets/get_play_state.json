@@ -1,7 +1,7 @@
 {
   "heos": {
-    "command": "player/set_play_state",
+    "command": "player/get_play_state",
     "result": "success",
-    "message": "pid='player_id'&state='play_state'"
+    "message": "pid=player_id&state=play_state"
   }
 }
