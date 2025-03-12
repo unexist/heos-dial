@@ -9,6 +9,7 @@
 /// See the file LICENSE for details.
 ///
 
+use std::fmt::{Display, Formatter};
 use crate::HeosDevice;
 
 #[derive(Debug)]
@@ -44,5 +45,11 @@ impl Clone for HeosGroup {
 impl PartialEq for HeosGroup {
     fn eq(&self, other: &Self) -> bool {
         self.group_id == other.group_id
+    }
+}
+
+impl Display for HeosGroup {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} (leader: {:?})", self.name, self.leader)
     }
 }
