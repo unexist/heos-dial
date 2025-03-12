@@ -124,6 +124,31 @@ mod heos_reply_test {
         assert!(matches!(reply, HeosReply::Volume { .. }));
     }
 
+
+    #[test]
+    fn should_parse_set_mute_reply() {
+        let reply = HeosReply::parse(test_asset!("set_mute.json"))
+            .expect("Failed to parse set_mute.json");
+
+        assert!(matches!(reply, HeosReply::Mute{ .. }));
+    }
+
+    #[test]
+    fn should_parse_get_volume_reply() {
+        let reply = HeosReply::parse(test_asset!("get_mute.json"))
+            .expect("Failed to parse get_mute.json");
+
+        assert!(matches!(reply, HeosReply::Mute { .. }));
+    }
+
+    #[test]
+    fn should_parse_get_volume_reply() {
+        let reply = HeosReply::parse(test_asset!("toggle_mute.json"))
+            .expect("Failed to parse toggle_mute.json");
+
+        assert!(matches!(reply, HeosReply::Mute { .. }));
+    }
+
     #[test]
     fn should_parse_error_reply() {
         let reply = HeosReply::parse(test_asset!("error.json"))
