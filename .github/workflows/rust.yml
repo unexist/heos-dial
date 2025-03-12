@@ -8,6 +8,9 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  TEST_DEVICE_NAME: "Studio1"
+  TEST_DEVICE_IP: "10.0.8.24"
+  TEST_GROUP_NAME: "Almost"
 
 jobs:
   build:
