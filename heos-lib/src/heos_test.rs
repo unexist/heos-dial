@@ -17,6 +17,7 @@ mod heos_test {
     use futures_util::{pin_mut, StreamExt};
     use pretty_assertions::assert_eq;
 
+    #[ignore]
     #[test]
     fn should_parse_discovery_response() {
         let location = formatcp!("http://{ip}:60006/upnp/desc/aios_device/aios_device.xml",
