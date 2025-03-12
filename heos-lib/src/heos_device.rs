@@ -66,6 +66,8 @@ impl HeosDevice {
                 self.name = device.name;
                 self.player_id = device.player_id;
             }
+        } else if let HeosReply::Error(_, _, message) = reply {
+            return Err(anyhow!(message.get("text").expect("Expected error test to be set")));
         }
 
         Ok(())
@@ -84,6 +86,8 @@ impl HeosDevice {
             if success {
                 self.volume = attrs.get("level").unwrap().parse::<u16>()?;
             }
+        } else if let HeosReply::Error(_, _, message) = reply {
+            return Err(anyhow!(message.get("text").expect("Expected error test to be set")));
         }
 
         Ok(())
