@@ -4,16 +4,19 @@ This project holds a small controller software for HEOS based on MD5Dial and Rus
 
 == Modules
 
-[cols="1,3"]
+[cols="1,3,2"]
 |===
 | heos-dial
 | The actual firmware
+|
 
 | heos-lib
 | The HEOS library
+a| image::https://github.com/unexist/heos-dial/actions/workflows/rust.yml/badge.svg[]
 
 | heos-tui
 | A TUI based on the library
+|
 |===
 
 == Links
