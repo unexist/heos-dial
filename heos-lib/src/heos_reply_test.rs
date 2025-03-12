@@ -134,7 +134,7 @@ mod heos_reply_test {
     }
 
     #[test]
-    fn should_parse_get_volume_reply() {
+    fn should_parse_get_mute_reply() {
         let reply = HeosReply::parse(test_asset!("get_mute.json"))
             .expect("Failed to parse get_mute.json");
 
@@ -142,7 +142,7 @@ mod heos_reply_test {
     }
 
     #[test]
-    fn should_parse_get_volume_reply() {
+    fn should_parse_toggle_mute_reply() {
         let reply = HeosReply::parse(test_asset!("toggle_mute.json"))
             .expect("Failed to parse toggle_mute.json");
 
