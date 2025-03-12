@@ -25,6 +25,7 @@ pub enum HeosReply {
     PlayAction(bool, HashMap<String, String>),
     PlayingMedia(bool, HashMap<String, String>),
     Volume(bool, HashMap<String, String>),
+    Mute(bool, HashMap<String, String>),
     Error(bool, String, HashMap<String, String>),
 }
 
@@ -79,7 +80,12 @@ impl HeosReply {
                 Self::parse_message(&json, "heos.message")
             )),
 
-            _ => Err(anyhow!("Command type unknown")),
+            "player/set_mute" | "player/get_mute" | "player/toggle_mute" => Ok(HeosReply::Mute(
+                "success" == json.get("heos.result").str(),
+                Self::parse_message(&json, "heos.message")
+            )),
+
+            cmd => Err(anyhow!("Command type `{:?}` unknown", cmd)),
         }
     }
 
