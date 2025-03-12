@@ -158,7 +158,31 @@ impl App {
         }
     }
 
-    pub(crate) fn toggle_status(&self) {
-        info!("Toggle status");
+    pub(crate) fn toggle_mute(&self) {
+        if let Some(i) = self.dev_list_state.selected() {
+            let dev_list = Arc::clone(&self.dev_list);
+            let read_list = dev_list.read().unwrap();
+
+            let mut dev = read_list.get(i).unwrap().clone();
+
+            drop(read_list);
+
+            tokio::spawn(async move {
+                info!("toggle_mute");
+
+                let cmd = HeosCommand::new()
+                    .group("player")
+                    .cmd("toggle_mute");
+
+                let reply = dev.send_command(&cmd).await.unwrap();
+
+                if let HeosReply::Mute(success, _) = reply {
+                    info!("toggle_mute: success={}", success);
+                } else if let HeosReply::Error(success, command, message) = reply {
+                    error!("toggle_mute: success={}, command={:?}, message={:?}",
+                        success, command, message);
+                }
+            });
+        }
     }
 }

@@ -29,7 +29,7 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
         KeyCode::Char('s') => app.set_play_state(app::PlayerState::Stop),
 
         KeyCode::Esc => app.select_none(),
-        KeyCode::Enter => app.toggle_status(),
+        KeyCode::Enter => app.toggle_mute(),
 
         /* Exit keys */
         KeyCode::Char('q') => app.quit(),
