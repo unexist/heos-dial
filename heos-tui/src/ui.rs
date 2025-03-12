@@ -19,15 +19,17 @@ use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding
 use tui_logger::{TuiLoggerLevelOutput, TuiLoggerWidget};
 use heos_lib::HeosDevice;
 use std::cmp::PartialEq;
+use ratatui::style::palette::material::RED;
 use crate::app::{App, Focus};
 
 const HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(SLATE.c800);
 const SELECTED_STYLE: Style = Style::new().fg(GREEN.c100).bg(SLATE.c800).add_modifier(Modifier::BOLD);
 const NORMAL_TEXT_FG_COLOR: Color = SLATE.c200;
-const ACTIVE_TEXT_FG_COLOR: Color = GREEN.c500;
+const ACTIVE_TEXT_FG_COLOR: Color = GREEN.c100;
+const ATTENTION_TEXT_FG_COLOR: Color = RED.c200;
 const NORMAL_ROW_BG_COLOR: Color = SLATE.c950;
 const ALT_ROW_BG_COLOR: Color = SLATE.c900;
-const VOLUME_GAUGE_COLOR: Color = GREEN.c500;
+const VOLUME_GAUGE_COLOR: Color = GREEN.c100;
 
 impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
@@ -177,9 +179,9 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
     let mut lines = vec![];
 
     if let Some(dev) = get_selected_device(app) {
-        lines.push(Line::styled(match dev.stream {
-            Some(_) => format!("{:^4} : {}", "🔊", dev.name),
-            None => format!("{:^4} : {}", "🔈", dev.name),
+        lines.push(Line::styled(match dev.volume {
+             x if 0 < x => format!("{:^4} : {}", "🔊", dev.name),
+            _ => format!("{:^4} : {}", "🔈", dev.name),
         }, style));
 
         lines.push(Line::styled(format!("{:^5} : {}", "™", dev.model), style));
@@ -213,11 +215,10 @@ fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
 fn render_logger(_app: &App, area: Rect, buf: &mut Buffer) {
     TuiLoggerWidget::default()
         .block(title_block("Heos Logs"))
-        .style_error(Style::default().fg(Color::Red))
-        .style_debug(Style::default().fg(Color::Green))
-        .style_warn(Style::default().fg(Color::Yellow))
-        .style_trace(Style::default().fg(Color::Magenta))
-        .style_info(Style::default().fg(Color::Cyan))
+        .style_error(Style::default().fg(ATTENTION_TEXT_FG_COLOR))
+        .style_debug(Style::default().fg(ACTIVE_TEXT_FG_COLOR))
+        .style_warn(Style::default().fg(ATTENTION_TEXT_FG_COLOR))
+        .style_info(Style::default().fg(NORMAL_TEXT_FG_COLOR))
         .output_separator('|')
         .output_timestamp(Some("%F %H:%M:%S%.3f".to_string()))
         .output_level(Some(TuiLoggerLevelOutput::Long))
