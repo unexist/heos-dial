@@ -93,12 +93,11 @@ fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
         .map(|(i, dev_item)| {
             let color = alternate_colors(i);
 
-            let line = match dev_item.stream {
-                Some(_) => Line::styled(
-                    format!("{:^5} {}", "🔊",
-                            dev_item.name), COMPLETED_TEXT_FG_COLOR),
-                None => Line::styled(format!("{:^5} {}", "🔈",
-                                             dev_item.name), TEXT_FG_COLOR),
+            let line = match dev_item.volume {
+                x if 0 < x => Line::styled(
+                    format!("{:^5} {}", "🔊", dev_item.name), COMPLETED_TEXT_FG_COLOR),
+                _ => Line::styled(
+                    format!("{:^5} {}", "🔈", dev_item.name), TEXT_FG_COLOR),
             };
 
             ListItem::new(line).bg(color)
