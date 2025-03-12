@@ -17,12 +17,12 @@ use app::App;
 use futures::pin_mut;
 use futures_util::StreamExt;
 use heos_lib::heos_command::{HeosCommand, HeosCommandHandler};
-use heos_lib::{Heos, HeosDevice, HeosReply};
+use heos_lib::{Heos, HeosDevice, HeosGroup, HeosReply};
 use ratatui::backend::CrosstermBackend;
 use ratatui::Terminal;
 use std::io;
 use std::sync::{Arc, RwLock};
-use log::info;
+use log::{debug, error, info};
 
 mod app;
 mod ui;
@@ -40,12 +40,12 @@ async fn main() -> AppResult<()> {
     tui.init()?;
 
     /* Create swap list */
-    let orig_list = Arc::new(RwLock::new(Vec::<HeosDevice>::new()));
+    let dev_orig_list = Arc::new(RwLock::new(Vec::<HeosDevice>::new()));
+    let group_orig_list = Arc::new(RwLock::new(Vec::<HeosGroup>::new()));
 
-    let mut app = App::new(Arc::clone(&orig_list));
-    let dev_list = Arc::clone(&orig_list);
+    let mut app = App::new(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list));
 
-    tokio::spawn(start_discovery(dev_list));
+    tokio::spawn(start_discovery(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list)));
 
     /* Kick off main loop */
     while app.running {
@@ -64,32 +64,32 @@ async fn main() -> AppResult<()> {
     Ok(())
 }
 
-async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>) {
+async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc<RwLock<Vec<HeosGroup>>>) {
     let devices = Heos::discover().await
         .expect("To discover devices");
     pin_mut!(devices);
 
     info!("discovery: Start");
 
-    let cmd = HeosCommand::new()
+    let mut cmd = HeosCommand::new()
         .group("player")
         .cmd("get_players");
 
     while let Some(mut dev) = devices.next().await {
-        info!("discovery: Requesting known devices from {}", dev);
+        info!("start_discovery: Requesting known devices from {}", dev);
 
         /* Ask first device for other known devices */
-        let reply = dev.send_command(&cmd).await
+        let mut reply = dev.send_command(&cmd).await
             .expect("To send command");
 
         if let HeosReply::Players(success, mut devices) = reply {
             if success {
-                info!("discovery: devices={}", devices.len());
+                debug!("start_discovery: Found ndevices={}", devices.len());
 
                 for dev in &mut devices {
                     dev.update_volume().await.expect("To update volume");
 
-                    info!("discovery: Updated volume for {}", dev);
+                    info!("start_discovery: Updated volume for {}", dev);
                 }
 
                 /* Replace vec */
@@ -99,6 +99,34 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>) {
 
                 break;
             }
+        } else if let HeosReply::Error(success, command, message) = reply {
+            error!("start_discovery: success={}, command={:?}, message={:?}",
+                        success, command, message);
+        }
+
+        /* Ask first device for known groups */
+        cmd = HeosCommand::new()
+            .group("player")
+            .cmd("get_groups");
+
+        reply = dev.send_command(&cmd).await.expect("To send command");
+
+        if let HeosReply::Groups(success, groups) = reply {
+            if success {
+                debug!("start_discovery: Found ngroups={}", groups.len());
+
+                for group in &groups {
+                    info!("start_discovery: Found group {}", group);
+                }
+
+                /* Replace vec */
+                let mut write_list = group_list.write().unwrap();
+
+                let _ = std::mem::replace(&mut *write_list, groups);
+            }
+        } else if let HeosReply::Error(success, command, message) = reply {
+            error!("start_discovery: success={}, command={:?}, message={:?}",
+                        success, command, message);
         }
     }
 }

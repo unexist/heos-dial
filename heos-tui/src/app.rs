@@ -11,21 +11,11 @@
 
 use std::{error, fmt};
 use std::fmt::{Display, Formatter};
-use heos_lib::{HeosDevice, HeosReply};
+use heos_lib::{HeosDevice, HeosGroup, HeosReply};
 use ratatui::widgets::ListState;
 use std::sync::{Arc, RwLock};
 use heos_lib::heos_command::{HeosCommand, HeosCommandHandler};
 use log::{error, info};
-
-pub type AppResult<T> = Result<T, Box<dyn error::Error>>;
-
-#[derive(Debug)]
-pub struct App {
-    pub(crate) dev_list: Arc<RwLock<Vec<HeosDevice>>>,
-    pub(crate) dev_list_state: ListState,
-    pub(crate) group_list_state: ListState,
-    pub running: bool,
-}
 
 #[derive(Debug)]
 pub(crate) enum PlayerState {
@@ -39,11 +29,23 @@ impl Display for PlayerState {
     }
 }
 
+pub type AppResult<T> = Result<T, Box<dyn error::Error>>;
+
+#[derive(Debug)]
+pub struct App {
+    pub(crate) dev_list: Arc<RwLock<Vec<HeosDevice>>>,
+    pub(crate) group_list: Arc<RwLock<Vec<HeosGroup>>>,
+    pub(crate) dev_list_state: ListState,
+    pub(crate) group_list_state: ListState,
+    pub running: bool,
+}
+
 impl App {
-    pub(crate) fn new(dev_list: Arc<RwLock<Vec<HeosDevice>>>) -> App {
+    pub(crate) fn new(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc<RwLock<Vec<HeosGroup>>>) -> App {
         Self {
             running: true,
             dev_list,
+            group_list,
             dev_list_state: ListState::default(),
             group_list_state: ListState::default(),
         }
@@ -157,6 +159,6 @@ impl App {
     }
 
     pub(crate) fn toggle_status(&self) {
-        eprintln!("Toggle status");
+        info!("Toggle status");
     }
 }
