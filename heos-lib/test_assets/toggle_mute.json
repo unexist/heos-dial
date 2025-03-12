@@ -1,6 +1,6 @@
 {
   "heos": {
-    "command": " player/toggle_mute ",
+    "command": "player/toggle_mute",
     "result": "success",
     "message": "pid=player_id"
   }
