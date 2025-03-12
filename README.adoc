@@ -12,8 +12,8 @@ This project holds a small controller software for HEOS based on MD5Dial and Rus
 | heos-lib
 | The HEOS library
 
-| heos-lib
-| HEOS parser lib crate
+| heos-tui
+| A TUI based on the library
 |===
 
 == Links
@@ -31,3 +31,4 @@ This project holds a small controller software for HEOS based on MD5Dial and Rus
 - https://gitlab.com/cyril-marpaud/rust_esp_quickstart
 - https://docs.esp-rs.org/book/overview/using-the-standard-library.html
 - https://embassy.dev/book/index.html
+- https://ratatui.rs/
