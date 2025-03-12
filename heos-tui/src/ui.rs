@@ -199,6 +199,11 @@ fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
 fn render_logger(_app: &App, area: Rect, buf: &mut Buffer) {
     TuiLoggerWidget::default()
         .block(title_block("Heos Logs"))
+        .style_error(Style::default().fg(Color::Red))
+        .style_debug(Style::default().fg(Color::Green))
+        .style_warn(Style::default().fg(Color::Yellow))
+        .style_trace(Style::default().fg(Color::Magenta))
+        .style_info(Style::default().fg(Color::Cyan))
         .output_separator('|')
         .output_timestamp(Some("%F %H:%M:%S%.3f".to_string()))
         .output_level(Some(TuiLoggerLevelOutput::Long))
