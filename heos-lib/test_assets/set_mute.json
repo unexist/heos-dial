@@ -1,0 +1,7 @@
+{
+  "heos": {
+    "command": " player/set_mute ",
+    "result": "success",
+    "message": "pid=player_id&state=on_or_off"
+  }
+}
