@@ -117,14 +117,15 @@ impl App {
 
                         dev.volume = level;
                     }
-                } else if let HeosReply::Error(success, command, _) = reply {
-                    error!("set_volume: success={}, command={:?}", success, command);
+                } else if let HeosReply::Error(success, command, message) = reply {
+                    error!("set_state: success={}, command={:?}, message={:?}",
+                        success, command, message);
                 }
             });
         }
     }
 
-    pub(crate) fn set_state(&mut self, state: PlayerState) {
+    pub(crate) fn set_play_state(&mut self, state: PlayerState) {
         if let Some(i) = self.dev_list_state.selected() {
             let dev_list = Arc::clone(&self.dev_list);
             let read_list = dev_list.read().unwrap();
@@ -134,21 +135,22 @@ impl App {
             drop(read_list);
 
             tokio::spawn(async move {
-                info!("set_state: state={}", state);
+                info!("set_play_state: state={}", state);
 
                 let state_str = state.to_string();
 
                 let cmd = HeosCommand::new()
                     .group("player")
-                    .cmd("set_state")
+                    .cmd("set_play_state")
                     .attr("state", &*state_str);
 
                 let reply = dev.send_command(&cmd).await.unwrap();
 
                 if let HeosReply::PlayState(success, _) = reply {
-                    info!("set_state: success={}, state={}", success, state_str);
-                } else if let HeosReply::Error(success, command, _) = reply {
-                    error!("set_state: success={}, command={:?}", success, command);
+                    info!("set_play_state: success={}, state={}", success, state_str);
+                } else if let HeosReply::Error(success, command, message) = reply {
+                    error!("set_play_state: success={}, command={:?}, message={:?}",
+                        success, command, message);
                 }
             });
         }

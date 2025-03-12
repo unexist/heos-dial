@@ -25,8 +25,8 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
         KeyCode::Char('G') | KeyCode::End => app.select_last(),
 
         /* Player */
-        KeyCode::Char('p') => app.set_state(app::PlayerState::Play),
-        KeyCode::Char('s') => app.set_state(app::PlayerState::Stop),
+        KeyCode::Char('p') => app.set_play_state(app::PlayerState::Play),
+        KeyCode::Char('s') => app.set_play_state(app::PlayerState::Stop),
 
         KeyCode::Esc => app.select_none(),
         KeyCode::Enter => app.toggle_status(),
