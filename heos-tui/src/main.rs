@@ -96,8 +96,6 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
                 let mut write_list = dev_list.write().unwrap();
 
                 let _ = std::mem::replace(&mut *write_list, devices);
-
-                break;
             }
         } else if let HeosReply::Error(success, command, message) = reply {
             error!("start_discovery: success={}, command={:?}, message={:?}",
@@ -128,5 +126,7 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
             error!("start_discovery: success={}, command={:?}, message={:?}",
                         success, command, message);
         }
+
+        break;
     }
 }

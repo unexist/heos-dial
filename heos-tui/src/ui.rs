@@ -127,7 +127,25 @@ fn render_group_list(app: &mut App, area: Rect, buf: &mut Buffer) {
         .border_style(DEV_HEADER_STYLE)
         .bg(NORMAL_ROW_BG);
 
-    let items: Vec<ListItem> = vec![ListItem::new("No groups found")];
+    let group_list = app.group_list.read().unwrap();
+
+    let mut items: Vec<ListItem> = group_list
+        .iter()
+        .enumerate()
+        .map(|(i, group_item)| {
+            let color = alternate_colors(i);
+
+            let line = Line::styled(format!("{:^5} {}", "∑",
+                                            group_item.name), TEXT_FG_COLOR);
+
+            ListItem::new(line).bg(color)
+        })
+        .collect();
+
+    /* Check whether list is empty */
+    if items.is_empty() {
+        items.push(ListItem::new("No groups found"));
+    }
 
     let list = List::new(items)
         .block(block)
