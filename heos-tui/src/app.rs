@@ -109,12 +109,12 @@ impl App {
             tokio::spawn(async move {
 
                 /* Calculate and normalize new volume level */
-                let new_level = i16::try_from(dev.volume).unwrap() + step;
+                let new_level = dev.volume as i16 + step;
 
                 let level : u16 = if 0 > new_level {
                     0
                 } else {
-                    u16::try_from(new_level).unwrap()
+                    new_level as u16
                 };
 
                 let level_str = level.to_string();
