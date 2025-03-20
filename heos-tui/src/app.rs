@@ -73,24 +73,51 @@ impl App {
         self.running = false;
     }
 
+    pub(crate) fn reset(&mut self) {
+        match self.focus_state {
+            Focus::Devices => self.group_list_state.select(None),
+            Focus::Groups => self.dev_list_state.select(None),
+        }
+    }
+
     pub(crate) fn select_none(&mut self) {
-        self.dev_list_state.select(None);
+        match self.focus_state {
+            Focus::Devices => self.dev_list_state.select(None),
+            Focus::Groups => self.group_list_state.select(None),
+        }
+        self.reset()
     }
 
     pub(crate) fn select_next(&mut self) {
-        self.dev_list_state.select_next();
+        match self.focus_state {
+            Focus::Devices => self.dev_list_state.select_next(),
+            Focus::Groups => self.group_list_state.select_next(),
+        }
+        self.reset()
     }
 
     pub(crate) fn select_previous(&mut self) {
-        self.dev_list_state.select_previous();
+        match self.focus_state {
+            Focus::Devices => self.dev_list_state.select_previous(),
+            Focus::Groups => self.group_list_state.select_previous(),
+        }
+        self.reset()
     }
 
     pub(crate) fn select_first(&mut self) {
-        self.dev_list_state.select_first();
+        match self.focus_state {
+            Focus::Devices => self.dev_list_state.select_first(),
+            Focus::Groups => self.group_list_state.select_first(),
+        }
+        self.reset()
     }
 
     pub(crate) fn select_last(&mut self) {
-        self.dev_list_state.select_last();
+        match self.focus_state {
+            Focus::Devices => self.dev_list_state.select_last(),
+            Focus::Groups => self.group_list_state.select_last(),
+        }
+        self.reset()
     }
 
     pub(crate) fn select_list(&mut self, focus_state: Focus) {
