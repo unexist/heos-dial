@@ -17,7 +17,7 @@ use ratatui::style::palette::tailwind::{GREEN, SLATE};
 use ratatui::text::Span;
 use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding, Wrap};
 use tui_logger::{TuiLoggerLevelOutput, TuiLoggerWidget};
-use heos_lib::HeosDevice;
+use heos_lib::{HeosDevice, HeosGroup};
 use std::cmp::PartialEq;
 use ratatui::style::palette::material::RED;
 use crate::app::{App, Focus};
@@ -180,13 +180,16 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
 
     if let Some(dev) = get_selected_device(app) {
         lines.push(Line::styled(match dev.volume {
-             x if 0 < x => format!("{:^4} : {}", "🔊", dev.name),
+            x if 0 < x => format!("{:^4} : {}", "🔊", dev.name),
             _ => format!("{:^4} : {}", "🔈", dev.name),
         }, style));
 
         lines.push(Line::styled(format!("{:^5} : {}", "™", dev.model), style));
         lines.push(Line::styled(format!("{:^5} : {}", "🖧", dev.base_url), style));
         lines.push(Line::styled(format!("{:^4} : {}", "🆔", dev.player_id), style));
+    } else if let Some(group) = get_selected_group(app) {
+        lines.push(Line::styled( format!("{:^4} : {}", "🔊", group.name), style));
+        lines.push(Line::styled(format!("{:^4} : {}", "🆔", group.group_id), style));
     } else {
         lines.push(Line::raw("Nothing selected yet".to_string()));
     }
@@ -251,6 +254,14 @@ fn title_block(title: &str) -> Block {
 fn get_selected_device(app: &App) -> Option<HeosDevice> {
     if let Some(i) = app.dev_list_state.selected() {
         return app.dev_list.read().unwrap().get(i).cloned();
+    }
+
+    None
+}
+
+fn get_selected_group(app: &App) -> Option<HeosGroup> {
+    if let Some(i) = app.group_list_state.selected() {
+        return app.group_list.read().unwrap().get(i).cloned();
     }
 
     None
