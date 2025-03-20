@@ -8,6 +8,7 @@ license-file = "LICENSE"
 homepage = "https://unexist.dev"
 repository = "https://hg.unexist.dev/heos-dial"
 edition = "2021"
+exclude = ["/Taskfile.yml"]
 
 [dependencies.heos-lib]
 version = "0.1.0"
