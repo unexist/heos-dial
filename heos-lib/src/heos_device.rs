@@ -94,6 +94,27 @@ impl HeosDevice {
 
         Ok(())
     }
+
+    pub async fn update_playing(&mut self) -> Result<()> {
+        self.connect().await?;
+
+        let cmd = HeosCommand::new()
+            .group("player")
+            .cmd("get_now_playing");
+
+        let reply = self.send_command(&cmd).await?;
+
+        if let HeosReply::PlayingMedia(success, attrs) = reply {
+            if success {
+                self.volume = attrs.get("level").unwrap().parse::<u16>()?;
+            }
+        } else if let HeosReply::Error(_, _, message) = reply {
+            return Err(anyhow!(message.get("text")
+                .expect("Expected error test to be set").to_string()));
+        }
+
+        Ok(())
+    }
 }
 
 impl HeosCommandHandler for HeosDevice {
