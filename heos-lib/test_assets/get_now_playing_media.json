@@ -14,5 +14,15 @@
     "qid": "'queue id'",
     "sid": "source_id",
     "album_id": "Album Id'"
-  }
+  },
+  "options": [
+    {
+      "play": [
+        {
+          "id": 19,
+          "name": "Add to HEOS Favorites"
+        }
+      ]
+    }
+  ]
 }
