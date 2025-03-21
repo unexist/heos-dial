@@ -23,6 +23,7 @@ mod heos_device_test;
 mod heos_group_test;
 mod heos_command_test;
 mod heos_reply_test;
+mod heos_media;
 
 pub use heos::Heos;
 pub use heos_device::HeosDevice;
