@@ -92,6 +92,12 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
                     info!("start_discovery: Updated volume for {}", dev);
                 }
 
+                for dev in &mut devices {
+                    dev.update_media().await.expect("To update media");
+
+                    info!("start_discovery: Updated media for {}", dev);
+                }
+
                 /* Replace vec */
                 let mut write_list = dev_list.write().unwrap();
 
