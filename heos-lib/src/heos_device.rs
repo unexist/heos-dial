@@ -1,4 +1,3 @@
-use std::fmt::{Display, Formatter};
 ///
 /// @package heos-dial
 ///
@@ -10,11 +9,13 @@ use std::fmt::{Display, Formatter};
 /// See the file LICENSE for details.
 ///
 
+use std::fmt::{Display, Formatter};
 use anyhow::{anyhow, Result};
 use tokio::io;
 use tokio::net::TcpStream;
 use crate::constants::DEFAULT_PORT;
 use crate::heos_command::{HeosCommand, HeosCommandHandler};
+use crate::heos_media::HeosMedia;
 use crate::heos_reply::HeosReply;
 
 #[derive(Debug)]
@@ -25,6 +26,7 @@ pub struct HeosDevice {
     pub player_id: String,
     pub group_id: String,
     pub volume: u16,
+    pub media: Option<HeosMedia>,
     pub stream: Option<TcpStream>,
 }
 
@@ -37,6 +39,7 @@ impl HeosDevice {
             player_id: pid.into(),
             group_id: Default::default(),
             volume: 0,
+            media: None,
             stream: None,
         })
     }
@@ -95,7 +98,7 @@ impl HeosDevice {
         Ok(())
     }
 
-    pub async fn update_playing(&mut self) -> Result<()> {
+    pub async fn update_media(&mut self) -> Result<()> {
         self.connect().await?;
 
         let cmd = HeosCommand::new()
@@ -106,7 +109,14 @@ impl HeosDevice {
 
         if let HeosReply::PlayingMedia(success, attrs) = reply {
             if success {
-                self.volume = attrs.get("level").unwrap().parse::<u16>()?;
+                let mut media = HeosMedia::default();
+
+                media.artist_title = attrs.get("artist").unwrap_or_default().into();
+                media.song_title = attrs.get("album").unwrap_or_default().into();
+                media.album_title = attrs.get("song").unwrap_or_default().into();
+                media.image_url = attrs.get("image_url").unwrap_or_default().into();
+
+                self.media = Some(media);
             }
         } else if let HeosReply::Error(_, _, message) = reply {
             return Err(anyhow!(message.get("text")
@@ -169,6 +179,7 @@ impl Clone for HeosDevice {
             player_id: self.player_id.clone(),
             group_id: self.group_id.clone(),
             volume: self.volume,
+            media: self.media.clone(),
             stream: None,
         }
     }
