@@ -111,10 +111,10 @@ impl HeosDevice {
             if success {
                 let mut media = HeosMedia::default();
 
-                media.artist_title = attrs.get("artist").unwrap_or_default().to_string();
-                media.song_title = attrs.get("album").unwrap_or_default().to_string();
-                media.album_title = attrs.get("song").unwrap_or_default().to_string();
-                media.image_url = attrs.get("image_url").unwrap_or_default().to_string();
+                media.artist_title = attrs.get("artist").cloned().unwrap_or_default();
+                media.song_title = attrs.get("album").cloned().unwrap_or_default();
+                media.album_title = attrs.get("song").cloned().unwrap_or_default();
+                media.image_url = attrs.get("image_url").cloned().unwrap_or_default();
 
                 self.media = Some(media);
             }
