@@ -9,8 +9,10 @@
 /// See the file LICENSE for details.
 ///
 
+use crate::heos_command::{HeosCommand, HeosCommandHandler};
+use crate::{HeosDevice, HeosReply};
+use anyhow::{anyhow, Result};
 use std::fmt::{Display, Formatter};
-use crate::HeosDevice;
 
 #[derive(Debug)]
 pub struct HeosGroup {
@@ -27,6 +29,17 @@ impl HeosGroup {
             group_id: group_id.into(),
             leader: None,
             players: None,
+        }
+    }
+}
+
+impl HeosCommandHandler for HeosGroup {
+    async fn send_command<'a>(&mut self, cmd: &HeosCommand<'a>) -> Result<HeosReply> {
+        match self.leader {
+            Some(ref mut leader) => {
+                Ok(leader.send_command(cmd).await?)
+            },
+            None => Err(anyhow!("No leader found")),
         }
     }
 }
