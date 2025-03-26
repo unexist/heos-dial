@@ -20,6 +20,7 @@ pub struct HeosGroup {
     pub group_id: String,
     pub leader: Option<HeosDevice>,
     pub players: Option<Vec<HeosDevice>>,
+    pub volume: u16,
 }
 
 impl HeosGroup {
@@ -29,21 +30,27 @@ impl HeosGroup {
             group_id: group_id.into(),
             leader: None,
             players: None,
+            volume: 0,
         }
     }
 
     pub async fn update_volume(&mut self) -> Result<()> {
-        match self.leader {
-            Some(ref mut leader) => leader.update_volume().await,
-            None => Ok(()),
-        }
-    }
+        let cmd = HeosCommand::new()
+            .group("group")
+            .cmd("get_volume");
 
-    pub fn volume(&self) -> u16 {
-        match self.leader {
-            Some(ref leader) => leader.volume,
-            None => 0
+        let reply = self.send_command(&cmd).await?;
+
+        if let HeosReply::Volume(success, attrs) = reply {
+            if success {
+                self.volume = attrs.get("level").unwrap().parse::<u16>()?;
+            }
+        } else if let HeosReply::Error(_, _, message) = reply {
+            return Err(anyhow!(message.get("text")
+                .expect("Expected error test to be set").to_string()));
         }
+
+        Ok(())
     }
 }
 
@@ -65,6 +72,7 @@ impl Clone for HeosGroup {
             group_id: self.group_id.clone(),
             leader: None,
             players: None,
+            volume: self.volume,
         }
     }
 }
