@@ -207,7 +207,7 @@ fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
     let vol = if let Some(dev) = get_selected_device(app) {
         dev.volume
     } else if let Some(group) = get_selected_group(app) {
-        group.volume()
+        group.volume
     } else {
         0
     };
