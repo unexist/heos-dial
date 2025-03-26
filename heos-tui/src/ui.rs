@@ -203,9 +203,13 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
 
 fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
     let title = title_block("Volume");
-    let vol = match get_selected_device(app) {
-        Some(dev) => dev.volume,
-        None => 0,
+
+    let vol = if let Some(dev) = get_selected_device(app) {
+        dev.volume
+    } else if let Some(group) = get_selected_group(app) {
+        group.volume()
+    } else {
+        0
     };
 
     Gauge::default()
