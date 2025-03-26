@@ -31,6 +31,20 @@ impl HeosGroup {
             players: None,
         }
     }
+
+    pub async fn update_volume(&mut self) -> Result<()> {
+        match self.leader {
+            Some(ref mut leader) => leader.update_volume().await,
+            None => Ok(()),
+        }
+    }
+
+    pub fn volume(&self) -> u16 {
+        match self.leader {
+            Some(ref leader) => leader.volume,
+            None => 0
+        }
+    }
 }
 
 impl HeosCommandHandler for HeosGroup {
