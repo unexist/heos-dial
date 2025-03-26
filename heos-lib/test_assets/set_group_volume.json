@@ -1,0 +1,7 @@
+{
+  "heos": {
+    "command": "group/set_volume ",
+    "result": "success",
+    "message": "gid='group_id'&level='vol_level'"
+  }
+}
