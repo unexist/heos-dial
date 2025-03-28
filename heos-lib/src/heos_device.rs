@@ -103,7 +103,7 @@ impl HeosDevice {
 
         let cmd = HeosCommand::new()
             .group("player")
-            .cmd("get_now_playing");
+            .cmd("get_now_playing_media");
 
         let reply = self.send_command(&cmd).await?;
 
