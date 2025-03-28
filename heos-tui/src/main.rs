@@ -76,7 +76,7 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
         .cmd("get_players");
 
     while let Some(mut dev) = devices.next().await {
-        info!("start_discovery: Requesting known devices from {}", dev);
+        info!("discovery: Requesting known devices from {}", dev);
 
         /* Ask first device for other known devices */
         let mut reply = dev.send_command(&cmd).await
@@ -84,18 +84,18 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
 
         if let HeosReply::Players(success, mut devices) = reply {
             if success {
-                debug!("start_discovery: Found ndevices={}", devices.len());
+                debug!("discovery: Found ndevices={}", devices.len());
 
                 for dev in &mut devices {
                     let res = dev.update_volume().await;
 
-                    info!("start_discovery: Updated volume for {} ({:?})", dev, res);
+                    info!("discovery: Updated volume for {} ({:?})", dev, res);
                 }
 
                 for dev in &mut devices {
                     let res = dev.update_media().await;
 
-                    info!("start_discovery: Updated media for {} ({:?})", dev, res);
+                    info!("discovery: Updated media for {} ({:?})", dev, res);
                 }
 
                 /* Replace vec */
@@ -104,7 +104,7 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
                 let _ = std::mem::replace(&mut *write_list, devices);
             }
         } else if let HeosReply::Error(success, command, message) = reply {
-            error!("start_discovery: success={}, command={:?}, message={:?}",
+            error!("discovery: success={}, command={:?}, message={:?}",
                         success, command, message);
         }
 
