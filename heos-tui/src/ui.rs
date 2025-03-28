@@ -19,6 +19,7 @@ use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding
 use tui_logger::{TuiLoggerLevelOutput, TuiLoggerWidget};
 use heos_lib::{HeosDevice, HeosGroup};
 use std::cmp::PartialEq;
+use futures_util::stream::poll_immediate;
 use ratatui::style::palette::material::RED;
 use crate::app::{App, Focus};
 
@@ -187,6 +188,11 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
         lines.push(Line::styled(format!("{:^5} : {}", "™", dev.model), style));
         lines.push(Line::styled(format!("{:^5} : {}", "🖧", dev.base_url), style));
         lines.push(Line::styled(format!("{:^4} : {}", "🆔", dev.player_id), style));
+
+        if let Some(media) = dev.media {
+            lines.push(Line::styled(format!("{:^5} : {} - {} ({})", "▶",
+                                            media.artist_title, media.song_title, media.album_title), style));
+        }
     } else if let Some(group) = get_selected_group(app) {
         lines.push(Line::styled( format!("{:^4} : {}", "🔊", group.name), style));
         lines.push(Line::styled(format!("{:^4} : {}", "🆔", group.group_id), style));
