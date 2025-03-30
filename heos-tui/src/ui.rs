@@ -19,7 +19,6 @@ use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding
 use tui_logger::{TuiLoggerLevelOutput, TuiLoggerWidget};
 use heos_lib::{HeosDevice, HeosGroup};
 use std::cmp::PartialEq;
-use futures_util::stream::poll_immediate;
 use ratatui::style::palette::material::RED;
 use crate::app::{App, Focus};
 
