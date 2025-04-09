@@ -80,7 +80,8 @@ impl HeosReply {
                 Self::parse_message(&json, "heos.message")
             )),
 
-            "player/set_mute" | "player/get_mute" | "player/toggle_mute" => Ok(HeosReply::Mute(
+            "player/set_mute" | "player/get_mute" | "player/toggle_mute" | "player/set_mute"
+            | "player/get_mute" | "player/toggle_mute" => Ok(HeosReply::Mute(
                 "success" == json.get("heos.result").str(),
                 Self::parse_message(&json, "heos.message")
             )),
