@@ -1,0 +1,7 @@
+{
+  "heos": {
+    "command": "group/set_mute",
+    "result": "success",
+    "message": "gid=group_id&state=on_or_off"
+  }
+}
