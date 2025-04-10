@@ -75,13 +75,14 @@ impl HeosReply {
                 Self::parse_generic_payload(&json, "payload")
             )),
 
-            "player/set_volume" | "player/get_volume" | "group/set_volume" | "group/get_volume" => Ok(HeosReply::Volume(
+            "player/set_volume" | "player/get_volume"
+            | "group/set_volume" | "group/get_volume" => Ok(HeosReply::Volume(
                 "success" == json.get("heos.result").str(),
                 Self::parse_message(&json, "heos.message")
             )),
 
-            "player/set_mute" | "player/get_mute" | "player/toggle_mute" | "player/set_mute"
-            | "player/get_mute" | "player/toggle_mute" => Ok(HeosReply::Mute(
+            "player/set_mute" | "player/get_mute" | "player/toggle_mute"
+            | "group/set_mute" | "group/get_mute" | "group/toggle_mute" => Ok(HeosReply::Mute(
                 "success" == json.get("heos.result").str(),
                 Self::parse_message(&json, "heos.message")
             )),

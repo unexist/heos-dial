@@ -110,41 +110,65 @@ mod heos_reply_test {
 
     #[test]
     fn should_parse_set_volume_reply() {
-        let reply = HeosReply::parse(test_asset!("set_volume.json"))
+        let mut reply = HeosReply::parse(test_asset!("set_volume.json"))
             .expect("Failed to parse set_volume.json");
+
+        assert!(matches!(reply, HeosReply::Volume { .. }));
+
+        reply = HeosReply::parse(test_asset!("set_group_volume.json"))
+            .expect("Failed to parse set_group_volume.json");
 
         assert!(matches!(reply, HeosReply::Volume { .. }));
     }
 
     #[test]
     fn should_parse_get_volume_reply() {
-        let reply = HeosReply::parse(test_asset!("get_volume.json"))
+        let mut reply = HeosReply::parse(test_asset!("get_volume.json"))
             .expect("Failed to parse get_volume.json");
+
+        assert!(matches!(reply, HeosReply::Volume { .. }));
+
+        reply = HeosReply::parse(test_asset!("get_group_volume.json"))
+            .expect("Failed to parse get_group_volume.json");
 
         assert!(matches!(reply, HeosReply::Volume { .. }));
     }
 
-
     #[test]
-    fn should_parse_set_mute_reply() {
-        let reply = HeosReply::parse(test_asset!("set_mute.json"))
+    fn should_parse_set_group_mute_reply() {
+        let mut reply = HeosReply::parse(test_asset!("set_mute.json"))
             .expect("Failed to parse set_mute.json");
+
+        assert!(matches!(reply, HeosReply::Mute{ .. }));
+
+        reply = HeosReply::parse(test_asset!("set_group_mute.json"))
+            .expect("Failed to parse set_group_mute.json");
 
         assert!(matches!(reply, HeosReply::Mute{ .. }));
     }
 
     #[test]
     fn should_parse_get_mute_reply() {
-        let reply = HeosReply::parse(test_asset!("get_mute.json"))
+        let mut reply = HeosReply::parse(test_asset!("get_mute.json"))
             .expect("Failed to parse get_mute.json");
+
+        assert!(matches!(reply, HeosReply::Mute { .. }));
+
+        reply = HeosReply::parse(test_asset!("get_group_mute.json"))
+            .expect("Failed to parse get_group_mute.json");
 
         assert!(matches!(reply, HeosReply::Mute { .. }));
     }
 
     #[test]
     fn should_parse_toggle_mute_reply() {
-        let reply = HeosReply::parse(test_asset!("toggle_mute.json"))
+        let mut reply = HeosReply::parse(test_asset!("toggle_mute.json"))
             .expect("Failed to parse toggle_mute.json");
+
+        assert!(matches!(reply, HeosReply::Mute { .. }));
+
+        reply = HeosReply::parse(test_asset!("toggle_group_mute.json"))
+            .expect("Failed to parse toggle_group_mute.json");
 
         assert!(matches!(reply, HeosReply::Mute { .. }));
     }
