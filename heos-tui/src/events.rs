@@ -82,13 +82,6 @@ impl EventHandler {
         }
     }
 
-    pub async fn send(&mut self, event: Event) -> AppResult<()> {
-        self.sender.clone().send(event)
-            .or(Err(Box::new(std::io::Error::new(
-                std::io::ErrorKind::Other, "This is an IO error",
-            ))))
-    }
-
     pub async fn next(&mut self) -> AppResult<Event> {
         self.receiver
             .recv()
