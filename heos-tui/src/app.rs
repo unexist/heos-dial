@@ -17,6 +17,8 @@ use std::sync::{Arc, RwLock};
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use heos_lib::heos_command::{HeosCommand, HeosCommandHandler};
 use log::{error, info};
+use tokio::sync::mpsc;
+use crate::events::Event;
 
 pub type AppResult<T> = Result<T, Box<dyn error::Error>>;
 
@@ -54,10 +56,13 @@ pub struct App {
     pub(crate) group_list_state: ListState,
     pub(crate) focus_state: Focus,
     pub is_running: bool,
+    sender: mpsc::UnboundedSender<Event>,
 }
 
 impl App {
-    pub(crate) fn new(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc<RwLock<Vec<HeosGroup>>>) -> App {
+    pub(crate) fn new(dev_list: Arc<RwLock<Vec<HeosDevice>>>,
+                      group_list: Arc<RwLock<Vec<HeosGroup>>>,
+                      sender: mpsc::UnboundedSender<Event>) -> App {
         Self {
             is_running: true,
             dev_list,
@@ -65,6 +70,7 @@ impl App {
             dev_list_state: ListState::default(),
             group_list_state: ListState::default(),
             focus_state: Focus::default(),
+            sender,
         }
     }
 
@@ -169,6 +175,8 @@ impl App {
 
             drop(read_list);
 
+            let cloned_sender = self.sender.clone();
+
             tokio::spawn(async move {
 
                 /* Calculate and normalize new volume level */
@@ -201,6 +209,8 @@ impl App {
                         let mut dev = write_list.get_mut(i).unwrap();
 
                         dev.volume = level;
+
+                        cloned_sender.send(Event::Redraw).unwrap();
                     }
                 } else if let HeosReply::Error(success, command, message) = reply {
                     error!("set_state: success={}, command={:?}, message={:?}",
@@ -219,6 +229,8 @@ impl App {
 
             drop(read_list);
 
+            let cloned_sender = self.sender.clone();
+
             tokio::spawn(async move {
                 let state_str = state.to_string().to_lowercase();
 
@@ -233,6 +245,8 @@ impl App {
 
                 if let HeosReply::PlayState(success, _) = reply {
                     info!("set_play_state: success={}, state={}", success, state_str);
+
+                    cloned_sender.send(Event::Redraw).unwrap();
                 } else if let HeosReply::Error(success, command, message) = reply {
                     error!("set_play_state: success={}, command={:?}, message={:?}",
                         success, command, message);
@@ -250,6 +264,8 @@ impl App {
 
             drop(read_list);
 
+            let cloned_sender = self.sender.clone();
+
             tokio::spawn(async move {
                 info!("toggle_mute");
 
@@ -261,6 +277,8 @@ impl App {
 
                 if let HeosReply::Mute(success, _) = reply {
                     info!("toggle_mute: success={}", success);
+
+                    cloned_sender.send(Event::Redraw).unwrap();
                 } else if let HeosReply::Error(success, command, message) = reply {
                     error!("toggle_mute: success={}, command={:?}, message={:?}",
                         success, command, message);
