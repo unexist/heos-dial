@@ -11,7 +11,6 @@
 
 use crate::app::AppResult;
 use crate::events::{Event, EventHandler};
-use crate::handlers::handle_key_events;
 use crate::tui::Tui;
 use app::App;
 use futures::pin_mut;
@@ -26,7 +25,6 @@ use log::{debug, error, info};
 
 mod app;
 mod ui;
-mod handlers;
 mod events;
 mod tui;
 
@@ -37,6 +35,7 @@ async fn main() -> AppResult<()> {
     let terminal = Terminal::new(backend)?;
     let events = EventHandler::new(250);
     let mut tui = Tui::new(terminal, events);
+
     tui.init()?;
 
     /* Create swap list */
@@ -48,13 +47,17 @@ async fn main() -> AppResult<()> {
     tokio::spawn(start_discovery(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list)));
 
     /* Kick off main loop */
-    while app.running {
+    while app.is_running {
         tui.draw(&mut app)?;
 
         match tui.events.next().await? {
             Event::Tick => app.tick(),
             Event::Redraw => tui.draw(&mut app)?,
-            Event::Key(key_event) => handle_key_events(key_event, &mut app)?,
+            Event::Key(key_event) => {
+                if let _result = app.handle_key_events(key_event)? {
+
+                }
+            },
             Event::Resize(_, _) => {}
         }
     }
