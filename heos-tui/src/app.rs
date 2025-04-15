@@ -14,6 +14,7 @@ use std::fmt::{Display, Formatter};
 use heos_lib::{HeosDevice, HeosGroup, HeosReply};
 use ratatui::widgets::ListState;
 use std::sync::{Arc, RwLock};
+use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use heos_lib::heos_command::{HeosCommand, HeosCommandHandler};
 use log::{error, info};
 
@@ -52,13 +53,13 @@ pub struct App {
     pub(crate) dev_list_state: ListState,
     pub(crate) group_list_state: ListState,
     pub(crate) focus_state: Focus,
-    pub running: bool,
+    pub is_running: bool,
 }
 
 impl App {
     pub(crate) fn new(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc<RwLock<Vec<HeosGroup>>>) -> App {
         Self {
-            running: true,
+            is_running: true,
             dev_list,
             group_list,
             dev_list_state: ListState::default(),
@@ -67,20 +68,55 @@ impl App {
         }
     }
 
+    pub fn handle_key_events(&mut self, key_event: KeyEvent) -> AppResult<()> {
+        match key_event.code {
+            /* Navigation */
+            KeyCode::Char('h') | KeyCode::Left => self.set_volume(-1),
+            KeyCode::Char('j') | KeyCode::Down => self.select_next(),
+            KeyCode::Char('k') | KeyCode::Up => self.select_previous(),
+            KeyCode::Char('l') | KeyCode::Right => self.set_volume(1),
+
+            KeyCode::Home => self.select_first(),
+            KeyCode::End => self.select_last(),
+
+            /* List selection */
+            KeyCode::Char('d') => self.select_list(Focus::Devices),
+            KeyCode::Char('g') => self.select_list(Focus::Groups),
+
+            /* Player */
+            KeyCode::Char('p') => self.set_play_state(PlayerState::Play),
+            KeyCode::Char('s') => self.set_play_state(PlayerState::Stop),
+
+            KeyCode::Esc => self.select_none(),
+            KeyCode::Enter => self.toggle_mute(),
+
+            /* Exit keys */
+            KeyCode::Char('q') => self.quit(),
+            KeyCode::Char('c') | KeyCode::Char('C') => {
+                if key_event.modifiers == KeyModifiers::CONTROL {
+                    self.quit();
+                }
+            },
+
+            _ => {}
+        }
+        Ok(())
+    }
+
     pub fn tick(&self) {}
 
     pub fn quit(&mut self) {
-        self.running = false;
+        self.is_running = false;
     }
 
-    pub(crate) fn reset(&mut self) {
+    fn reset(&mut self) {
         match self.focus_state {
             Focus::Devices => self.group_list_state.select(None),
             Focus::Groups => self.dev_list_state.select(None),
         }
     }
 
-    pub(crate) fn select_none(&mut self) {
+    fn select_none(&mut self) {
         match self.focus_state {
             Focus::Devices => self.dev_list_state.select(None),
             Focus::Groups => self.group_list_state.select(None),
@@ -88,7 +124,7 @@ impl App {
         self.reset()
     }
 
-    pub(crate) fn select_next(&mut self) {
+    fn select_next(&mut self) {
         match self.focus_state {
             Focus::Devices => self.dev_list_state.select_next(),
             Focus::Groups => self.group_list_state.select_next(),
@@ -96,7 +132,7 @@ impl App {
         self.reset()
     }
 
-    pub(crate) fn select_previous(&mut self) {
+    fn select_previous(&mut self) {
         match self.focus_state {
             Focus::Devices => self.dev_list_state.select_previous(),
             Focus::Groups => self.group_list_state.select_previous(),
@@ -104,7 +140,7 @@ impl App {
         self.reset()
     }
 
-    pub(crate) fn select_first(&mut self) {
+    fn select_first(&mut self) {
         match self.focus_state {
             Focus::Devices => self.dev_list_state.select_first(),
             Focus::Groups => self.group_list_state.select_first(),
@@ -112,7 +148,7 @@ impl App {
         self.reset()
     }
 
-    pub(crate) fn select_last(&mut self) {
+    fn select_last(&mut self) {
         match self.focus_state {
             Focus::Devices => self.dev_list_state.select_last(),
             Focus::Groups => self.group_list_state.select_last(),
@@ -120,11 +156,11 @@ impl App {
         self.reset()
     }
 
-    pub(crate) fn select_list(&mut self, focus_state: Focus) {
+    fn select_list(&mut self, focus_state: Focus) {
         self.focus_state = focus_state;
     }
 
-    pub(crate) fn set_volume(&mut self, step: i16) {
+    fn set_volume(&mut self, step: i16) {
         if let Some(i) = self.dev_list_state.selected() {
             let dev_list = Arc::clone(&self.dev_list);
             let read_list = dev_list.read().unwrap();
@@ -174,7 +210,7 @@ impl App {
         }
     }
 
-    pub(crate) fn set_play_state(&mut self, state: PlayerState) {
+    fn set_play_state(&mut self, state: PlayerState) {
         if let Some(i) = self.dev_list_state.selected() {
             let dev_list = Arc::clone(&self.dev_list);
             let read_list = dev_list.read().unwrap();
@@ -205,7 +241,7 @@ impl App {
         }
     }
 
-    pub(crate) fn toggle_mute(&self) {
+    fn toggle_mute(&self) {
         if let Some(i) = self.dev_list_state.selected() {
             let dev_list = Arc::clone(&self.dev_list);
             let read_list = dev_list.read().unwrap();
