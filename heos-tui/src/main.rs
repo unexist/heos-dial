@@ -34,6 +34,8 @@ async fn main() -> AppResult<()> {
     let backend = CrosstermBackend::new(io::stdout());
     let terminal = Terminal::new(backend)?;
     let events = EventHandler::new(250);
+    let sender= events.sender.clone();
+
     let mut tui = Tui::new(terminal, events);
 
     tui.init()?;
@@ -42,7 +44,7 @@ async fn main() -> AppResult<()> {
     let dev_orig_list = Arc::new(RwLock::new(Vec::<HeosDevice>::new()));
     let group_orig_list = Arc::new(RwLock::new(Vec::<HeosGroup>::new()));
 
-    let mut app = App::new(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list));
+    let mut app = App::new(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list), sender);
 
     tokio::spawn(start_discovery(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list)));
 
@@ -53,11 +55,7 @@ async fn main() -> AppResult<()> {
         match tui.events.next().await? {
             Event::Tick => app.tick(),
             Event::Redraw => tui.draw(&mut app)?,
-            Event::Key(key_event) => {
-                if let _result = app.handle_key_events(key_event)? {
-
-                }
-            },
+            Event::Key(key_event) => app.handle_key_events(key_event)?,
             Event::Resize(_, _) => {}
         }
     }
