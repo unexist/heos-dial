@@ -34,7 +34,8 @@ async fn main() -> AppResult<()> {
     /* Initialize the terminal user interface */
     let backend = CrosstermBackend::new(io::stdout());
     let terminal = Terminal::new(backend)?;
-    let mut events = EventHandler::new(250);
+
+    let mut events = EventHandler::new();
     let mut tui = Tui::new(terminal);
 
     tui.init()?;
@@ -52,7 +53,6 @@ async fn main() -> AppResult<()> {
         tui.draw(&mut app)?;
 
         match events.next().await? {
-            Event::Tick => app.tick(),
             Event::Redraw => tui.draw(&mut app)?,
             Event::Key(key_event) => app.handle_key_events(key_event)?,
             _ => {}
