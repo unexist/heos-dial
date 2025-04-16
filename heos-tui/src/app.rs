@@ -109,8 +109,6 @@ impl App {
         Ok(())
     }
 
-    pub fn tick(&self) {}
-
     pub fn quit(&mut self) {
         self.is_running = false;
     }
