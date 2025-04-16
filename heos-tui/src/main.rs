@@ -34,12 +34,8 @@ async fn main() -> AppResult<()> {
     /* Initialize the terminal user interface */
     let backend = CrosstermBackend::new(io::stdout());
     let terminal = Terminal::new(backend)?;
-    let events = EventHandler::new(250);
-
-    let sender= events.sender.clone();
-    let cloned_sender = events.sender.clone();
-
-    let mut tui = Tui::new(terminal, events);
+    let mut events = EventHandler::new(250);
+    let mut tui = Tui::new(terminal);
 
     tui.init()?;
 
@@ -47,19 +43,19 @@ async fn main() -> AppResult<()> {
     let dev_orig_list = Arc::new(RwLock::new(Vec::<HeosDevice>::new()));
     let group_orig_list = Arc::new(RwLock::new(Vec::<HeosGroup>::new()));
 
-    let mut app = App::new(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list), sender);
+    let mut app = App::new(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list), events.sender.clone());
 
-    tokio::spawn(start_discovery(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list), cloned_sender));
+    tokio::spawn(start_discovery(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list), events.sender.clone()));
 
     /* Kick off main loop */
     while app.is_running {
         tui.draw(&mut app)?;
 
-        match tui.events.next().await? {
+        match events.next().await? {
             Event::Tick => app.tick(),
             Event::Redraw => tui.draw(&mut app)?,
             Event::Key(key_event) => app.handle_key_events(key_event)?,
-            Event::Resize(_, _) => {}
+            _ => {}
         }
     }
 
@@ -106,6 +102,8 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
                 let mut write_list = dev_list.write().unwrap();
 
                 let _ = std::mem::replace(&mut *write_list, devices);
+
+                cloned_sender.send(Event::Redraw).unwrap();
             }
         } else if let HeosReply::Error(success, command, message) = reply {
             error!("discovery: success={}, command={:?}, message={:?}",
