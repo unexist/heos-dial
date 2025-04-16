@@ -22,6 +22,7 @@ use ratatui::Terminal;
 use std::io;
 use std::sync::{Arc, RwLock};
 use log::{debug, error, info};
+use tokio::sync::mpsc::UnboundedSender;
 
 mod app;
 mod ui;
@@ -34,7 +35,9 @@ async fn main() -> AppResult<()> {
     let backend = CrosstermBackend::new(io::stdout());
     let terminal = Terminal::new(backend)?;
     let events = EventHandler::new(250);
+
     let sender= events.sender.clone();
+    let cloned_sender = events.sender.clone();
 
     let mut tui = Tui::new(terminal, events);
 
@@ -46,7 +49,7 @@ async fn main() -> AppResult<()> {
 
     let mut app = App::new(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list), sender);
 
-    tokio::spawn(start_discovery(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list)));
+    tokio::spawn(start_discovery(Arc::clone(&dev_orig_list), Arc::clone(&group_orig_list), cloned_sender));
 
     /* Kick off main loop */
     while app.is_running {
@@ -65,7 +68,7 @@ async fn main() -> AppResult<()> {
     Ok(())
 }
 
-async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc<RwLock<Vec<HeosGroup>>>) {
+async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc<RwLock<Vec<HeosGroup>>>, cloned_sender: UnboundedSender<Event>) {
     let devices = Heos::discover().await
         .expect("To discover devices");
     pin_mut!(devices);
@@ -128,6 +131,8 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
                 let mut write_list = group_list.write().unwrap();
 
                 let _ = std::mem::replace(&mut *write_list, groups);
+
+                cloned_sender.send(Event::Redraw).unwrap();
             }
         } else if let HeosReply::Error(success, command, message) = reply {
             error!("start_discovery: success={}, command={:?}, message={:?}",
