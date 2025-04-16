@@ -16,19 +16,16 @@ use ratatui::Terminal;
 use std::io;
 use std::panic;
 use tui_logger::{init_logger, set_default_level, LevelFilter};
-use crate::events::EventHandler;
 
 #[derive(Debug)]
 pub struct Tui<B: Backend> {
     terminal: Terminal<B>,
-    pub events: EventHandler,
 }
 
 impl<B: Backend> Tui<B> {
-    pub fn new(terminal: Terminal<B>, events: EventHandler) -> Self {
+    pub fn new(terminal: Terminal<B>) -> Self {
         Self {
             terminal,
-            events
         }
     }
 
