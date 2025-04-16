@@ -9,8 +9,6 @@
 /// See the file LICENSE for details.
 ///
 
-use std::time::Duration;
-
 use crossterm::event::{Event as CrosstermEvent, KeyEvent};
 use futures::{FutureExt, StreamExt};
 use tokio::sync::mpsc;
@@ -20,7 +18,6 @@ use crate::app::AppResult;
 #[allow(dead_code)]
 #[derive(Clone, Copy, Debug)]
 pub enum Event {
-    Tick,
     Redraw,
     Key(KeyEvent),
     Resize(u16, u16),
@@ -35,26 +32,21 @@ pub struct EventHandler {
 }
 
 impl EventHandler {
-    pub fn new(tick_rate: u64) -> Self {
-        let tick_rate = Duration::from_millis(tick_rate);
+    pub fn new() -> Self {
         let (sender, receiver) = mpsc::unbounded_channel();
         let cloned_sender = sender.clone();
 
         let handler = tokio::spawn(async move {
             let mut reader = crossterm::event::EventStream::new();
-            let mut tick = tokio::time::interval(tick_rate);
 
             loop {
-                let tick_delay = tick.tick();
                 let crossterm_event = reader.next().fuse();
 
                 tokio::select! {
                   _ = cloned_sender.closed() => {
                         break;
                   }
-                  _ = tick_delay => {
-                        cloned_sender.send(Event::Tick).unwrap();
-                  }
+
                   Some(Ok(evt)) = crossterm_event => {
                         match evt {
                             CrosstermEvent::Key(key) => {
@@ -65,10 +57,7 @@ impl EventHandler {
                             CrosstermEvent::Resize(x, y) => {
                                 cloned_sender.send(Event::Resize(x, y)).unwrap();
                             },
-                            CrosstermEvent::Mouse(_) => { },
-                            CrosstermEvent::FocusLost => { },
-                            CrosstermEvent::FocusGained => { },
-                            CrosstermEvent::Paste(_) => { },
+                            _ => {}
                         }
                     }
                 };
