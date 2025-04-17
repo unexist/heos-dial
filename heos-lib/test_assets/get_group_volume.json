@@ -1,6 +1,6 @@
 {
   "heos": {
-    "command": "group/get_volume ",
+    "command": "group/get_volume",
     "result": "success",
     "message": "gid='group_id'&level='vol_level'"
   }
