@@ -26,4 +26,14 @@ mod heos_group_test {
 
         assert_eq!(heos_group, cloned);
     }
+
+    #[ignore]
+    #[rstest]
+    #[tokio::test]
+    async fn should_update_volume(mut heos_group: HeosGroup) {
+        heos_group.update_volume().await
+            .expect("Failed to update client");
+
+        assert!(heos_group.volume > 0);
+    }
 }
