@@ -146,6 +146,14 @@ impl HeosReply {
 
                 group.players = Some(Self::parse_players_payload(v, "players", &*group.group_id));
 
+                v.get("players").array().iter().for_each(|player| {
+                    if "leader".eq(player.get("role").str()) {
+                        group.leader = Some(Self::parse_player(player));
+
+                        return;
+                    }
+                });
+
                 group
             })
             .collect()
