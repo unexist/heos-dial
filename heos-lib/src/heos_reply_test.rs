@@ -37,6 +37,11 @@ mod heos_reply_test {
         if let HeosReply::Groups(success, groups) = reply {
             assert!(success);
             assert_eq!(groups.len(), 2);
+            assert!(groups[0].leader.is_some());
+
+            let leader = groups.get(0).as_ref().unwrap().leader.as_ref().unwrap();
+
+            assert_eq!(leader.player_id, env!("TEST_GROUP_LEADER"));
         } else {
             panic!("Wrong reply type");
         }
