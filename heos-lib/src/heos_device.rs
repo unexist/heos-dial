@@ -193,6 +193,9 @@ impl PartialEq for HeosDevice {
 
 impl Display for HeosDevice {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} ({})", self.name, self.base_url)
+        write!(f, "{} ({})", self.name, match self.base_url.is_empty() {
+            true => String::from("x.x.x.x"),
+            false => self.base_url.clone(),
+        })
     }
 }
