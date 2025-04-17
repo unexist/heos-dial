@@ -35,30 +35,24 @@ impl HeosGroup {
     }
 
     pub async fn update_volume(&mut self) -> Result<()> {
-        let cmd = HeosCommand::new()
-            .group("group")
-            .cmd("get_volume");
-
-        let reply = self.send_command(&cmd).await?;
-
-        if let HeosReply::Volume(success, attrs) = reply {
-            if success {
-                self.volume = attrs.get("level").unwrap().parse::<u16>()?;
-            }
-        } else if let HeosReply::Error(_, _, message) = reply {
-            return Err(anyhow!(message.get("text")
-                .expect("Expected error test to be set").to_string()));
-        }
-
-        Ok(())
-    }
-}
-
-impl HeosCommandHandler for HeosGroup {
-    async fn send_command<'a>(&mut self, cmd: &HeosCommand<'a>) -> Result<HeosReply> {
         match self.leader {
             Some(ref mut leader) => {
-                Ok(leader.send_command(cmd).await?)
+                let cmd = HeosCommand::new()
+                    .group("group")
+                    .cmd("get_volume");
+
+                let reply = leader.send_command(&cmd).await?;
+
+                if let HeosReply::Volume(success, attrs) = reply {
+                    if success {
+                        self.volume = attrs.get("level").unwrap().parse::<u16>()?;
+                    }
+                } else if let HeosReply::Error(_, _, message) = reply {
+                    return Err(anyhow!(message.get("text")
+                        .expect("Expected error test to be set").to_string()));
+                }
+
+                Ok(())
             },
             None => Err(anyhow!("No leader found")),
         }
@@ -85,6 +79,9 @@ impl PartialEq for HeosGroup {
 
 impl Display for HeosGroup {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} (leader: {:?})", self.name, self.leader)
+        write!(f, "{} (leader: {})", self.name, match self.leader {
+            Some(ref leader) => leader.to_string(),
+            None => "None".to_string()
+        })
     }
 }
