@@ -117,12 +117,18 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
 
         reply = dev.send_command(&cmd).await.expect("To send command");
 
-        if let HeosReply::Groups(success, groups) = reply {
+        if let HeosReply::Groups(success, mut groups) = reply {
             if success {
                 debug!("start_discovery: Found ngroups={}", groups.len());
 
                 for group in &groups {
                     info!("start_discovery: Found group {}", group);
+                }
+
+                for group in &mut groups {
+                    let res = group.update_volume().await;
+
+                    info!("discovery: Updated volume for {} ({:?})", group, res);
                 }
 
                 /* Replace vec */
