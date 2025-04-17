@@ -18,7 +18,7 @@ use crate::heos_command::{HeosCommand, HeosCommandHandler};
 use crate::heos_media::HeosMedia;
 use crate::heos_reply::HeosReply;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct HeosDevice {
     pub name: String,
     pub model: String,
