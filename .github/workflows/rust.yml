@@ -11,6 +11,7 @@ env:
   TEST_DEVICE_NAME: "Studio1"
   TEST_DEVICE_IP: "10.0.8.24"
   TEST_GROUP_NAME: "Almost"
+  TEST_GROUP_LEADER: "-1859434560"
 
 jobs:
   build:
