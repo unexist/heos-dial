@@ -174,7 +174,8 @@ fn render_group_list(app: &mut App, area: Rect, buf: &mut Buffer) {
 
 fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
     let title = title_block("Device Info");
-    let style = Style::new().italic();
+    let style = Style::new()
+        .bg(NORMAL_ROW_BG_COLOR);
 
     let mut lines = vec![];
 
@@ -202,6 +203,7 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
     Paragraph::new(lines)
         .block(title)
         .fg(NORMAL_TEXT_FG_COLOR)
+        .bg(NORMAL_ROW_BG_COLOR)
         .wrap(Wrap { trim: false })
         .render(area, buf);
 }
