@@ -75,6 +75,8 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
         .group("player")
         .cmd("get_players");
 
+    cloned_sender.send(Event::Redraw).unwrap();
+
     while let Some(mut dev) = devices.next().await {
         info!("discovery: Requesting known devices from {}", dev);
 
@@ -109,6 +111,8 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
             error!("discovery: success={}, command={:?}, message={:?}",
                         success, command, message);
         }
+
+        cloned_sender.send(Event::Redraw).unwrap();
 
         /* Ask first device for known groups */
         cmd = HeosCommand::new()
