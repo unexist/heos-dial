@@ -71,7 +71,7 @@ impl Clone for HeosGroup {
         Self {
             name: self.name.clone(),
             group_id: self.group_id.clone(),
-            leader: None,
+            leader: self.leader.clone(),
             players: None,
             volume: self.volume,
         }
