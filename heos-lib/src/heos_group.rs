@@ -34,6 +34,13 @@ impl HeosGroup {
         }
     }
 
+    pub async fn send_command<'a>(&mut self, cmd: &HeosCommand<'a>) -> Result<HeosReply> {
+        match self.leader {
+            Some(ref mut leader) => leader.send_command(cmd).await,
+            None => Err(anyhow!("No leader found")),
+        }
+    }
+
     pub async fn update_volume(&mut self) -> Result<()> {
         match self.leader {
             Some(ref mut leader) => {
