@@ -10,6 +10,7 @@
 ///
 
 use std::{error, fmt};
+use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use heos_lib::{HeosDevice, HeosGroup, HeosReply};
 use ratatui::widgets::ListState;
@@ -165,6 +166,13 @@ impl App {
     }
 
     fn set_volume(&mut self, step: i16) {
+        match self.focus_state {
+            Focus::Devices => self.set_player_volume(step),
+            Focus::Groups => self.set_group_volume(step),
+        }
+    }
+
+    fn set_player_volume(&mut self, step: i16) {
         if let Some(i) = self.dev_list_state.selected() {
             let dev_list = Arc::clone(&self.dev_list);
             let read_list = dev_list.read().unwrap();
@@ -188,17 +196,19 @@ impl App {
 
                 let level_str = level.to_string();
 
-                info!("set_volume: level={}", level_str);
+                info!("set_player_volume: level={}", level_str);
 
                 let cmd = HeosCommand::new()
                     .group("player")
                     .cmd("set_volume")
                     .attr("level", &*level_str);
 
-                let reply = dev.send_command(&cmd).await.unwrap();
+                let reply = dev.send_command(&cmd).await.unwrap_or_else(|err| {
+                    HeosReply::Error(false, err.to_string(), HashMap::new())
+                });
 
                 if let HeosReply::Volume(success, _) = reply {
-                    info!("set_volume: success={}, level={}", success, level);
+                    info!("set_player_volume: success={}, level={}", success, level);
 
                     if success {
                         let mut write_list = dev_list.write().unwrap();
@@ -211,7 +221,56 @@ impl App {
                         cloned_sender.send(Event::Redraw).unwrap();
                     }
                 } else if let HeosReply::Error(success, command, message) = reply {
-                    error!("set_state: success={}, command={:?}, message={:?}",
+                    error!("set_player_volume: success={}, command={:?}, message={:?}",
+                        success, command, message);
+                }
+            });
+        }
+    }
+
+    fn set_group_volume(&mut self, step: i16) {
+        if let Some(i) = self.group_list_state.selected() {
+            let group_list = Arc::clone(&self.group_list);
+            let read_list = group_list.read().unwrap();
+
+            let mut group = read_list.get(i).unwrap().clone();
+
+            drop(read_list);
+
+            let cloned_sender = self.sender.clone();
+
+            tokio::spawn(async move {
+
+                /* Calculate and normalize new volume level */
+                let new_level = group.volume as i16 + step;
+
+                let level : u16 = if 0 > new_level {
+                    0
+                } else {
+                    new_level as u16
+                };
+
+                let level_str = level.to_string();
+
+                info!("set_group_volume: level={}", level_str);
+
+                let cmd = HeosCommand::new()
+                    .group("group")
+                    .cmd("set_volume")
+                    .attr("level", &*level_str);
+
+                let reply = group.send_command(&cmd).await.unwrap_or_else(|err| {
+                    HeosReply::Error(false, err.to_string(), HashMap::new())
+                });
+
+                if let HeosReply::Volume(success, _) = reply {
+                    info!("set_group_volume: success={}, level={}", success, level);
+
+                    if success {
+                        cloned_sender.send(Event::Redraw).unwrap();
+                    }
+                } else if let HeosReply::Error(success, command, message) = reply {
+                    error!("set_group_volume: success={}, command={:?}, message={:?}",
                         success, command, message);
                 }
             });
