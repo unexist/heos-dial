@@ -125,8 +125,17 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
             if success {
                 debug!("start_discovery: Found ngroups={}", groups.len());
 
-                for group in &groups {
+                /* Find base url for leader if any */
+                for group in &mut groups {
                     info!("start_discovery: Found group {}", group);
+
+                    if let Some(leader) = group.leader.as_mut() {
+                        for dev in dev_list.read().unwrap().iter() {
+                            if dev == leader {
+                                leader.base_url = dev.base_url.clone();
+                            }
+                        }
+                    }
                 }
 
                 for group in &mut groups {
