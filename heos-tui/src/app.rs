@@ -267,6 +267,13 @@ impl App {
                     info!("set_group_volume: success={}, level={}", success, level);
 
                     if success {
+                        let mut write_list = group_list.write().unwrap();
+
+                        #[allow(unused_mut)]
+                        let mut group = write_list.get_mut(i).unwrap();
+
+                        group.volume = level;
+
                         cloned_sender.send(Event::Redraw).unwrap();
                     }
                 } else if let HeosReply::Error(success, command, message) = reply {
