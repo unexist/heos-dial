@@ -45,7 +45,7 @@ There will soon be docs available, for now please have a look at the test suite
 or the demo TUI app:
 
 * https://github.com/unexist/heos-dial/tree/master/heos-lib/src
-* https://github.com/unexist/heos-dial/tree/master/heos-lib/src
+* https://github.com/unexist/heos-dial/tree/master/heos-tui
 
 ## Roadmap
 
