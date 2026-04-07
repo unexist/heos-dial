@@ -35,8 +35,12 @@ impl HeosGroup {
     }
 
     pub async fn send_command<'a>(&mut self, cmd: &HeosCommand<'a>) -> Result<HeosReply> {
+
+        /* Append group id */
+        let group_cmd = cmd.clone().attr("gid", self.group_id.as_str());
+
         match self.leader {
-            Some(ref mut leader) => leader.send_command(cmd).await,
+            Some(ref mut leader) => leader.send_command(&group_cmd).await,
             None => Err(anyhow!("No leader found")),
         }
     }
