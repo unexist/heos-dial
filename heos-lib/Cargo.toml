@@ -1,12 +1,14 @@
 [package]
 name = "heos-lib"
+description = "Tokio-based bindings for the HEOS system"
 version = "0.1.0"
 authors = [
     "Christoph Kappel <christoph@unexist.dev>"
 ]
 license-file = "LICENSE"
+readme = "README.md"
 homepage = "https://unexist.dev"
-repository = "https://hg.unexist.dev/heos-dial"
+repository = "https://github.com/unexist/heos-dial/tree/master/heos-lib"
 edition = "2021"
 exclude = ["/test_assets", "/slumber.yml", "/Taskfile.yml"]
 
