@@ -56,6 +56,10 @@ impl<'a> HeosCommand<'a> {
 
         self
     }
+
+    pub fn is_player_command(&self) -> bool {
+        Some("player") == self.group
+    }
 }
 
 fn format_attributes(attrs: Option<&Vec<(&str, &str)>>) -> String {

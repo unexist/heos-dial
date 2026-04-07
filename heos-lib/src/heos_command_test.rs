@@ -44,4 +44,19 @@ mod heos_commands_test {
 
         assert_eq!(CMD_SET_PLAY_STATE2, cmd3);
     }
+
+    #[test]
+    fn should_identify_player_commands() {
+        let cmd1 = HeosCommand::new()
+            .group("player")
+            .cmd("get_players");
+
+        assert_eq!(true, cmd1.is_player_command());
+
+        let cmd2 = HeosCommand::new()
+            .group("group")
+            .cmd("get_volume");
+
+        assert_eq!(false, cmd1.is_player_command());
+    }
 }
