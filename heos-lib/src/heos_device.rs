@@ -132,7 +132,11 @@ impl HeosCommandHandler for HeosDevice {
         self.connect().await?;
 
         /* Append player id */
-        let dev_cmd = cmd.clone().attr("pid", self.player_id.as_str());
+        let mut dev_cmd = cmd.clone();
+
+        if dev_cmd.is_player_command() {
+            dev_cmd = dev_cmd.attr("pid", self.player_id.as_str());
+        };
 
         match self.stream.as_ref() {
             Some(stream) => {
