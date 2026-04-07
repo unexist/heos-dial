@@ -24,12 +24,24 @@ use crate::app::{App, Focus};
 
 const HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(SLATE.c800);
 const SELECTED_STYLE: Style = Style::new().fg(GREEN.c100).bg(SLATE.c800).add_modifier(Modifier::BOLD);
+
+// Display colors
 const NORMAL_TEXT_FG_COLOR: Color = SLATE.c200;
 const ACTIVE_TEXT_FG_COLOR: Color = GREEN.c100;
 const ATTENTION_TEXT_FG_COLOR: Color = RED.c200;
 const NORMAL_ROW_BG_COLOR: Color = SLATE.c950;
 const ALT_ROW_BG_COLOR: Color = SLATE.c900;
 const VOLUME_GAUGE_COLOR: Color = GREEN.c100;
+
+// Icons for UI taken from https://gist.github.com/nicolasdao/8f0220d050f585be1b56cc615ef6c12e
+const ICON_ID: &'static str = "🆔 ";
+const ICON_MODEL: &'static str = "™️";
+const ICON_URL: &'static str = "🔗";
+const ICON_PLAY: &'static str = "▶";
+const ICON_VOL_ON: &'static str = "🔈";
+const ICON_VOL_OFF: &'static str = "🔇";
+const ICON_DEV_NAME: &'static str = "📻";
+const ICON_GROUP_NAME: &'static str = "📻";
 
 impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
@@ -101,9 +113,9 @@ fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
 
             let line = match dev_item.volume {
                 x if 0 < x => Line::styled(
-                    format!("{:^5} {}", "🔊", dev_item.name), ACTIVE_TEXT_FG_COLOR),
+                    format!("{:^5} {}", ICON_VOL_ON, dev_item.name), ACTIVE_TEXT_FG_COLOR),
                 _ => Line::styled(
-                    format!("{:^5} {}", "🔈", dev_item.name), NORMAL_TEXT_FG_COLOR),
+                    format!("{:^5} {}", ICON_VOL_OFF, dev_item.name), NORMAL_TEXT_FG_COLOR),
             };
 
             ListItem::new(line).bg(color)
@@ -180,22 +192,20 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
     let mut lines = vec![];
 
     if let Some(dev) = get_selected_device(app) {
-        lines.push(Line::styled(match dev.volume {
-            x if 0 < x => format!("{:^4} : {}", "🔊", dev.name),
-            _ => format!("{:^4} : {}", "🔈", dev.name),
-        }, style));
-
-        lines.push(Line::styled(format!("{:^5} : {}", "™", dev.model), style));
-        lines.push(Line::styled(format!("{:^5} : {}", "🖧", dev.base_url), style));
-        lines.push(Line::styled(format!("{:^4} : {}", "🆔", dev.player_id), style));
+        lines.push(Line::styled(format!("{:^4} : {}", ICON_DEV_NAME, dev.name), style));
+        lines.push(Line::styled(format!("{:^5} : {}", ICON_MODEL, dev.model), style));
+        lines.push(Line::styled(format!("{:^4} : {}", ICON_URL, dev.base_url), style));
+        lines.push(Line::styled(format!("{:^4} : {}", ICON_ID, dev.player_id), style));
 
         if let Some(media) = dev.media {
-            lines.push(Line::styled(format!("{:^5} : {} - {} ({})", "▶",
+            lines.push(Line::styled(format!("{:^5} : {} - {} ({})", ICON_PLAY,
                                             media.artist_title, media.song_title, media.album_title), style));
         }
     } else if let Some(group) = get_selected_group(app) {
-        lines.push(Line::styled( format!("{:^4} : {}", "🔊", group.name), style));
-        lines.push(Line::styled(format!("{:^4} : {}", "🆔", group.group_id), style));
+        lines.push(Line::styled(format!("{:^4} : {}", ICON_GROUP_NAME, group.name), style));
+        lines.push(Line::styled(format!("{:^4} : {}", ICON_ID, group.group_id), style));
+        lines.push(Line::styled(format!("{:^4} : {}", ICON_DEV_NAME,
+                                        group.leader.unwrap_or_default().name), style));
     } else {
         lines.push(Line::raw("Nothing selected yet".to_string()));
     }
