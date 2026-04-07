@@ -29,7 +29,9 @@ impl<B: Backend> Tui<B> {
         }
     }
 
-    pub fn init(&mut self) -> AppResult<()> {
+    pub fn init(&mut self) -> AppResult<()>
+        where <B as Backend>::Error: 'static
+    {
         terminal::enable_raw_mode()?;
         crossterm::execute!(io::stdout(), EnterAlternateScreen)?;
 
@@ -51,7 +53,9 @@ impl<B: Backend> Tui<B> {
         Ok(())
     }
 
-    pub fn draw(&mut self, app: &mut App) -> AppResult<()> {
+    pub fn draw(&mut self, app: &mut App) -> AppResult<()>
+        where <B as Backend>::Error: 'static
+    {
         self.terminal.draw(|frame|
             frame.render_widget(app, frame.area())
         )?;
@@ -66,7 +70,9 @@ impl<B: Backend> Tui<B> {
         Ok(())
     }
 
-    pub fn exit(&mut self) -> AppResult<()> {
+    pub fn exit(&mut self) -> AppResult<()>
+        where <B as Backend>::Error: 'static
+    {
         Self::reset()?;
         self.terminal.show_cursor()?;
 
