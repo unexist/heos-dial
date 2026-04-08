@@ -60,7 +60,7 @@ impl HeosGroup {
                     }
                 } else if let HeosReply::Error(_, _, message) = reply {
                     return Err(anyhow!(message.get("text")
-                        .expect("Expected error test to be set").to_string()));
+                        .expect("Expected error text to be set").to_string()));
                 }
 
                 Ok(())
