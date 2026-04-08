@@ -22,6 +22,7 @@ use std::cmp::PartialEq;
 use ratatui::style::palette::material::RED;
 use crate::app::{App, Focus};
 
+// Default styles
 const HEADER_STYLE: Style = Style::new().fg(SLATE.c100).bg(SLATE.c800);
 const SELECTED_STYLE: Style = Style::new().fg(GREEN.c100).bg(SLATE.c800).add_modifier(Modifier::BOLD);
 
@@ -42,6 +43,11 @@ const ICON_VOL_ON: &'static str = "🔈";
 const ICON_VOL_OFF: &'static str = "🔇";
 const ICON_DEV_NAME: &'static str = "📻";
 const ICON_GROUP_NAME: &'static str = "📻";
+
+// Text in UI
+const TEXT_DEVICE_LIST: &'static str = "Device List (d)";
+const TEXT_GROUP_LIST: &'static str = "Group List (g)";
+const TEXT_STATUS: &'static str = "Use ↓ /↑ to move, ← /→  to lower/raise volume, g/d to select lists, p to play, s to stop.";
 
 impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
@@ -82,13 +88,14 @@ fn render_header(area: Rect, buf: &mut Buffer) {
 
 fn render_footer(area: Rect, buf: &mut Buffer) {
     let lines = Line::from(vec![
-        Span::raw("Use ↓ /↑ to move, ← /→  to lower/raise volume, g/d to select lists, p to play, s to stop."),
+        Span::raw(TEXT_STATUS),
     ]);
 
     Paragraph::new(lines)
         .centered()
         .render(area, buf);
 }
+
 
 fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
     let style = match app.focus_state {
@@ -97,7 +104,7 @@ fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
     };
 
     let block = Block::new()
-        .title(Line::raw("Device List (d)").centered())
+        .title(Line::raw(TEXT_DEVICE_LIST).centered())
         .borders(Borders::all())
         .border_set(symbols::border::PLAIN)
         .border_style(style)
@@ -149,7 +156,7 @@ fn render_group_list(app: &mut App, area: Rect, buf: &mut Buffer) {
     };
 
     let block = Block::new()
-        .title(Line::raw("Group List (g)").centered())
+        .title(Line::raw(TEXT_GROUP_LIST).centered())
         .borders(Borders::all())
         .border_set(symbols::border::PLAIN)
         .border_style(style)
