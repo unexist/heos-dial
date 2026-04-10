@@ -47,7 +47,7 @@ const ICON_GROUP_NAME: &'static str = "📻";
 // Text in UI
 const TEXT_DEVICE_LIST: &'static str = "Device List (d)";
 const TEXT_GROUP_LIST: &'static str = "Group List (g)";
-const TEXT_STATUS: &'static str = "Use ↓ /↑ to move, ← /→  to lower/raise volume, g/d to select lists, p to play, s to stop.";
+const TEXT_STATUS: &'static str = "Use ↓ /↑ to move, ← /→  to lower/raise volume, g/d to select lists, p to play, s to stop, m toggle mute.";
 
 impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
