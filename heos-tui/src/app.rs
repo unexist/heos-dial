@@ -95,7 +95,7 @@ impl App {
             KeyCode::Char('s') => self.set_play_state(PlayerState::Stop),
 
             KeyCode::Esc => self.select_none(),
-            KeyCode::Enter => self.toggle_mute(),
+            KeyCode::Char('m') => self.toggle_mute(),
 
             /* Exit keys */
             KeyCode::Char('q') => self.quit(),
@@ -114,7 +114,7 @@ impl App {
         self.is_running = false;
     }
 
-    fn reset(&mut self) {
+    fn deselect_all(&mut self) {
         match self.focus_state {
             Focus::Devices => self.group_list_state.select(None),
             Focus::Groups => self.dev_list_state.select(None),
@@ -126,7 +126,7 @@ impl App {
             Focus::Devices => self.dev_list_state.select(None),
             Focus::Groups => self.group_list_state.select(None),
         }
-        self.reset()
+        self.deselect_all()
     }
 
     fn select_next(&mut self) {
@@ -134,7 +134,7 @@ impl App {
             Focus::Devices => self.dev_list_state.select_next(),
             Focus::Groups => self.group_list_state.select_next(),
         }
-        self.reset()
+        self.deselect_all()
     }
 
     fn select_previous(&mut self) {
@@ -142,7 +142,7 @@ impl App {
             Focus::Devices => self.dev_list_state.select_previous(),
             Focus::Groups => self.group_list_state.select_previous(),
         }
-        self.reset()
+        self.deselect_all()
     }
 
     fn select_first(&mut self) {
@@ -150,7 +150,7 @@ impl App {
             Focus::Devices => self.dev_list_state.select_first(),
             Focus::Groups => self.group_list_state.select_first(),
         }
-        self.reset()
+        self.deselect_all()
     }
 
     fn select_last(&mut self) {
@@ -158,7 +158,7 @@ impl App {
             Focus::Devices => self.dev_list_state.select_last(),
             Focus::Groups => self.group_list_state.select_last(),
         }
-        self.reset()
+        self.deselect_all()
     }
 
     fn select_list(&mut self, focus_state: Focus) {
