@@ -204,7 +204,7 @@ impl App {
                     .attr("level", &*level_str);
 
                 let reply = dev.send_command(&cmd).await.unwrap_or_else(|err| {
-                    HeosReply::Error(false, err.to_string(), HashMap::new())
+                    HeosReply::Error(false, err.to_string(), HashMap::default())
                 });
 
                 if let HeosReply::Volume(success, _) = reply {
@@ -260,7 +260,7 @@ impl App {
                     .attr("level", &*level_str);
 
                 let reply = group.send_command(&cmd).await.unwrap_or_else(|err| {
-                    HeosReply::Error(false, err.to_string(), HashMap::new())
+                    HeosReply::Error(false, err.to_string(), HashMap::default())
                 });
 
                 if let HeosReply::Volume(success, _) = reply {
