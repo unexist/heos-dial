@@ -85,6 +85,7 @@ impl App {
 
             KeyCode::Home => self.select_first(),
             KeyCode::End => self.select_last(),
+            KeyCode::Esc => self.select_none(),
 
             /* List selection */
             KeyCode::Char('d') => self.select_list(Focus::Devices),
@@ -94,7 +95,6 @@ impl App {
             KeyCode::Char('p') => self.set_play_state(PlayerState::Play),
             KeyCode::Char('s') => self.set_play_state(PlayerState::Stop),
 
-            KeyCode::Esc => self.select_none(),
             KeyCode::Char('m') => self.toggle_mute(),
 
             /* Exit keys */
@@ -169,6 +169,13 @@ impl App {
         match self.focus_state {
             Focus::Devices => self.set_player_volume(step),
             Focus::Groups => self.set_group_volume(step),
+        }
+    }
+
+    fn toggle_mute(&mut self) {
+        match self.focus_state {
+            Focus::Devices => self.toggle_player_mute(),
+            Focus::Groups => self.toggle_group_mute(),
         }
     }
 
@@ -319,7 +326,7 @@ impl App {
         }
     }
 
-    fn toggle_mute(&self) {
+    fn toggle_player_mute(&self) {
         if let Some(i) = self.dev_list_state.selected() {
             let dev_list = Arc::clone(&self.dev_list);
             let read_list = dev_list.read().unwrap();
@@ -344,7 +351,39 @@ impl App {
 
                     cloned_sender.send(Event::Redraw).unwrap();
                 } else if let HeosReply::Error(success, command, message) = reply {
-                    error!("toggle_mute: success={}, command={:?}, message={:?}",
+                    error!("toggle_player_mute: success={}, command={:?}, message={:?}",
+                        success, command, message);
+                }
+            });
+        }
+    }
+
+    fn toggle_group_mute(&self) {
+        if let Some(i) = self.group_list_state.selected() {
+            let group_list = Arc::clone(&self.group_list);
+            let read_list = group_list.read().unwrap();
+
+            let mut group = read_list.get(i).unwrap().clone();
+
+            drop(read_list);
+
+            let cloned_sender = self.sender.clone();
+
+            tokio::spawn(async move {
+                info!("toggle_mute");
+
+                let cmd = HeosCommand::new()
+                    .group("group")
+                    .cmd("toggle_mute");
+
+                let reply = group.send_command(&cmd).await.unwrap();
+
+                if let HeosReply::Mute(success, _) = reply {
+                    info!("toggle_mute: success={}", success);
+
+                    cloned_sender.send(Event::Redraw).unwrap();
+                } else if let HeosReply::Error(success, command, message) = reply {
+                    error!("toggle_group_mute: success={}, command={:?}, message={:?}",
                         success, command, message);
                 }
             });
