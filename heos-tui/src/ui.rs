@@ -45,9 +45,14 @@ const ICON_DEV_NAME: &'static str = "📻";
 const ICON_GROUP_NAME: &'static str = "📻";
 
 // Text in UI
-const TEXT_DEVICE_LIST: &'static str = "Device List (d)";
-const TEXT_GROUP_LIST: &'static str = "Group List (g)";
 const TEXT_STATUS: &'static str = "Use ↓ /↑ to move, ← /→  to lower/raise volume, g/d to select lists, p to play, s to stop, m toggle mute.";
+
+const HEADER_DEVICE_LIST: &'static str = "Device List (d)";
+const HEADER_GROUP_LIST: &'static str = "Group List (g)";
+const HEADER_LOGS: &'static str = "Heos Logs";
+
+const HEADER_DEVICE_INFO: &'static str = "Device Info";
+const HEADER_VOLUME: &'static str = "Volume";
 
 impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
@@ -104,7 +109,7 @@ fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
     };
 
     let block = Block::new()
-        .title(Line::raw(TEXT_DEVICE_LIST).centered())
+        .title(Line::raw(HEADER_DEVICE_LIST).centered())
         .borders(Borders::all())
         .border_set(symbols::border::PLAIN)
         .border_style(style)
@@ -156,7 +161,7 @@ fn render_group_list(app: &mut App, area: Rect, buf: &mut Buffer) {
     };
 
     let block = Block::new()
-        .title(Line::raw(TEXT_GROUP_LIST).centered())
+        .title(Line::raw(HEADER_GROUP_LIST).centered())
         .borders(Borders::all())
         .border_set(symbols::border::PLAIN)
         .border_style(style)
@@ -192,7 +197,7 @@ fn render_group_list(app: &mut App, area: Rect, buf: &mut Buffer) {
 }
 
 fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
-    let title = title_block("Device Info");
+    let title = title_block(HEADER_DEVICE_INFO);
     let style = Style::new()
         .bg(NORMAL_ROW_BG_COLOR);
 
@@ -226,7 +231,7 @@ fn render_selected_item(app: &App, area: Rect, buf: &mut Buffer) {
 }
 
 fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
-    let title = title_block("Volume");
+    let title = title_block(HEADER_VOLUME);
 
     let vol = if let Some(dev) = get_selected_device(app) {
         dev.volume
@@ -245,7 +250,7 @@ fn render_gauge(app: &App, area: Rect, buf: &mut Buffer) {
 
 fn render_logger(_app: &App, area: Rect, buf: &mut Buffer) {
     TuiLoggerWidget::default()
-        .block(title_block("Heos Logs"))
+        .block(title_block(HEADER_LOGS))
         .style_error(Style::default().fg(ATTENTION_TEXT_FG_COLOR))
         .style_debug(Style::default().fg(ACTIVE_TEXT_FG_COLOR))
         .style_warn(Style::default().fg(ATTENTION_TEXT_FG_COLOR))
