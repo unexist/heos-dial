@@ -1,0 +1,11 @@
+[tasks.test]
+run = "cargo test -- --nocapture"
+
+[tasks.cap]
+run = "cargo test"
+
+[tasks.run]
+run = "cargo run"
+
+[tasks.clean]
+run = "cargo clean"
