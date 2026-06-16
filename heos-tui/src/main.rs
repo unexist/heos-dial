@@ -1,13 +1,13 @@
-///
-/// @package heos-dial
-///
-/// @file HEOS tui
-/// @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
-/// @version $Id$
-///
-/// This program can be distributed under the terms of the GNU GPLv3.
-/// See the file LICENSE for details.
-///
+//!
+//! @package heos-dial
+//!
+//! @file HEOS tui
+//! @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
+//! @version $Id$
+//!
+//! This program can be distributed under the terms of the GNU GPLv3.
+//! See the file LICENSE for details.
+//!
 
 use crate::app::AppResult;
 use crate::events::{Event, EventHandler};
@@ -110,6 +110,8 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
         } else if let HeosReply::Error(success, command, message) = reply {
             error!("discovery: success={}, command={:?}, message={:?}",
                         success, command, message);
+
+            continue;
         }
 
         cloned_sender.send(Event::Redraw).unwrap();
@@ -154,6 +156,8 @@ async fn start_discovery(dev_list: Arc<RwLock<Vec<HeosDevice>>>, group_list: Arc
         } else if let HeosReply::Error(success, command, message) = reply {
             error!("start_discovery: success={}, command={:?}, message={:?}",
                         success, command, message);
+
+            continue;
         }
 
         break;

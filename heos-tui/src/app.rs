@@ -1,13 +1,13 @@
-///
-/// @package heos-dial
-///
-/// @file HEOS tui
-/// @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
-/// @version $Id$
-///
-/// This program can be distributed under the terms of the GNU GPLv3.
-/// See the file LICENSE for details.
-///
+//!
+//! @package heos-dial
+//!
+//! @file HEOS tui
+//! @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
+//! @version $Id$
+//!
+//! This program can be distributed under the terms of the GNU GPLv3.
+//! See the file LICENSE for details.
+//!
 
 use std::{error, fmt};
 use std::collections::HashMap;
@@ -35,7 +35,7 @@ impl Display for PlayerState {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub(crate) enum Focus {
     #[default]
     Devices,
@@ -99,10 +99,8 @@ impl App {
 
             /* Exit keys */
             KeyCode::Char('q') => self.quit(),
-            KeyCode::Char('c') | KeyCode::Char('C') => {
-                if key_event.modifiers == KeyModifiers::CONTROL {
-                    self.quit();
-                }
+            KeyCode::Char('c') | KeyCode::Char('C') if key_event.modifiers == KeyModifiers::CONTROL => {
+                self.quit();
             },
 
             _ => {}
@@ -208,7 +206,7 @@ impl App {
                 let cmd = HeosCommand::new()
                     .group("player")
                     .cmd("set_volume")
-                    .attr("level", &*level_str);
+                    .attr("level", &level_str);
 
                 let reply = dev.send_command(&cmd).await.unwrap_or_else(|err| {
                     HeosReply::Error(false, err.to_string(), HashMap::default())
@@ -264,7 +262,7 @@ impl App {
                 let cmd = HeosCommand::new()
                     .group("group")
                     .cmd("set_volume")
-                    .attr("level", &*level_str);
+                    .attr("level", &level_str);
 
                 let reply = group.send_command(&cmd).await.unwrap_or_else(|err| {
                     HeosReply::Error(false, err.to_string(), HashMap::default())
@@ -310,7 +308,7 @@ impl App {
                 let cmd = HeosCommand::new()
                     .group("player")
                     .cmd("set_play_state")
-                    .attr("state", &*state_str);
+                    .attr("state", &state_str);
 
                 let reply = dev.send_command(&cmd).await.unwrap();
 

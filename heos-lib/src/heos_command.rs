@@ -1,13 +1,13 @@
-///
-/// @package heos-dial
-///
-/// @file HEOS lib
-/// @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
-/// @version $Id$
-///
-/// This program can be distributed under the terms of the GNU GPLv3.
-/// See the file LICENSE for details.
-///
+//!
+//! @package heos-dial
+//!
+//! @file HEOS lib
+//! @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
+//! @version $Id$
+//!
+//! This program can be distributed under the terms of the GNU GPLv3.
+//! See the file LICENSE for details.
+//!
 
 use std::fmt::Display;
 use anyhow::Result;
@@ -63,15 +63,16 @@ impl<'a> HeosCommand<'a> {
 }
 
 fn format_attributes(attrs: Option<&Vec<(&str, &str)>>) -> String {
-    if attrs.is_none() || attrs.unwrap().is_empty() {
-        "".into()
-    } else {
-        match attrs.unwrap().iter()
-            .map(|kv| { format!("{}={}", kv.0, kv.1) })
-            .reduce(|prev, next| { format!("{}&{}", prev, next) })
-        {
-            Some(result) => format!("?{}", result),
-            None => "".into()
+    match attrs {
+        None => "".into(),
+        Some(vals) => {
+            match vals.iter()
+                .map(|kv| { format!("{}={}", kv.0, kv.1) })
+                .reduce(|prev, next| { format!("{}&{}", prev, next) })
+            {
+                Some(result) => format!("?{}", result),
+                None => "".into()
+            }
         }
     }
 }

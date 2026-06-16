@@ -1,13 +1,13 @@
-///
-/// @package heos-dial
-///
-/// @file HEOS tui
-/// @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
-/// @version $Id$
-///
-/// This program can be distributed under the terms of the GNU GPLv3.
-/// See the file LICENSE for details.
-///
+//!
+//! @package heos-dial
+//!
+//! @file HEOS tui
+//! @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
+//! @version $Id$
+//!
+//! This program can be distributed under the terms of the GNU GPLv3.
+//! See the file LICENSE for details.
+//!
 
 use ratatui::{style::{Color, Style}, symbols, widgets::{Block, Paragraph}};
 use ratatui::buffer::Buffer;
@@ -18,7 +18,6 @@ use ratatui::text::Span;
 use ratatui::widgets::{Borders, Gauge, HighlightSpacing, List, ListItem, Padding, Wrap};
 use tui_logger::{TuiLoggerLevelOutput, TuiLoggerWidget};
 use heos_lib::{HeosDevice, HeosGroup};
-use std::cmp::PartialEq;
 use ratatui::style::palette::material::RED;
 use crate::app::{App, Focus};
 
@@ -35,24 +34,24 @@ const ALT_ROW_BG_COLOR: Color = SLATE.c900;
 const VOLUME_GAUGE_COLOR: Color = GREEN.c100;
 
 // Icons for UI taken from https://gist.github.com/nicolasdao/8f0220d050f585be1b56cc615ef6c12e
-const ICON_ID: &'static str = "🆔 ";
-const ICON_MODEL: &'static str = "™️";
-const ICON_URL: &'static str = "🔗";
-const ICON_PLAY: &'static str = "▶";
-const ICON_VOL_ON: &'static str = "🔈";
-const ICON_VOL_OFF: &'static str = "🔇";
-const ICON_DEV_NAME: &'static str = "📻";
-const ICON_GROUP_NAME: &'static str = "📻";
+const ICON_ID: &str = "🆔 ";
+const ICON_MODEL: &str = "™️";
+const ICON_URL: &str = "🔗";
+const ICON_PLAY: &str = "▶";
+const ICON_VOL_ON: &str = "🔈";
+const ICON_VOL_OFF: &str = "🔇";
+const ICON_DEV_NAME: &str = "📻";
+const ICON_GROUP_NAME: &str = "📻";
 
 // Text in UI
-const TEXT_STATUS: &'static str = "Use ↓ /↑ to move, ← /→  to lower/raise volume, g/d to select lists, p to play, s to stop, m toggle mute.";
+const TEXT_STATUS: &str = "Use ↓ /↑ to move, ← /→  to lower/raise volume, g/d to select lists, p to play, s to stop, m toggle mute.";
 
-const HEADER_DEVICE_LIST: &'static str = "Device List (d)";
-const HEADER_GROUP_LIST: &'static str = "Group List (g)";
-const HEADER_LOGS: &'static str = "Heos Logs";
+const HEADER_DEVICE_LIST: &str = "Device List (d)";
+const HEADER_GROUP_LIST: &str = "Group List (g)";
+const HEADER_LOGS: &str = "Heos Logs";
 
-const HEADER_DEVICE_INFO: &'static str = "Device Info";
-const HEADER_VOLUME: &'static str = "Volume";
+const HEADER_DEVICE_INFO: &str = "Device Info";
+const HEADER_VOLUME: &str = "Volume";
 
 impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
@@ -146,12 +145,6 @@ fn render_dev_list(app: &mut App, area: Rect, buf: &mut Buffer) {
         .highlight_spacing(HighlightSpacing::Always);
 
     StatefulWidget::render(list, area, buf, &mut app.dev_list_state);
-}
-
-impl PartialEq for Focus {
-    fn eq(&self, other: &Self) -> bool {
-        self == other
-    }
 }
 
 fn render_group_list(app: &mut App, area: Rect, buf: &mut Buffer) {
@@ -265,7 +258,7 @@ fn render_logger(_app: &App, area: Rect, buf: &mut Buffer) {
 }
 
 const fn alternate_colors(i: usize) -> Color {
-    if 0 == i % 2 {
+    if i.is_multiple_of(2) {
         NORMAL_ROW_BG_COLOR
     } else {
         ALT_ROW_BG_COLOR

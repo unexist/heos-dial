@@ -1,16 +1,16 @@
-///
-/// @package heos-dial
-///
-/// @file HEOS lib
-/// @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
-/// @version $Id$
-///
-/// This program can be distributed under the terms of the GNU GPLv3.
-/// See the file LICENSE for details.
-///
+//!
+//! @package heos-dial
+//!
+//! @file HEOS lib
+//! @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
+//! @version $Id$
+//!
+//! This program can be distributed under the terms of the GNU GPLv3.
+//! See the file LICENSE for details.
+//!
 
 use std::str;
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow, bail};
 use async_stream::stream;
 use const_format::formatcp;
 use futures_util::Stream;
@@ -19,7 +19,7 @@ use tokio::net::UdpSocket;
 use crate::constants::TARGET_URN;
 use crate::heos_device::HeosDevice;
 
-const DISCOVERY_REQUEST: &'static str = formatcp!("M-SEARCH * HTTP/1.1\r\n\
+const DISCOVERY_REQUEST: &str = formatcp!("M-SEARCH * HTTP/1.1\r\n\
 HOST: 239.255.255.250:1900\r\n\
 ST: {urn}\r\n\
 MX: 5\r\n\
@@ -62,7 +62,7 @@ impl Heos {
                     match Self::parse_discovery_response(&response) {
                         Ok(location) => {
                             match Self::parse_location(location.as_ref()) {
-                                Ok(url) => yield HeosDevice::new(&*url, &*url, "0").unwrap(), // FIXME: ? doesn't work
+                                Ok(url) => yield HeosDevice::new(&url, &url, "0").unwrap(), // FIXME: ? doesn't work
                                 Err(err) => println!("Error parse location: {:#?}", err),
                             }
                         },
@@ -74,22 +74,19 @@ impl Heos {
     }
 
     pub(crate) fn parse_discovery_response(response_str: &str) -> Result<String> {
-        match response_str.split("\r\n\r\n").next() {
-            Some(header_str) => {
-                for header_line in header_str.split("\r\n") {
-                    if header_line.contains("LOCATION") {
-                        if let Some(idx) = header_line.find(":") {
-                            let location = header_line[idx + 1..].trim();
+        if let Some(header_str) = response_str.split("\r\n\r\n").next() {
+            for header_line in header_str.split("\r\n") {
+                if header_line.contains("LOCATION") {
+                    if let Some(idx) = header_line.find(":") {
+                        let location = header_line[idx + 1..].trim();
 
-                            return Ok(String::from(location));
-                        }
+                        return Ok(String::from(location));
                     }
                 }
-            },
-            None => {}
+            }
         }
 
-        Err(anyhow!("Invalid response"))
+        bail!("Invalid response");
     }
 
     pub(crate) fn parse_location(location_str: &str) -> Result<String> {
