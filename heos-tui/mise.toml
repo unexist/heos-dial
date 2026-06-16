@@ -9,3 +9,6 @@ run = "cargo run"
 
 [tasks.clean]
 run = "cargo clean"
+
+[tasks.clippy]
+run = "bacon clippy"
