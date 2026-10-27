@@ -10,7 +10,7 @@ readme = "README.md"
 homepage = "https://unexist.dev"
 repository = "https://github.com/unexist/heos-dial/tree/master/heos-lib"
 edition = "2021"
-exclude = ["/test_assets", "/slumber.yml", "/Taskfile.yml"]
+exclude = ["/test_assets", "/slumber.yml", "/Taskfile.yml", "/packetsender.ini"]
 
 [dependencies]
 anyhow = "1.0.102"
