@@ -1,13 +1,13 @@
-///
-/// @package heos-dial
-///
-/// @file Wifi helper
-/// @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
-/// @version $Id$
-///
-/// This program can be distributed under the terms of the GNU GPLv3.
-/// See the file LICENSE for details.
-///
+//!
+//! @package heos-dial
+//!
+//! @file Wifi helper
+//! @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
+//! @version $Id$
+//!
+//! This program can be distributed under the terms of the GNU GPLv3.
+//! See the file LICENSE for details.
+//!
 
 use anyhow::{bail, Result};
 use esp_idf_svc::{

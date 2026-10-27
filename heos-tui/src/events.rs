@@ -1,13 +1,13 @@
-///
-/// @package heos-dial
-///
-/// @file HEOS tui
-/// @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
-/// @version $Id$
-///
-/// This program can be distributed under the terms of the GNU GPLv3.
-/// See the file LICENSE for details.
-///
+//!
+//! @package heos-dial
+//!
+//! @file HEOS tui
+//! @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
+//! @version $Id$
+//!
+//! This program can be distributed under the terms of the GNU GPLv3.
+//! See the file LICENSE for details.
+//!
 
 use crossterm::event::{Event as CrosstermEvent, KeyEvent};
 use futures::{FutureExt, StreamExt};
@@ -49,10 +49,9 @@ impl EventHandler {
 
                   Some(Ok(evt)) = crossterm_event => {
                         match evt {
-                            CrosstermEvent::Key(key) => {
-                                if key.kind == crossterm::event::KeyEventKind::Press {
+                            CrosstermEvent::Key(key)
+                                if key.kind == crossterm::event::KeyEventKind::Press => {
                                     cloned_sender.send(Event::Key(key)).unwrap();
-                                }
                             },
                             CrosstermEvent::Resize(x, y) => {
                                 cloned_sender.send(Event::Resize(x, y)).unwrap();
@@ -75,8 +74,6 @@ impl EventHandler {
         self.receiver
             .recv()
             .await
-            .ok_or(Box::new(std::io::Error::new(
-                std::io::ErrorKind::Other, "This is an IO error",
-            )))
+            .ok_or(Box::new(std::io::Error::other("This is an IO error")))
     }
 }

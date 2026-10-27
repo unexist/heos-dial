@@ -1,13 +1,13 @@
-///
-/// @package heos-dial
-///
-/// @file HEOS lib
-/// @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
-/// @version $Id$
-///
-/// This program can be distributed under the terms of the GNU GPLv3.
-/// See the file LICENSE for details.
-///
+//!
+//! @package heos-dial
+//!
+//! @file HEOS lib
+//! @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
+//! @version $Id$
+//!
+//! This program can be distributed under the terms of the GNU GPLv3.
+//! See the file LICENSE for details.
+//!
 
 use anyhow::{anyhow, Result};
 use gjson::Value;
@@ -144,13 +144,11 @@ impl HeosReply {
             .map(|v| {
                 let mut group = Self::parse_group(v);
 
-                group.players = Some(Self::parse_players_payload(v, "players", &*group.group_id));
+                group.players = Some(Self::parse_players_payload(v, "players", &group.group_id));
 
                 v.get("players").array().iter().for_each(|player| {
                     if "leader".eq(player.get("role").str()) {
                         group.leader = Some(Self::parse_player(player));
-
-                        return;
                     }
                 });
 

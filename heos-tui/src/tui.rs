@@ -1,13 +1,13 @@
-///
-/// @package heos-dial
-///
-/// @file HEOS tui
-/// @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
-/// @version $Id$
-///
-/// This program can be distributed under the terms of the GNU GPLv3.
-/// See the file LICENSE for details.
-///
+//!
+//! @package heos-dial
+//!
+//! @file HEOS tui
+//! @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
+//! @version $Id$
+//!
+//! This program can be distributed under the terms of the GNU GPLv3.
+//! See the file LICENSE for details.
+//!
 
 use crate::app::{App, AppResult};
 use crossterm::terminal::{self, EnterAlternateScreen, LeaveAlternateScreen};

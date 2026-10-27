@@ -1,0 +1,28 @@
+[tasks.test]
+run = "cargo test -- --nocapture"
+
+[tasks.cap]
+run = "cargo test"
+
+[tasks.run]
+run = "cargo run"
+
+[tasks.clean]
+run = "cargo clean"
+
+[tasks.clippy]
+run = "bacon clippy"
+
+[tasks.cuc]
+usage = '''
+flag "-d --dry-run" {
+    help "Enable dry-running"
+}
+'''
+run = '''
+{% if usage.dry_run %}
+    cargo update-check
+{% else %}
+    cargo update-check -u
+{% endif %}
+'''

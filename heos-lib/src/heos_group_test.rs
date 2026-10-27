@@ -1,13 +1,13 @@
-///
-/// @package heos-dial
-///
-/// @file HEOS group tests
-/// @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
-/// @version $Id$
-///
-/// This program can be distributed under the terms of the GNU GPLv3.
-/// See the file LICENSE for details.
-///
+//!
+//! @package heos-dial
+//!
+//! @file HEOS group tests
+//! @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
+//! @version $Id$
+//!
+//! This program can be distributed under the terms of the GNU GPLv3.
+//! See the file LICENSE for details.
+//!
 
 #[cfg(test)]
 mod heos_group_test {

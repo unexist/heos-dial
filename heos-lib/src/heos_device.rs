@@ -1,16 +1,16 @@
-///
-/// @package heos-dial
-///
-/// @file HEOS lib
-/// @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
-/// @version $Id$
-///
-/// This program can be distributed under the terms of the GNU GPLv3.
-/// See the file LICENSE for details.
-///
+//!
+//! @package heos-dial
+//!
+//! @file HEOS lib
+//! @copyright (c) 2024-present Christoph Kappel <christoph@unexist.dev>
+//! @version $Id$
+//!
+//! This program can be distributed under the terms of the GNU GPLv3.
+//! See the file LICENSE for details.
+//!
 
 use std::fmt::{Display, Formatter};
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow, bail};
 use tokio::io;
 use tokio::net::TcpStream;
 use crate::constants::DEFAULT_PORT;
@@ -46,13 +46,12 @@ impl HeosDevice {
 
     pub async fn connect(&mut self) -> Result<()> {
         /* Sanity check to prevent re-connection */
-        Ok(match self.stream {
-            Some(_) => (),
-            None => {
-                self.stream = Some(TcpStream::connect(
-                    format!("{}:{}", self.base_url, DEFAULT_PORT)).await?)
-            }
-        })
+        if self.stream.is_none() {
+            self.stream = Some(TcpStream::connect(
+                format!("{}:{}", self.base_url, DEFAULT_PORT)).await?)
+        }
+
+        Ok(())
     }
 
     pub async fn update_info(&mut self) -> Result<()> {
@@ -109,12 +108,13 @@ impl HeosDevice {
 
         if let HeosReply::PlayingMedia(success, attrs) = reply {
             if success {
-                let mut media = HeosMedia::default();
-
-                media.artist_title = attrs.get("artist").cloned().unwrap_or_default();
-                media.song_title = attrs.get("album").cloned().unwrap_or_default();
-                media.album_title = attrs.get("song").cloned().unwrap_or_default();
-                media.image_url = attrs.get("image_url").cloned().unwrap_or_default();
+                let media = HeosMedia {
+                    artist_title: attrs.get("artist").cloned().unwrap_or_default(),
+                    song_title: attrs.get("album").cloned().unwrap_or_default(),
+                    album_title: attrs.get("song").cloned().unwrap_or_default(),
+                    image_url: attrs.get("image_url").cloned().unwrap_or_default(),
+                    ..Default::default()
+                };
 
                 self.media = Some(media);
             }
@@ -138,39 +138,36 @@ impl HeosCommandHandler for HeosDevice {
             dev_cmd = dev_cmd.attr("pid", self.player_id.as_str());
         };
 
-        match self.stream.as_ref() {
-            Some(stream) => {
-                stream.try_write(dev_cmd.to_string().as_bytes())?;
+        if let Some(stream) = self.stream.as_ref() {
+            stream.try_write(dev_cmd.to_string().as_bytes())?;
 
-                let mut buf = Vec::with_capacity(2048);
+            let mut buf = Vec::with_capacity(2048);
 
-                loop {
-                    stream.readable().await?;
+            loop {
+                stream.readable().await?;
 
-                    match stream.try_read_buf(&mut buf) {
-                        Ok(0) => break,
-                        Ok(_n) => {
-                            #[cfg(test)]
-                            println!("Read {} bytes", _n);
-                        }
-                        Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
-                            if '\r' == char::from(buf[buf.len() - 2])
-                                && '\n' == char::from(buf[buf.len() - 1]) {
-                                break;
-                            }
-                        }
-                        Err(e) => {
-                            return Err(anyhow!(e));
+                match stream.try_read_buf(&mut buf) {
+                    Ok(0) => break,
+                    Ok(_n) => {
+                        #[cfg(test)]
+                        println!("Read {} bytes", _n);
+                    }
+                    Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
+                        if '\r' == char::from(buf[buf.len() - 2])
+                        && '\n' == char::from(buf[buf.len() - 1]) {
+                            break;
                         }
                     }
+                    Err(e) => {
+                        bail!(e);
+                    }
                 }
-
-                return Ok(HeosReply::parse(String::from_utf8(buf)?.as_str())?)
             }
-            _ => {}
+
+            return HeosReply::parse(String::from_utf8(buf)?.as_str());
         }
 
-        Err(anyhow!("Failed to send command"))
+        bail!("Failed to send command");
     }
 }
 
