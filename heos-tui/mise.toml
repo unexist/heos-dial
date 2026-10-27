@@ -9,3 +9,22 @@ run = "cargo run"
 
 [tasks.clean]
 run = "cargo clean"
+
+[tasks.cuc]
+usage = '''
+flag "-d --dry-run" {
+    help "Enable dry-running"
+}
+'''
+run = '''
+DRY_RUN=-u
+
+if [ ${usage_dry_run} ] ; then
+    DRY_RUN=
+fi
+
+cargo update-check $DRY_RUN
+'''
+
+[tasks.clippy]
+run = "bacon clippy"
